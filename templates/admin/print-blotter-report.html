@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blotter Report</title>
+    <style>
+        @media print {
+            @page {
+                size: letter landscape;
+                margin: 0.5in;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+            table {
+                page-break-inside: auto;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #000;
+            padding-bottom: 15px;
+        }
+        
+        .header h1 {
+            margin: 10px 0 5px;
+            font-size: 22px;
+            text-transform: uppercase;
+        }
+        
+        .header h2 {
+            margin: 5px 0;
+            font-size: 16px;
+            font-weight: normal;
+        }
+        
+        .report-title {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .filter-info {
+            background: #f0f0f0;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+        }
+        
+        .filter-info strong {
+            color: #000;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 11px;
+        }
+        
+        th {
+            background: #000;
+            color: white;
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #000;
+        }
+        
+        td {
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border: 1px solid #333;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: #fff;
+            color: #000;
+        }
+        
+        .status-pending { border: 2px solid #666; }
+        .status-under_investigation { border: 2px solid #333; }
+        .status-resolved { border: 2px solid #000; font-weight: bold; }
+        .status-closed { background: #e5e7eb; border: 2px solid #999; }
+        
+        .priority-high { border: 3px solid #000; font-weight: bold; }
+        .priority-medium { border: 2px solid #333; }
+        .priority-low { border: 1px solid #666; }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 2px solid #ddd;
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .summary {
+            background: #f5f5f5;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #000;
+            border: 1px solid #ccc;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .summary-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #000;
+            color: white;
+            border: 2px solid #000;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .print-button:hover {
+            background: #333;
+            border-color: #333;
+        }
+        
+        .no-records {
+            text-align: center;
+            padding: 40px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button no-print" onclick="window.print()">
+        <i class="fas fa-print"></i> Print Report
+    </button>
+
+    <div class="header">
+        <h1>{{ barangay_info.barangay_name if barangay_info else 'Barangay' }}</h1>
+        <h2>{{ barangay_info.municipality if barangay_info else 'Municipality' }}, {{ barangay_info.province if barangay_info else 'Province' }}</h2>
+    </div>
+
+    <div class="report-title">BLOTTER RECORDS REPORT</div>
+
+    {% if filter_info.date_from or filter_info.date_to or filter_info.status or filter_info.type or filter_info.priority %}
+    <div class="filter-info">
+        <strong>Report Filters:</strong>
+        {% if filter_info.date_from and filter_info.date_to %}
+            <span>Period: {{ filter_info.date_from }} to {{ filter_info.date_to }}</span> |
+        {% elif filter_info.date_from %}
+            <span>Date: {{ filter_info.date_from }}</span> |
+        {% endif %}
+        {% if filter_info.status %}
+            <span>Status: {{ filter_info.status.replace('_', ' ').title() }}</span> |
+        {% endif %}
+        {% if filter_info.type %}
+            <span>Type: {{ filter_info.type.replace('_', ' ').title() }}</span> |
+        {% endif %}
+        {% if filter_info.priority %}
+            <span>Priority: {{ filter_info.priority.title() }}</span>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if blotters %}
+    <div class="summary">
+        <strong>Summary Statistics</strong>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="summary-value">{{ blotters|length }}</div>
+                <div class="summary-label">Total Records</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">{{ blotters|selectattr('priority', 'equalto', 'high')|list|length }}</div>
+                <div class="summary-label">High Priority</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">{{ blotters|selectattr('status', 'in', ['pending', 'under_investigation'])|list|length }}</div>
+                <div class="summary-label">Active Cases</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">{{ blotters|selectattr('status', 'equalto', 'resolved')|list|length }}</div>
+                <div class="summary-label">Resolved</div>
+            </div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 8%;">Case No.</th>
+                <th style="width: 10%;">Date</th>
+                <th style="width: 12%;">Type</th>
+                <th style="width: 15%;">Complainant</th>
+                <th style="width: 15%;">Respondent</th>
+                <th style="width: 15%;">Location</th>
+                <th style="width: 10%;">Status</th>
+                <th style="width: 8%;">Priority</th>
+                <th style="width: 7%;">Recorded By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for blotter in blotters %}
+            <tr>
+                <td>{{ blotter.case_number }}</td>
+                <td>{{ blotter.incident_date.strftime('%m/%d/%Y') if blotter.incident_date else 'N/A' }}</td>
+                <td>{{ blotter.incident_type.replace('_', ' ').title() if blotter.incident_type else 'N/A' }}</td>
+                <td>{{ blotter.complainant_name or 'N/A' }}</td>
+                <td>{{ blotter.respondent_name or 'N/A' }}</td>
+                <td>{{ blotter.incident_place or 'N/A' }}</td>
+                <td>
+                    <span class="status-badge status-{{ blotter.status }}">
+                        {{ blotter.status.replace('_', ' ')[:8] if blotter.status else 'N/A' }}
+                    </span>
+                </td>
+                <td>
+                    <span class="status-badge priority-{{ blotter.priority }}">
+                        {{ blotter.priority[:3].upper() if blotter.priority else 'N/A' }}
+                    </span>
+                </td>
+                <td>{{ blotter.recorder.username if blotter.recorder else 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="no-records">
+        <h3>No Records Found</h3>
+        <p>No blotter records match the selected filters.</p>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>This is a computer-generated report. Generated on: {{ current_datetime }}</p>
+        <p>Total Records in Report: {{ blotters|length if blotters else 0 }}</p>
+    </div>
+
+    <script>
+        // Auto-print on load
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('auto_print') === 'true') {
+                setTimeout(() => window.print(), 500);
+            }
+        };
+    </script>
+</body>
+</html>

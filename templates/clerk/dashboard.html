@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clerk Dashboard - iSerbisyo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',                           
+                            800: '#1e40af',
+                            900: '#1e3a8a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        /* Custom scrollbar for certificate list */
+        .certificate-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .certificate-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        .certificate-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .certificate-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar Container -->
+        <div class="hidden lg:block">
+            {% include 'components/clerk-sidebar.html' %}
+        </div>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 lg:pl-64">
+            <!-- Header Container -->
+            {% include 'components/clerk-header.html' %}
+
+            <!-- Main Dashboard Content -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <!-- Dashboard Content -->
+                <div class="py-3 sm:py-4 lg:py-6">
+                    <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+                        <!-- Modern Page Header -->
+                        <div class="mb-8">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                                    <div class="flex items-center space-x-4 mb-4 lg:mb-0">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                                            <i class="fas fa-tachometer-alt text-white text-2xl"></i>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-600 bg-clip-text text-transparent">
+                                                Clerk Dashboard
+                                            </h1>
+                                            <p class="text-gray-600 text-lg">Ready to assist residents and process their requests efficiently</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-3">
+                                        <a href="{{ url_for('clerk.pending_residents') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:shadow-md transition-all duration-300">
+                                            <i class="fas fa-user-clock mr-2"></i>
+                                            View Pending Residents
+                                        </a>
+                                        <a href="{{ url_for('clerk.certificates') }}" class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-300">
+                                            <i class="fas fa-certificate mr-2"></i>
+                                            Process Certificates
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Stats Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+                            <!-- Total Residents -->
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-blue-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-blue-600 uppercase tracking-wide">Total Residents</p>
+                                            <p class="text-3xl font-bold text-blue-900 mt-2">{{ stats.total_residents | default(0) | number_format }}</p>
+                                            <div class="flex items-center mt-2">
+                                                <i class="fas fa-users text-blue-500 text-xs mr-1"></i>
+                                                <p class="text-sm text-blue-600 font-medium">Approved residents</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-users text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pending Requests -->
+                            <div class="bg-gradient-to-br from-amber-50 to-amber-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-amber-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-amber-600 uppercase tracking-wide">Pending Requests</p>
+                                            <p class="text-3xl font-bold text-amber-900 mt-2">{{ stats.pending_requests | default(0) }}</p>
+                                            <div class="flex items-center mt-2">
+                                                <i class="fas fa-clock text-amber-500 text-xs mr-1"></i>
+                                                <p class="text-sm text-amber-600 font-medium">Awaiting review</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-amber-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-clock text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Certificates Processed Today -->
+                            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-emerald-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-emerald-600 uppercase tracking-wide">Certificates Processed Today</p>
+                                            <p class="text-3xl font-bold text-emerald-900 mt-2">{{ stats.certificates_today | default(0) }}</p>
+                                            <div class="flex items-center mt-2">
+                                                <i class="fas fa-check-circle text-green-500 text-xs mr-1"></i>
+                                                <p class="text-sm text-green-600 font-medium">{{ stats.certificates_pending | default(0) }} pending review</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-certificate text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Residents Approved Today -->
+                            <div class="bg-gradient-to-br from-violet-50 to-violet-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-violet-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-violet-600 uppercase tracking-wide">Residents Approved Today</p>
+                                            <p class="text-3xl font-bold text-violet-900 mt-2">{{ stats.residents_approved_today | default(0) }}</p>
+                                            <div class="flex items-center mt-2">
+                                                <i class="fas fa-user-check text-green-500 text-xs mr-1"></i>
+                                                <p class="text-sm text-blue-600 font-medium">{{ stats.residents_pending_approval | default(0) }} awaiting approval</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-violet-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-user-check text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Charts and Activity Section -->
+                        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+                            <!-- Service Requests Chart -->
+                            <div class="bg-white shadow-lg rounded-xl p-6 hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-bold text-gray-900">Service Requests</h3>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                        <span class="text-sm text-gray-600">Monthly Trend</span>
+                                    </div>
+                                </div>
+                                <div class="flex-1 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg p-4" style="min-height: 220px; max-height: 220px;">
+                                    <canvas id="requestsChart" 
+                                            class="w-full h-full"
+                                            data-labels='{{ stats.monthly_labels | tojson }}'
+                                            data-values='{{ stats.monthly_chart_data | tojson }}'></canvas>
+                                </div>
+                                <div class="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">This month: {{ stats.monthly_requests | default(0) }} requests</span>
+                                    {% set change = stats.requests_change | default(0) %}
+                                    <span class="font-medium {% if change >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                                        {% if change >= 0 %}
+                                            <i class="fas fa-arrow-up text-xs mr-1"></i>+{{ change }}%
+                                        {% else %}
+                                            <i class="fas fa-arrow-down text-xs mr-1"></i>{{ change }}%
+                                        {% endif %}
+                                        <span class="text-gray-500 text-xs ml-1">vs last month</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Recently Requested Certificates -->
+                            <div class="bg-white shadow-lg rounded-xl p-6 hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-bold text-gray-900">Recently Requested Certificates</h3>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                        <span class="text-sm text-gray-600">Latest Requests</span>
+                                    </div>
+                                </div>
+                                <!-- Scrollable Container - Max height to show ~3 items -->
+                                <div class="space-y-3 overflow-y-auto pr-2 certificate-scroll flex-1" style="min-height: 220px; max-height: 220px;">
+                                    {% if recent_certificates %}
+                                        {% for cert in recent_certificates %}
+                                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 transition-all duration-200">
+                                            <div class="flex items-center space-x-3 flex-1">
+                                                <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0
+                                                    {% if cert.status == 'pending' %}bg-amber-100{% elif cert.status == 'approved' %}bg-green-100{% elif cert.status == 'rejected' %}bg-red-100{% else %}bg-blue-100{% endif %}">
+                                                    <i class="fas fa-certificate 
+                                                        {% if cert.status == 'pending' %}text-amber-600{% elif cert.status == 'approved' %}text-green-600{% elif cert.status == 'rejected' %}text-red-600{% else %}text-blue-600{% endif %} text-sm"></i>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="font-medium text-gray-900 truncate">{{ cert.resident.full_name }}</p>
+                                                    <p class="text-xs text-gray-500 truncate">{{ cert.certificate_type.replace('_', ' ').title() }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-2 flex-shrink-0">
+                                                <span class="px-2 py-1 text-xs font-medium rounded-full
+                                                    {% if cert.status == 'pending' %}bg-amber-100 text-amber-700
+                                                    {% elif cert.status == 'processing' %}bg-blue-100 text-blue-700
+                                                    {% elif cert.status == 'approved' %}bg-green-100 text-green-700
+                                                    {% elif cert.status == 'ready' %}bg-indigo-100 text-indigo-700
+                                                    {% elif cert.status == 'completed' %}bg-gray-100 text-gray-700
+                                                    {% elif cert.status == 'rejected' %}bg-red-100 text-red-700
+                                                    {% else %}bg-gray-100 text-gray-700{% endif %}">
+                                                    {{ cert.status.capitalize() }}
+                                                </span>
+                                                <a href="{{ url_for('clerk.certificates') }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                                                    <i class="fas fa-arrow-right"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="text-center py-8">
+                                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                                <i class="fas fa-inbox text-gray-400 text-2xl"></i>
+                                            </div>
+                                            <p class="text-gray-500 text-sm">No recent certificate requests</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mt-4 pt-4 border-t border-gray-200">
+                                    <a href="{{ url_for('clerk.certificates') }}" class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center justify-center">
+                                        View All Certificates
+                                        <i class="fas fa-arrow-right ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Dashboard functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+        });
+        
+        function initCharts() {
+            // Requests Chart - Using real database data
+            const requestsCtx = document.getElementById('requestsChart');
+            if (requestsCtx) {
+                // Get data from backend via data attributes
+                const monthlyLabels = JSON.parse(requestsCtx.dataset.labels || '[]');
+                const monthlyData = JSON.parse(requestsCtx.dataset.values || '[]');
+                
+                // Debug: Log the data to console
+                console.log('Monthly Labels:', monthlyLabels);
+                console.log('Monthly Data:', monthlyData);
+                
+                // Check if data exists
+                if (!monthlyLabels.length || !monthlyData.length) {
+                    console.warn('No chart data available');
+                    // Show empty state in chart
+                    requestsCtx.parentElement.innerHTML = `
+                        <div class="flex items-center justify-center h-full">
+                            <div class="text-center">
+                                <i class="fas fa-chart-line text-gray-300 text-4xl mb-2"></i>
+                                <p class="text-gray-500 text-sm">No data available</p>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                new Chart(requestsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: monthlyLabels,
+                        datasets: [{
+                            label: 'Service Requests',
+                            data: monthlyData,
+                            borderColor: '#3B82F6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#3B82F6',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#3B82F6',
+                                borderWidth: 1,
+                                cornerRadius: 8,
+                                displayColors: false,
+                                callbacks: {
+                                    title: function(context) {
+                                        return context[0].label;
+                                    },
+                                    label: function(context) {
+                                        return `${context.parsed.y} requests`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(59, 130, 246, 0.1)',
+                                    borderColor: 'rgba(59, 130, 246, 0.2)'
+                                },
+                                ticks: {
+                                    color: '#6B7280',
+                                    font: {
+                                        size: 12
+                                    },
+                                    stepSize: 1,
+                                    precision: 0
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(59, 130, 246, 0.1)',
+                                    borderColor: 'rgba(59, 130, 246, 0.2)'
+                                },
+                                ticks: {
+                                    color: '#6B7280',
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                });
+            }
+            
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart');
+            if (revenueCtx) {
+                new Chart(revenueCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Revenue',
+                            data: [12000, 19000, 15000, 25000, 22000, 30000],
+                            backgroundColor: '#10B981',
+                            borderRadius: 4,
+                            borderSkipped: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#f3f4f6'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₱' + value.toLocaleString();
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: '#f3f4f6'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+    
+    <!-- Main JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

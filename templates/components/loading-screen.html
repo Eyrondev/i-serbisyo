@@ -1,0 +1,165 @@
+<!-- Loading Screen Component -->
+<div id="loadingScreen" class="fixed inset-0 bg-white z-50 flex items-center justify-center">
+    <div class="text-center">
+        <!-- Logo -->
+        <div class="mb-8">
+            <img src="{{ url_for('static', filename='images/iserbisyo_icon.png') }}" 
+                 alt="i-Serbisyo Logo" 
+                 class="w-24 h-24 mx-auto animate-pulse">
+        </div>
+        
+        <!-- Loading Text -->
+        <div class="mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-2">i-Serbisyo</h2>
+            <p class="text-gray-600">Loading...</p>
+        </div>
+        
+
+    </div>
+</div>
+
+<style>
+/* Loading Screen Styles */
+#loadingScreen {
+    transition: opacity 0.3s ease-out;
+}
+
+#loadingScreen.fade-out {
+    opacity: 0;
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideDown {
+    from { 
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#loadingScreen > div {
+    animation: slideDown 0.5s ease-out;
+}
+
+/* Logo pulse animation */
+#loadingScreen img {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+</style>
+
+<script>
+// Loading Screen Controller
+class LoadingScreen {
+    constructor() {
+        this.element = document.getElementById('loadingScreen');
+        this.initializeEventListeners();
+    }
+    
+    show() {
+        if (this.element) {
+            this.element.classList.remove('fade-out');
+            this.element.style.display = 'flex';
+        }
+    }
+    
+    hide() {
+        if (this.element) {
+            this.element.classList.add('fade-out');
+            setTimeout(() => {
+                this.element.style.display = 'none';
+                this.element.classList.remove('fade-out');
+            }, 300);
+        }
+    }
+    
+    initializeEventListeners() {
+        // Show loading on page unload (when navigating away)
+        window.addEventListener('beforeunload', () => {
+            this.show();
+        });
+        
+        // Show loading on form submissions that redirect
+        document.addEventListener('submit', (e) => {
+            // Only show for forms that redirect (not AJAX forms)
+            const form = e.target;
+            if (form.method && form.method.toLowerCase() === 'post') {
+                // Check if it's an AJAX form by looking for prevent default handlers
+                if (!e.defaultPrevented) {
+                    this.show();
+                }
+            }
+        });
+        
+        // Show loading on navigation links
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            if (link && link.href) {
+                // Skip anchor links (same-page navigation)
+                if (link.href.includes('#')) {
+                    return;
+                }
+                
+                // Skip javascript links
+                if (link.href.startsWith('javascript:')) {
+                    return;
+                }
+                
+                // Don't show loading for external links or same-page links
+                const isExternal = link.hostname !== window.location.hostname;
+                const isSamePage = link.href === window.location.href;
+                
+                if (!isExternal && !isSamePage) {
+                    this.show();
+                }
+            }
+        });
+        
+        // Hide loading when page is fully loaded
+        window.addEventListener('load', () => {
+            this.hide();
+        });
+        
+        // Hide loading when DOM content is loaded (fallback)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => this.hide(), 100);
+            });
+        } else {
+            // Document already loaded
+            setTimeout(() => this.hide(), 100);
+        }
+    }
+}
+
+// Initialize loading screen when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    window.loadingScreen = new LoadingScreen();
+});
+
+// Fallback: Hide loading screen after maximum 10 seconds
+setTimeout(() => {
+    const loadingElement = document.getElementById('loadingScreen');
+    if (loadingElement && loadingElement.style.display !== 'none') {
+        loadingElement.style.display = 'none';
+    }
+}, 10000);
+</script>

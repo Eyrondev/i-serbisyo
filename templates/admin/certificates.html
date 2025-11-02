@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Requests - iSerBisyo Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',                           
+                            800: '#1e40af',
+                            900: '#1e3a8a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar Container -->
+        <div class="hidden lg:block">
+            {% include 'components/admin-sidebar.html' %}
+        </div>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 lg:pl-64">
+            <!-- Header Container -->
+            {% include 'components/admin-header.html' %}
+            <div id="admin-header"></div>
+
+            <!-- Main content area -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <!-- Certificates Content -->
+                <div class="py-3 sm:py-4 lg:py-6">
+                    <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+                        <!-- Modern Page Header -->
+                        <div class="mb-8">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                                    <div class="flex items-center space-x-4 mb-4 lg:mb-0">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                                            <i class="fas fa-certificate text-white text-2xl"></i>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-600 bg-clip-text text-transparent">
+                                                Certificate Requests
+                                            </h1>
+                                            <p class="text-gray-600 text-lg">Manage and process certificate applications efficiently</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-3">
+                                        <button class="issue-certificate-btn inline-flex items-center px-6 py-2 bg-gradient-to-r from-emerald-600 to-blue-600 text-white text-sm font-medium rounded-lg hover:from-emerald-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-300">
+                                            <i class="fas fa-plus mr-2"></i>
+                                            Issue Certificate
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Stats Cards - Full Width -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+                            <!-- Total Requests -->
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-blue-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-blue-600 uppercase tracking-wide">Total Requests</p>
+                                            <p class="text-3xl font-bold text-blue-900 mt-2">{{ stats.total_requests }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-file-alt text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pending -->
+                            <div class="bg-gradient-to-br from-amber-50 to-amber-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-amber-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-amber-600 uppercase tracking-wide">Pending</p>
+                                            <p class="text-3xl font-bold text-amber-900 mt-2">{{ stats.pending_count }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-amber-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-clock text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Approved -->
+                            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-emerald-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-emerald-600 uppercase tracking-wide">Approved</p>
+                                            <p class="text-3xl font-bold text-emerald-900 mt-2">{{ stats.approved_count + stats.completed_count }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-check text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ready for Pickup -->
+                            <div class="bg-gradient-to-br from-violet-50 to-violet-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-violet-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-violet-600 uppercase tracking-wide">Ready for Pickup</p>
+                                            <p class="text-3xl font-bold text-violet-900 mt-2">{{ stats.ready_count }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-violet-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-hand-holding text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Filters -->
+                        <div class="bg-white shadow-lg rounded-xl p-6 mb-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center space-x-3">
+                                    <h3 class="text-lg font-bold text-gray-900">Search & Filters</h3>
+                                    {% set active_filters = [] %}
+                                    {% if current_filters.search %}{% set _ = active_filters.append('search') %}{% endif %}
+                                    {% if current_filters.type %}{% set _ = active_filters.append('type') %}{% endif %}
+                                    {% if current_filters.status %}{% set _ = active_filters.append('status') %}{% endif %}
+                                    {% if current_filters.date_from %}{% set _ = active_filters.append('date') %}{% endif %}
+                                    {% if current_filters.date_to %}{% set _ = active_filters.append('date') %}{% endif %}
+                                    {% if active_filters %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <i class="fas fa-filter mr-1"></i>
+                                        {{ active_filters|length }} filter{{ 's' if active_filters|length != 1 else '' }} active
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors">
+                                    <i class="fas fa-redo mr-1"></i>
+                                    Reset Filters
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Search Certificates</label>
+                                    <div class="relative">
+                                        <input type="text" id="searchInput" placeholder="Search by name or ID..." value="{{ current_filters.search or '' }}" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                        <i class="fas fa-search absolute left-3 top-4 text-gray-400 text-sm"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Certificate Type</label>
+                                    <select id="typeFilter" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                        <option value="">All Types</option>
+                                        <!-- Dynamic options will be loaded here -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                    <select id="statusFilter" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                        <option value="">All Status</option>
+                                        <option value="pending" {{ 'selected' if current_filters.status == 'pending' else '' }}>Pending</option>
+                                        <option value="processing" {{ 'selected' if current_filters.status == 'processing' else '' }}>Processing</option>
+                                        <option value="approved" {{ 'selected' if current_filters.status == 'approved' else '' }}>Approved</option>
+                                        <option value="ready" {{ 'selected' if current_filters.status == 'ready' else '' }}>Ready for Pickup</option>
+                                        <option value="completed" {{ 'selected' if current_filters.status == 'completed' else '' }}>Completed</option>
+                                        <option value="rejected" {{ 'selected' if current_filters.status == 'rejected' else '' }}>Rejected</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Date From</label>
+                                    <input type="date" id="dateFromFilter" value="{{ current_filters.date_from or '' }}" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Date To</label>
+                                    <input type="date" id="dateToFilter" value="{{ current_filters.date_to or '' }}" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Certificate Requests Table -->
+                        <div class="bg-white shadow-lg rounded-xl border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-lg font-bold text-gray-900">Certificate Requests</h3>
+                                    <div class="flex items-center space-x-3">
+                                        {% if certificates.total > 0 %}
+                                        <span class="text-sm text-gray-600">
+                                            Showing {{ ((certificates.page - 1) * 10 + 1) }} 
+                                            to {{ (certificates.page * 10) if certificates.page * 10 < certificates.total else certificates.total }} 
+                                            of {{ certificates.total }} request{{ 's' if certificates.total != 1 else '' }}
+                                        </span>
+                                        {% else %}
+                                        <span class="text-sm text-gray-600">No certificates found</span>
+                                        {% endif %}
+                                        <div class="flex items-center space-x-1">
+                                            <span class="text-xs text-gray-400">Page {{ certificates.page }} of {{ certificates.pages }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
+                                        <tr>
+                                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Request Details</th>
+                                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Certificate Type</th>
+                                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Purpose</th>
+                                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+                                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Fee</th>
+                                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% if certificates.items %}
+                                        {% for certificate in certificates.items %}
+                                        <tr class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="h-10 w-10 rounded-full bg-gradient-to-br 
+                                                        {% if certificate.resident.gender == 'Male' %}from-blue-500 to-blue-600
+                                                        {% elif certificate.resident.gender == 'Female' %}from-pink-500 to-pink-600
+                                                        {% else %}from-gray-500 to-gray-600{% endif %} 
+                                                        flex items-center justify-center shadow-md">
+                                                        <span class="text-sm font-bold text-white">
+                                                            {{ certificate.resident.first_name[0] if certificate.resident.first_name else 'R' }}{{ certificate.resident.last_name[0] if certificate.resident.last_name else '' }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-semibold text-gray-900">{{ certificate.resident.full_name }}</div>
+                                                        <div class="text-xs text-gray-500 flex items-center">
+                                                            <i class="fas fa-hashtag mr-1"></i>
+                                                            {{ certificate.certificate_number or 'CERT-' + '%04d'|format(certificate.id) }} • {{ certificate.request_date.strftime('%b %d, %Y') if certificate.request_date else 'N/A' }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {% if certificate.certificate_type == 'barangay_clearance' %}Barangay Clearance
+                                                    {% elif certificate.certificate_type == 'certificate_of_indigency' %}Certificate of Indigency
+                                                    {% elif certificate.certificate_type == 'business_permit' %}Business Permit
+                                                    {% elif certificate.certificate_type == 'certificate_of_residency' %}Certificate of Residency
+                                                    {% elif certificate.certificate_type == 'cedula' %}Cedula
+                                                    {% elif certificate.certificate_type == 'tribal_membership' %}Tribal Membership
+                                                    {% else %}{{ certificate.certificate_type|title }}{% endif %}
+                                                </div>
+                                                <div class="text-xs text-gray-500 flex items-center">
+                                                    <i class="fas fa-certificate mr-1"></i>
+                                                    Standard Certificate
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900 font-medium">{{ certificate.purpose or 'Not specified' }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold 
+                                                    {% if certificate.status == 'pending' %}bg-gradient-to-r from-amber-100 to-amber-200 text-amber-800 border border-amber-300
+                                                    {% elif certificate.status == 'processing' %}bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border border-blue-300
+                                                    {% elif certificate.status == 'approved' %}bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300
+                                                    {% elif certificate.status == 'ready' %}bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-800 border border-emerald-300
+                                                    {% elif certificate.status == 'completed' %}bg-gradient-to-r from-violet-100 to-violet-200 text-violet-800 border border-violet-300
+                                                    {% elif certificate.status == 'rejected' %}bg-gradient-to-r from-red-100 to-red-200 text-red-800 border border-red-300
+                                                    {% else %}bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-300{% endif %}">
+                                                    {% if certificate.status == 'pending' %}<i class="fas fa-clock mr-1"></i>Pending
+                                                    {% elif certificate.status == 'processing' %}<i class="fas fa-spinner mr-1"></i>Processing
+                                                    {% elif certificate.status == 'approved' %}<i class="fas fa-check mr-1"></i>Approved
+                                                    {% elif certificate.status == 'ready' %}<i class="fas fa-hand-holding mr-1"></i>Ready for Pickup
+                                                    {% elif certificate.status == 'completed' %}<i class="fas fa-check-circle mr-1"></i>Completed
+                                                    {% elif certificate.status == 'rejected' %}<i class="fas fa-times mr-1"></i>Rejected
+                                                    {% else %}{{ certificate.status|title }}{% endif %}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-semibold text-gray-900">₱{{ "%.2f"|format(certificate.fee) }}</div>
+                                                <div class="text-xs font-medium flex items-center
+                                                    {% if certificate.payment_status == 'paid' %}text-emerald-600
+                                                    {% elif certificate.payment_status == 'unpaid' %}text-red-600
+                                                    {% elif certificate.payment_status == 'refunded' %}text-blue-600
+                                                    {% else %}text-gray-600{% endif %}">
+                                                    {% if certificate.payment_status == 'paid' %}<i class="fas fa-check-circle mr-1"></i>Paid
+                                                    {% elif certificate.payment_status == 'unpaid' %}<i class="fas fa-exclamation-circle mr-1"></i>Unpaid
+                                                    {% elif certificate.payment_status == 'refunded' %}<i class="fas fa-undo mr-1"></i>Refunded
+                                                    {% else %}{{ certificate.payment_status|title }}{% endif %}
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <div class="flex space-x-2">
+                                                    <!-- View Certificate -->
+                                                    <button class="view-certificate-btn p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200" 
+                                                            data-certificate-id="{{ certificate.id }}" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    
+                                                    <!-- Proceed to Payment (for ready or completed certificates with unpaid status) -->
+                                                    {% if certificate.status in ['ready', 'completed'] and certificate.payment_status == 'unpaid' %}
+                                                    <button class="proceed-payment-btn p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-all duration-200" 
+                                                            data-certificate-id="{{ certificate.id }}" title="Proceed to Payment">
+                                                        <i class="fas fa-credit-card"></i>
+                                                    </button>
+                                                    {% endif %}
+                                                    
+                                                    <!-- Mark as Complete (only for approved certificates) -->
+                                                    {% if certificate.status == 'approved' %}
+                                                    <button class="complete-certificate-btn p-2 text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded-lg transition-all duration-200" 
+                                                            data-certificate-id="{{ certificate.id }}" title="Mark as Complete">
+                                                        <i class="fas fa-check-circle"></i>
+                                                    </button>
+                                                    {% endif %}
+                                                    
+                                                    <!-- Edit Certificate -->
+                                                    <button class="edit-certificate-btn p-2 text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded-lg transition-all duration-200" 
+                                                            data-certificate-id="{{ certificate.id }}" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    
+                                                    <!-- Reject Certificate (only for pending/processing) -->
+                                                    {% if certificate.status in ['pending', 'processing'] %}
+                                                    <button class="reject-certificate-btn p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200" 
+                                                            data-certificate-id="{{ certificate.id }}" title="Reject">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="6" class="px-6 py-12 text-center">
+                                                <div class="flex flex-col items-center">
+                                                    <i class="fas fa-certificate text-gray-400 text-4xl mb-4"></i>
+                                                    <h3 class="text-lg font-medium text-gray-900 mb-2">No certificate requests found</h3>
+                                                    <p class="text-gray-500 mb-4">Try adjusting your filters or add a new certificate request.</p>
+                                                    <button class="add-certificate-btn inline-flex items-center px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700">
+                                                        <i class="fas fa-plus mr-2"></i>
+                                                        Add Certificate Request
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination -->
+                            {% if certificates.total > 0 %}
+                            <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-sm text-gray-600 font-medium">
+                                        Showing {{ ((certificates.page - 1) * certificates.per_page + 1) }} 
+                                        to {{ (certificates.page * certificates.per_page) if certificates.page * certificates.per_page < certificates.total else certificates.total }} 
+                                        of {{ certificates.total }} certificate{{ 's' if certificates.total != 1 else '' }}
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        {% if certificates.has_prev %}
+                                        <a href="{{ url_for('admin.certificates', page=certificates.prev_num, search=request.args.get('search', ''), type=request.args.get('type', ''), status=request.args.get('status', ''), date_from=request.args.get('date_from', ''), date_to=request.args.get('date_to', '')) }}" 
+                                           class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-all duration-200">
+                                            <i class="fas fa-chevron-left mr-1 text-xs"></i>
+                                            Previous
+                                        </a>
+                                        {% else %}
+                                        <span class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-lg cursor-not-allowed">
+                                            <i class="fas fa-chevron-left mr-1 text-xs"></i>
+                                            Previous
+                                        </span>
+                                        {% endif %}
+
+                                        <!-- Page numbers -->
+                                        <div class="flex items-center space-x-1">
+                                            {% for page_num in certificates.iter_pages() %}
+                                                {% if page_num %}
+                                                    {% if page_num != certificates.page %}
+                                                    <a href="{{ url_for('admin.certificates', page=page_num, search=request.args.get('search', ''), type=request.args.get('type', ''), status=request.args.get('status', ''), date_from=request.args.get('date_from', ''), date_to=request.args.get('date_to', '')) }}" 
+                                                       class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 transition-all duration-200">
+                                                        {{ page_num }}
+                                                    </a>
+                                                    {% else %}
+                                                    <span class="px-3 py-2 text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-emerald-600 border border-emerald-500 rounded-lg shadow-md">
+                                                        {{ page_num }}
+                                                    </span>
+                                                    {% endif %}
+                                                {% else %}
+                                                <span class="px-2 py-2 text-sm text-gray-400">…</span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+
+                                        {% if certificates.has_next %}
+                                        <a href="{{ url_for('admin.certificates', page=certificates.next_num, search=request.args.get('search', ''), type=request.args.get('type', ''), status=request.args.get('status', ''), date_from=request.args.get('date_from', ''), date_to=request.args.get('date_to', '')) }}" 
+                                           class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-all duration-200">
+                                            Next
+                                            <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                        </a>
+                                        {% else %}
+                                        <span class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-lg cursor-not-allowed">
+                                            Next
+                                            <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Popular Certificates - Bottom Section -->
+                        <div class="mt-6">
+                            <div class="bg-white shadow-lg rounded-xl border border-gray-100 hover:shadow-xl transition-all duration-300">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between mb-6">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-chart-bar text-white text-sm"></i>
+                                            </div>
+                                            <h3 class="text-lg font-bold text-gray-900">Popular Certificates</h3>
+                                        </div>
+                                        <span class="text-sm text-gray-500">Based on recent requests</span>
+                                    </div>
+                                    {% if stats.popular_certificates %}
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                        {% for cert in stats.popular_certificates[:4] %}
+                                        <div class="group hover:bg-gray-50 p-4 rounded-lg transition-colors">
+                                            <div class="flex items-center justify-between mb-3">
+                                                <span class="text-sm font-medium text-gray-700">{{ cert.type_name }}</span>
+                                                <span class="text-sm font-bold 
+                                                    {% if loop.index == 1 %}text-blue-600
+                                                    {% elif loop.index == 2 %}text-emerald-600
+                                                    {% elif loop.index == 3 %}text-amber-600
+                                                    {% else %}text-violet-600{% endif %}">{{ cert.count }}</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-3">
+                                                <div class="bg-gradient-to-r 
+                                                    {% if loop.index == 1 %}from-blue-500 to-blue-600
+                                                    {% elif loop.index == 2 %}from-emerald-500 to-emerald-600
+                                                    {% elif loop.index == 3 %}from-amber-500 to-amber-600
+                                                    {% else %}from-violet-500 to-violet-600{% endif %} 
+                                                    h-3 rounded-full transition-all duration-500 group-hover:shadow-sm progress-bar" 
+                                                    data-width="{{ cert.percentage|default(0)|round(1) }}"></div>
+                                            </div>
+                                            <div class="mt-2 text-xs text-gray-500">{{ cert.percentage }}% of total requests</div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    <div class="text-center py-8">
+                                        <i class="fas fa-chart-bar text-gray-400 text-3xl mb-4"></i>
+                                        <p class="text-gray-500">No certificate data available yet</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Load admin components -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- Certificate Management JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - Certificate page initialized');
+            
+            // Load certificate types from database
+            loadCertificateTypes();
+            
+            // Debug: Check all certificate rows and their status
+            const certificateRows = document.querySelectorAll('tbody tr');
+            console.log('Total certificate rows found:', certificateRows.length);
+            
+            certificateRows.forEach((row, index) => {
+                const statusElement = row.querySelector('.inline-flex.items-center.px-3.py-1.rounded-full');
+                const paymentElement = row.querySelector('.text-xs.font-medium.flex.items-center');
+                if (statusElement && paymentElement) {
+                    console.log(`Certificate ${index + 1}:`, {
+                        status: statusElement.textContent.trim(),
+                        payment: paymentElement.textContent.trim()
+                    });
+                }
+            });
+            
+            // Certificate action handlers
+            
+            // View certificate details
+            document.querySelectorAll('.view-certificate-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const certificateId = this.dataset.certificateId;
+                    viewCertificate(certificateId);
+                });
+            });
+
+            // Release certificate
+            document.querySelectorAll('.release-certificate-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const certificateId = this.dataset.certificateId;
+                    releaseCertificate(certificateId);
+                });
+            });
+
+            // Approve certificate
+            document.querySelectorAll('.approve-certificate-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const certificateId = this.dataset.certificateId;
+                    approveCertificate(certificateId);
+                });
+            });
+
+            // Proceed to payment
+            console.log('Looking for proceed-payment-btn buttons...');
+            const proceedPaymentButtons = document.querySelectorAll('.proceed-payment-btn');
+            console.log('Found', proceedPaymentButtons.length, 'proceed-payment-btn buttons');
+            
+            proceedPaymentButtons.forEach((btn, index) => {
+                console.log(`Button ${index + 1}:`, btn, 'Certificate ID:', btn.dataset.certificateId);
+                btn.addEventListener('click', function() {
+                    console.log('Proceed to payment button clicked!');
+                    const certificateId = this.dataset.certificateId;
+                    console.log('Certificate ID from button:', certificateId);
+                    proceedToPayment(certificateId);
+                });
+            });
+
+            // Edit certificate
+            document.querySelectorAll('.edit-certificate-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const certificateId = this.dataset.certificateId;
+                    editCertificate(certificateId);
+                });
+            });
+
+            // Mark as complete
+            document.querySelectorAll('.complete-certificate-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const certificateId = this.dataset.certificateId;
+                    completeCertificate(certificateId);
+                });
+            });
+
+            // Reject certificate
+            document.querySelectorAll('.reject-certificate-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const certificateId = this.dataset.certificateId;
+                    rejectCertificate(certificateId);
+                });
+            });
+
+            // Add certificate button
+            document.querySelectorAll('.add-certificate-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showAddCertificateModal();
+                });
+            });
+
+            // Issue Certificate button (header)
+            document.querySelectorAll('.issue-certificate-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showAddCertificateModal();
+                });
+            });
+
+            // Filter functionality
+            const searchInput = document.getElementById('searchInput');
+            const typeFilter = document.getElementById('typeFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const dateFromFilter = document.getElementById('dateFromFilter');
+            const dateToFilter = document.getElementById('dateToFilter');
+            const resetFiltersBtn = document.querySelector('.text-blue-600');
+
+            // Reset filters button click
+            resetFiltersBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                resetFilters();
+            });
+
+            // Auto-apply filters on search input with debounce
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() {
+                    applyFilters();
+                }, 500); // Wait 500ms after user stops typing
+            });
+
+            // Auto-apply filters on dropdown change
+            [typeFilter, statusFilter, dateFromFilter, dateToFilter].forEach(filter => {
+                filter.addEventListener('change', function() {
+                    applyFilters();
+                });
+            });
+
+            // Initialize progress bars
+            document.querySelectorAll('.progress-bar').forEach(bar => {
+                const width = bar.getAttribute('data-width') || '0';
+                bar.style.width = width + '%';
+            });
+        });
+
+        // View certificate details
+        function viewCertificate(certificateId) {
+            fetch(`/admin/api/certificate/${certificateId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const cert = data.certificate;
+                        Swal.fire({
+                            title: 'Certificate Details',
+                            html: `
+                                <div class="text-left space-y-4">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <strong>Certificate Number:</strong><br>
+                                            <span class="text-gray-600">${cert.certificate_number || 'CERT-' + String(cert.id).padStart(4, '0')}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Type:</strong><br>
+                                            <span class="text-gray-600">${formatCertificateType(cert.certificate_type)}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Resident:</strong><br>
+                                            <span class="text-gray-600">${cert.resident_name}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Purpose:</strong><br>
+                                            <span class="text-gray-600">${cert.purpose || 'Not specified'}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Status:</strong><br>
+                                            <span class="text-gray-600">${cert.status.charAt(0).toUpperCase() + cert.status.slice(1)}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Payment:</strong><br>
+                                            <span class="text-gray-600">₱${cert.fee.toFixed(2)} - ${cert.payment_status.charAt(0).toUpperCase() + cert.payment_status.slice(1)}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Request Date:</strong><br>
+                                            <span class="text-gray-600">${new Date(cert.request_date).toLocaleDateString()}</span>
+                                        </div>
+                                        ${cert.completion_date ? `<div>
+                                            <strong>Completion Date:</strong><br>
+                                            <span class="text-gray-600">${new Date(cert.completion_date).toLocaleDateString()}</span>
+                                        </div>` : ''}
+                                    </div>
+                                </div>
+                            `,
+                            width: '600px',
+                            confirmButtonText: 'Close',
+                            confirmButtonColor: '#059669'
+                        });
+                    } else {
+                        Swal.fire('Error', data.message || 'Failed to load certificate details', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'Failed to load certificate details', 'error');
+                });
+        }
+
+        // Release certificate
+        function releaseCertificate(certificateId) {
+            Swal.fire({
+                title: 'Release Certificate',
+                text: 'Mark this certificate as completed and released?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Release',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#059669'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/api/certificate/${certificateId}/status`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ status: 'completed' })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Check if it was added to payment list
+                            const message = data.message || 'Certificate has been marked as completed';
+                            const wasAddedToPaymentList = message.includes('payment list');
+                            
+                            Swal.fire({
+                                title: 'Success!',
+                                html: wasAddedToPaymentList 
+                                    ? '<p>Certificate has been marked as completed</p><p class="text-green-600 font-semibold mt-2"><i class="fas fa-check-circle mr-1"></i>Automatically added to Payment List</p>'
+                                    : 'Certificate has been marked as completed',
+                                icon: 'success',
+                                timer: wasAddedToPaymentList ? 3000 : 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', data.message || 'Failed to update certificate status', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'Failed to update certificate status', 'error');
+                    });
+                }
+            });
+        }
+
+        // Approve certificate
+        function approveCertificate(certificateId) {
+            Swal.fire({
+                title: 'Approve Certificate',
+                text: 'Approve this certificate request?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Approve',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#059669'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/api/certificate/${certificateId}/status`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ status: 'approved' })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Certificate has been approved',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', data.message || 'Failed to approve certificate', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'Failed to approve certificate', 'error');
+                    });
+                }
+            });
+        }
+
+        // Proceed to payment - redirect to certificate payment page
+        function proceedToPayment(certificateId) {
+            console.log('proceedToPayment called with certificateId:', certificateId);
+            
+            // Show confirmation before redirect
+            Swal.fire({
+                title: 'Proceed to Payment',
+                text: `Go to payment page for certificate ID: ${certificateId}?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Go to Payment',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#059669'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    console.log('Redirecting to:', `/admin/certificate/${certificateId}/payment`);
+                    // Redirect to certificate payment page with certificate ID
+                    window.location.href = `/admin/certificate/${certificateId}/payment`;
+                }
+            });
+        }
+
+        // Edit certificate
+        function editCertificate(certificateId) {
+            // Fetch certificate details first
+            fetch(`/admin/api/certificate/${certificateId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const cert = data.certificate;
+                        showEditCertificateModal(cert);
+                    } else {
+                        Swal.fire('Error', data.message || 'Failed to load certificate details', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'Failed to load certificate details', 'error');
+                });
+        }
+
+        // Show edit certificate modal
+        function showEditCertificateModal(certificate) {
+            Swal.fire({
+                title: 'Edit Certificate',
+                html: `
+                    <div class="text-left space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
+                            <input type="text" id="edit-purpose" value="${certificate.purpose || ''}" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <select id="edit-status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="pending" ${certificate.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="processing" ${certificate.status === 'processing' ? 'selected' : ''}>Processing</option>
+                                <option value="approved" ${certificate.status === 'approved' ? 'selected' : ''}>Approved</option>
+                                <option value="ready" ${certificate.status === 'ready' ? 'selected' : ''}>Ready for Pickup</option>
+                                <option value="completed" ${certificate.status === 'completed' ? 'selected' : ''}>Completed</option>
+                                <option value="rejected" ${certificate.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Payment Status</label>
+                            <select id="edit-payment-status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="unpaid" ${certificate.payment_status === 'unpaid' ? 'selected' : ''}>Unpaid</option>
+                                <option value="paid" ${certificate.payment_status === 'paid' ? 'selected' : ''}>Paid</option>
+                                <option value="refunded" ${certificate.payment_status === 'refunded' ? 'selected' : ''}>Refunded</option>
+                            </select>
+                        </div>
+                    </div>
+                `,
+                width: '500px',
+                showCancelButton: true,
+                confirmButtonText: 'Update',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#059669',
+                preConfirm: () => {
+                    const purpose = document.getElementById('edit-purpose').value;
+                    const status = document.getElementById('edit-status').value;
+                    const paymentStatus = document.getElementById('edit-payment-status').value;
+
+                    return {
+                        purpose: purpose,
+                        status: status,
+                        payment_status: paymentStatus
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/api/certificate/${certificate.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(result.value)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Check if certificate should move to payment list after update
+                            if (data.certificate && data.certificate.status === 'completed' && data.certificate.payment_status === 'paid') {
+                                checkAndMoveToPaymentList(certificate.id, data.certificate);
+                            } else {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Certificate has been updated successfully',
+                                    icon: 'success',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            }
+                        } else {
+                            Swal.fire('Error', data.message || 'Failed to update certificate', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'Failed to update certificate', 'error');
+                    });
+                }
+            });
+        }
+
+        // Show add certificate modal
+        function showAddCertificateModal() {
+            Swal.fire({
+                title: 'Add Certificate Request',
+                html: `
+                    <div class="text-left space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Resident *</label>
+                            <div class="relative">
+                                <input type="text" id="add-resident-search" placeholder="Search residents..." 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                                       autocomplete="off" required>
+                                <input type="hidden" id="add-resident" name="resident_id" required>
+                                <div id="resident-dropdown" class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto hidden">
+                                    <div class="p-2 text-sm text-gray-500">Loading residents...</div>
+                                </div>
+                                <i class="fas fa-search absolute right-3 top-3 text-gray-400 text-sm"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Certificate Type *</label>
+                            <select id="add-certificate-type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+                                <option value="">Select certificate type...</option>
+                                <!-- Dynamic options will be loaded here -->
+                            </select>
+                            <div id="certificate-fee-display" class="mt-2 hidden">
+                                <div class="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded-md">
+                                    <span class="text-sm text-green-700">Service Fee:</span>
+                                    <span id="certificate-fee-amount" class="text-sm font-semibold text-green-800"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Purpose *</label>
+                            <input type="text" id="add-purpose" placeholder="Enter purpose..." 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+                        </div>
+                    </div>
+                `,
+                width: '500px',
+                showCancelButton: true,
+                confirmButtonText: 'Add Certificate',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#059669',
+                didOpen: () => {
+                    // Initialize searchable resident dropdown
+                    initializeResidentSearch();
+                    // Load certificate types for the dropdown
+                    loadCertificateTypesForModal();
+                },
+                preConfirm: () => {
+                    const residentId = document.getElementById('add-resident').value;
+                    const residentName = document.getElementById('add-resident-search').value;
+                    const certificateType = document.getElementById('add-certificate-type').value;
+                    const purpose = document.getElementById('add-purpose').value;
+
+                    if (!residentId || !residentName || !certificateType || !purpose) {
+                        Swal.showValidationMessage('Please fill in all required fields and select a valid resident');
+                        return false;
+                    }
+
+                    // Validate that a resident was actually selected (not just typed)
+                    if (!residentId || residentId === '') {
+                        Swal.showValidationMessage('Please select a resident from the dropdown');
+                        return false;
+                    }
+
+                    return {
+                        resident_id: parseInt(residentId),
+                        certificate_type: certificateType,
+                        purpose: purpose
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/admin/api/certificate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(result.value)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Certificate request has been added',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', data.message || 'Failed to add certificate request', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'Failed to add certificate request', 'error');
+                    });
+                }
+            });
+        }
+
+        // Global variables to store data
+        let allResidents = [];
+        let certificateTypes = {};
+
+        // Load certificate types from database
+        function loadCertificateTypes() {
+            fetch('/admin/api/certificate-types')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Store certificate types for quick access
+                        certificateTypes = {};
+                        data.certificate_types.forEach(type => {
+                            certificateTypes[type.code] = type.name;
+                        });
+                        
+                        // Update the type filter dropdown
+                        updateTypeFilter(data.certificate_types);
+                    } else {
+                        console.error('Failed to load certificate types:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading certificate types:', error);
+                });
+        }
+
+        // Update type filter dropdown with dynamic options
+        function updateTypeFilter(types) {
+            const typeFilter = document.getElementById('typeFilter');
+            const currentValue = typeFilter.value;
+            
+            // Clear existing options except "All Types"
+            while (typeFilter.children.length > 1) {
+                typeFilter.removeChild(typeFilter.lastChild);
+            }
+            
+            // Add dynamic options
+            types.forEach(type => {
+                if (type.is_active) {
+                    const option = document.createElement('option');
+                    option.value = type.code;
+                    option.textContent = type.name;
+                    if (currentValue === type.code || '{{ current_filters.type or "" }}' === type.code) {
+                        option.selected = true;
+                    }
+                    typeFilter.appendChild(option);
+                }
+            });
+        }
+
+        // Helper function to format certificate type using dynamic data
+        function formatCertificateType(type) {
+            // Use loaded certificate types, fallback to formatted type name
+            return certificateTypes[type] || type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        // Load certificate types for the add certificate modal
+        function loadCertificateTypesForModal() {
+            const certificateTypeSelect = document.getElementById('add-certificate-type');
+            
+            if (!certificateTypeSelect) {
+                console.error('Certificate type select not found');
+                return;
+            }
+
+            // Show loading state
+            certificateTypeSelect.innerHTML = '<option value="">Loading certificate types...</option>';
+            certificateTypeSelect.disabled = true;
+
+            fetch('/admin/api/certificate-types')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Clear loading state
+                        certificateTypeSelect.innerHTML = '<option value="">Select certificate type...</option>';
+                        
+                        // Add active certificate types
+                        data.certificate_types.forEach(type => {
+                            if (type.is_active && type.is_available_online) {
+                                const option = document.createElement('option');
+                                option.value = type.code;
+                                option.textContent = type.name;
+                                option.setAttribute('data-fee', type.fee);
+                                certificateTypeSelect.appendChild(option);
+                            }
+                        });
+                        
+                        certificateTypeSelect.disabled = false;
+                        
+                        // Add event listener to show fee when certificate type is selected
+                        certificateTypeSelect.addEventListener('change', function() {
+                            const selectedOption = this.options[this.selectedIndex];
+                            const feeDisplay = document.getElementById('certificate-fee-display');
+                            const feeAmount = document.getElementById('certificate-fee-amount');
+                            
+                            if (selectedOption.value && selectedOption.getAttribute('data-fee')) {
+                                const fee = parseFloat(selectedOption.getAttribute('data-fee'));
+                                feeAmount.textContent = `₱${fee.toFixed(2)}`;
+                                feeDisplay.classList.remove('hidden');
+                            } else {
+                                feeDisplay.classList.add('hidden');
+                            }
+                        });
+                        
+                    } else {
+                        console.error('Failed to load certificate types:', data.message);
+                        certificateTypeSelect.innerHTML = '<option value="">Failed to load certificate types</option>';
+                        
+                        // Show error message to user
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'text-sm text-red-600 mt-1';
+                        errorMsg.textContent = 'Failed to load certificate types. Please try again.';
+                        certificateTypeSelect.parentNode.appendChild(errorMsg);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading certificate types:', error);
+                    certificateTypeSelect.innerHTML = '<option value="">Error loading certificate types</option>';
+                    certificateTypeSelect.disabled = false;
+                    
+                    // Show error message to user
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'text-sm text-red-600 mt-1';
+                    errorMsg.textContent = 'Error loading certificate types. Please check your connection.';
+                    certificateTypeSelect.parentNode.appendChild(errorMsg);
+                });
+        }
+
+        // Initialize searchable resident dropdown
+        function initializeResidentSearch() {
+            const searchInput = document.getElementById('add-resident-search');
+            const hiddenInput = document.getElementById('add-resident');
+            const dropdown = document.getElementById('resident-dropdown');
+            let selectedIndex = -1;
+
+            // Load residents data
+            fetch('/admin/api/residents')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success && data.residents && data.residents.length > 0) {
+                        allResidents = data.residents;
+                        showResidentDropdown(allResidents);
+                    } else {
+                        dropdown.innerHTML = '<div class="p-2 text-sm text-gray-500">No approved residents found</div>';
+                        console.warn('No residents found or API returned error:', data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading residents:', error);
+                    dropdown.innerHTML = '<div class="p-2 text-sm text-red-500">Error loading residents</div>';
+                    Swal.showValidationMessage('Failed to load residents. Please try again.');
+                });
+
+            // Search functionality
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                
+                if (query === '') {
+                    showResidentDropdown(allResidents);
+                    hiddenInput.value = ''; // Clear selection when input is cleared
+                } else {
+                    const filtered = allResidents.filter(resident => 
+                        resident.first_name.toLowerCase().includes(query) ||
+                        resident.last_name.toLowerCase().includes(query) ||
+                        resident.full_name.toLowerCase().includes(query)
+                    );
+                    showResidentDropdown(filtered);
+                    
+                    // Clear selection if the current input doesn't match the selected resident
+                    const selectedResidentName = allResidents.find(r => r.id == hiddenInput.value)?.full_name;
+                    if (selectedResidentName !== this.value) {
+                        hiddenInput.value = '';
+                    }
+                }
+                
+                dropdown.classList.remove('hidden');
+            });
+
+            // Keyboard navigation
+            searchInput.addEventListener('keydown', function(e) {
+                const options = dropdown.querySelectorAll('.resident-option');
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedIndex = Math.min(selectedIndex + 1, options.length - 1);
+                    updateSelection(options);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedIndex = Math.max(selectedIndex - 1, -1);
+                    updateSelection(options);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (selectedIndex >= 0 && options[selectedIndex]) {
+                        options[selectedIndex].click();
+                    }
+                } else if (e.key === 'Escape') {
+                    dropdown.classList.add('hidden');
+                    selectedIndex = -1;
+                }
+            });
+
+            function updateSelection(options) {
+                options.forEach((option, index) => {
+                    if (index === selectedIndex) {
+                        option.classList.add('bg-blue-100');
+                        option.scrollIntoView({ block: 'nearest' });
+                    } else {
+                        option.classList.remove('bg-blue-100');
+                    }
+                });
+            }
+
+            // Show dropdown on focus
+            searchInput.addEventListener('focus', function() {
+                if (allResidents.length > 0) {
+                    dropdown.classList.remove('hidden');
+                }
+            });
+
+            // Hide dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!searchInput.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+
+
+        }
+
+        // Show resident dropdown with filtered results
+        function showResidentDropdown(residents) {
+            const dropdown = document.getElementById('resident-dropdown');
+            
+            if (residents.length === 0) {
+                dropdown.innerHTML = '<div class="p-2 text-sm text-gray-500">No residents found</div>';
+                return;
+            }
+
+            // Reset keyboard selection
+            selectedIndex = -1;
+
+            dropdown.innerHTML = residents.map(resident => `
+                <div class="resident-option px-3 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 flex items-center" 
+                     data-id="${resident.id}" data-name="${resident.full_name}">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center mr-3">
+                        <span class="text-white text-xs font-semibold">
+                            ${resident.first_name.charAt(0)}${resident.last_name.charAt(0)}
+                        </span>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-gray-900">${resident.full_name}</div>
+                        <div class="text-xs text-gray-500">ID: ${resident.id}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click handlers to options
+            dropdown.querySelectorAll('.resident-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const name = this.getAttribute('data-name');
+                    
+                    document.getElementById('add-resident-search').value = name;
+                    document.getElementById('add-resident').value = id;
+                    dropdown.classList.add('hidden');
+                });
+            });
+        }
+
+        // Apply filters function
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value;
+            const type = document.getElementById('typeFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const dateFrom = document.getElementById('dateFromFilter').value;
+            const dateTo = document.getElementById('dateToFilter').value;
+
+            // Build query parameters
+            const params = new URLSearchParams();
+            if (search) params.append('search', search);
+            if (type) params.append('type', type);
+            if (status) params.append('status', status);
+            if (dateFrom) params.append('date_from', dateFrom);
+            if (dateTo) params.append('date_to', dateTo);
+            
+            // Reset to page 1
+            params.append('page', '1');
+            
+            // Redirect with filters
+            window.location.href = `${window.location.pathname}?${params.toString()}`;
+        }
+
+        // Reset filters function
+        function resetFilters() {
+            // Clear all filter inputs
+            document.getElementById('searchInput').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('dateFromFilter').value = '';
+            document.getElementById('dateToFilter').value = '';
+            
+            // Redirect without filters
+            window.location.href = window.location.pathname;
+        }
+
+        // Helper function to automatically copy certificate to payment list when completed and paid
+        function checkAndMoveToPaymentList(certificateId, certificateData) {
+            // Check if certificate is completed and payment is paid
+            if (certificateData && certificateData.status === 'completed' && certificateData.payment_status === 'paid') {
+                // Certificate is already moved to payment list automatically by the API
+                // Just show success message
+                Swal.fire({
+                    title: 'Payment Complete!',
+                    html: `
+                        <div class="text-center">
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                                <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                            </div>
+                            <p class="text-gray-600 mb-2">Certificate payment completed successfully!</p>
+                            <p class="text-sm text-gray-500">✓ Payment record created</p>
+                            <p class="text-sm text-gray-500">✓ Receipt generated</p>
+                            <p class="text-sm text-green-600 font-medium">✓ Added to Payment List automatically</p>
+                        </div>
+                    `,
+                    icon: 'success',
+                    timer: 3000,
+                    showConfirmButton: false
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                // Just show success for the current action
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Certificate status updated successfully.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    location.reload();
+                });
+            }
+        }
+
+        // Complete certificate function
+        function completeCertificate(certificateId) {
+            Swal.fire({
+                title: 'Mark Certificate as Complete',
+                text: 'This will mark the certificate as completed. Continue?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, mark as complete',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/api/certificate/${certificateId}/complete`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Check if certificate should move to payment list
+                            checkAndMoveToPaymentList(certificateId, data.certificate);
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'Failed to complete certificate', 'error');
+                    });
+                }
+            });
+        }
+
+        // Reject certificate function
+        function rejectCertificate(certificateId) {
+            Swal.fire({
+                title: 'Reject Certificate',
+                input: 'textarea',
+                inputLabel: 'Rejection Reason',
+                inputPlaceholder: 'Please provide a reason for rejecting this certificate...',
+                inputAttributes: {
+                    'aria-label': 'Rejection reason',
+                    'rows': '4'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Reject Certificate',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#ef4444',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'You need to provide a reason for rejection!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/api/certificate/${certificateId}/reject`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            reason: result.value 
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Certificate Rejected!',
+                                text: data.message,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'Failed to reject certificate', 'error');
+                    });
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>

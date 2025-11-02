@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - iSerbisyo Resident</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        purple: {
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            200: '#e9d5ff',
+                            300: '#d8b4fe',
+                            400: '#c084fc',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            700: '#7c3aed',
+                            800: '#6b21a8',
+                            900: '#581c87'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-purple-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar Container - Always render, let the sidebar component handle its own visibility -->
+        {% include 'components/resident-sidebar.html' %}
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 lg:pl-64">
+            <!-- Header Container -->
+            {% include 'components/resident-header.html' %}
+
+            <!-- Main content area -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <!-- Edit Profile Content -->
+                <div class="py-3 sm:py-4 lg:py-6 pl-4 sm:pl-6 lg:pl-8 pr-4 sm:pr-6 lg:pr-8 xl:pr-10">
+                    <div class="max-w-full mx-auto">
+                        <!-- Modern Page Header -->
+                        <div class="mb-6 sm:mb-8">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <div class="flex items-center space-x-3 sm:space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                                                <i class="fas fa-edit text-white text-lg sm:text-xl"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Edit Profile</h1>
+                                            <p class="text-gray-600 mt-1 text-sm sm:text-base">Update your personal information</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <a href="{{ url_for('resident.profile') }}" class="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200 text-sm sm:text-base">
+                                            <i class="fas fa-arrow-left mr-1.5 sm:mr-2 text-xs sm:text-sm"></i>
+                                            <span class="hidden sm:inline">Back to Profile</span>
+                                            <span class="sm:hidden">Back</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Edit Form -->
+                        <form method="POST" action="{{ url_for('resident.edit_profile') }}" class="space-y-4 sm:space-y-6">
+                            <!-- Personal Information Section -->
+                            <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+                                    <i class="fas fa-user-circle mr-2 text-purple-600 text-sm sm:text-base"></i>
+                                    <span class="text-sm sm:text-lg">Personal Information</span>
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                    <div>
+                                        <label for="name" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            Display Name <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" id="name" name="name" value="{{ current_user.name }}" required
+                                               class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                    <div>
+                                        <label for="email" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            Email Address <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="email" id="email" name="email" value="{{ current_user.email }}" required
+                                               class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                    <div>
+                                        <label for="first_name" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            First Name <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" id="first_name" name="first_name" value="{{ resident.first_name }}" required
+                                               class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                    <div>
+                                        <label for="middle_name" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            Middle Name
+                                        </label>
+                                        <input type="text" id="middle_name" name="middle_name" value="{{ resident.middle_name or '' }}"
+                                               class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                    <div>
+                                        <label for="last_name" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            Last Name <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" id="last_name" name="last_name" value="{{ resident.last_name }}" required
+                                               class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                    <div>
+                                        <label for="suffix" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            Suffix
+                                        </label>
+                                        <select id="suffix" name="suffix" class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                            <option value="">Select suffix</option>
+                                            <option value="Jr." {% if resident.suffix == 'Jr.' %}selected{% endif %}>Jr.</option>
+                                            <option value="Sr." {% if resident.suffix == 'Sr.' %}selected{% endif %}>Sr.</option>
+                                            <option value="II" {% if resident.suffix == 'II' %}selected{% endif %}>II</option>
+                                            <option value="III" {% if resident.suffix == 'III' %}selected{% endif %}>III</option>
+                                            <option value="IV" {% if resident.suffix == 'IV' %}selected{% endif %}>IV</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="birth_date" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            Birth Date
+                                        </label>
+                                        <input type="date" id="birth_date" name="birth_date" 
+                                               value="{% if resident.birth_date %}{{ resident.birth_date.strftime('%Y-%m-%d') }}{% endif %}"
+                                               class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                    <div>
+                                        <label for="birth_place" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            Birth Place
+                                        </label>
+                                        <input type="text" id="birth_place" name="birth_place" value="{{ resident.birth_place or '' }}"
+                                               class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                    <div>
+                                        <label for="gender" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            Gender
+                                        </label>
+                                        <select id="gender" name="gender" class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                            <option value="">Select gender</option>
+                                            <option value="Male" {% if resident.gender == 'Male' %}selected{% endif %}>Male</option>
+                                            <option value="Female" {% if resident.gender == 'Female' %}selected{% endif %}>Female</option>
+                                            <option value="Other" {% if resident.gender == 'Other' %}selected{% endif %}>Other</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="civil_status" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            Civil Status
+                                        </label>
+                                        <select id="civil_status" name="civil_status" class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                            <option value="">Select civil status</option>
+                                            <option value="Single" {% if resident.civil_status == 'Single' %}selected{% endif %}>Single</option>
+                                            <option value="Married" {% if resident.civil_status == 'Married' %}selected{% endif %}>Married</option>
+                                            <option value="Divorced" {% if resident.civil_status == 'Divorced' %}selected{% endif %}>Divorced</option>
+                                            <option value="Widowed" {% if resident.civil_status == 'Widowed' %}selected{% endif %}>Widowed</option>
+                                            <option value="Separated" {% if resident.civil_status == 'Separated' %}selected{% endif %}>Separated</option>
+                                        </select>
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label for="occupation" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            Occupation
+                                        </label>
+                                        <input type="text" id="occupation" name="occupation" value="{{ resident.occupation or '' }}"
+                                               class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Information Section -->
+                            <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+                                    <i class="fas fa-address-book mr-2 text-purple-600 text-sm sm:text-base"></i>
+                                    <span class="text-sm sm:text-lg">Contact Information</span>
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                    <div>
+                                        <label for="phone" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            Phone Number
+                                        </label>
+                                        <input type="tel" id="phone" name="phone" value="{{ resident.phone or '' }}"
+                                               placeholder="+63 9XX XXX XXXX"
+                                               class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Address Information Section -->
+                            <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+                                    <i class="fas fa-map-marker-alt mr-2 text-purple-600 text-sm sm:text-base"></i>
+                                    <span class="text-sm sm:text-lg">Address Information</span>
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                                    <div>
+                                        <label for="house_number" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            House Number
+                                        </label>
+                                        <input type="text" id="house_number" name="house_number" value="{{ resident.house_number or '' }}"
+                                               class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                    <div>
+                                        <label for="street" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            Street
+                                        </label>
+                                        <input type="text" id="street" name="street" value="{{ resident.street or '' }}"
+                                               class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                    <div>
+                                        <label for="purok" class="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                                            Purok
+                                        </label>
+                                        <input type="text" id="purok" name="purok" value="{{ resident.purok or '' }}"
+                                               class="block w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <div class="text-xs sm:text-sm text-gray-600">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Fields marked with <span class="text-red-500">*</span> are required
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                                        <a href="{{ url_for('resident.profile') }}" 
+                                           class="w-full sm:w-auto text-center px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base">
+                                            Cancel
+                                        </a>
+                                        <button type="submit" 
+                                                class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors text-sm sm:text-base">
+                                            <i class="fas fa-save mr-2"></i>
+                                            <span class="hidden sm:inline">Save Changes</span>
+                                            <span class="sm:hidden">Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        console.log('Edit Profile page loaded successfully');
+
+        // Mobile menu initialization
+        function initializeMobileMenu() {
+            console.log('Initializing mobile menu');
+            
+            const mobileMenuBtn = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            if (!mobileMenuBtn || !sidebar || !overlay) {
+                console.warn('Mobile menu elements not found', {
+                    mobileMenuBtn: !!mobileMenuBtn,
+                    sidebar: !!sidebar,
+                    overlay: !!overlay
+                });
+                return;
+            }
+
+            // Open sidebar
+            mobileMenuBtn.addEventListener('click', function() {
+                console.log('Opening mobile menu');
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+
+            // Close sidebar via overlay
+            overlay.addEventListener('click', function() {
+                console.log('Closing mobile menu via overlay');
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+
+            // Close sidebar on window resize if screen becomes large
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1024) {
+                    sidebar.classList.remove('translate-x-0', '-translate-x-full');
+                    overlay.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+
+        // Header dropdowns initialization
+        function initializeHeaderDropdowns() {
+            console.log('Initializing header dropdowns');
+            
+            // Notification dropdown
+            const notificationBtn = document.getElementById('notifications-toggle');
+            const notificationDropdown = document.getElementById('notifications-dropdown');
+
+            if (notificationBtn && notificationDropdown) {
+                notificationBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    console.log('Toggling notification dropdown');
+                    notificationDropdown.classList.toggle('hidden');
+                    const profileDropdown = document.getElementById('profile-dropdown');
+                    if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                        profileDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Profile dropdown
+            const profileBtn = document.getElementById('profile-toggle');
+            const profileDropdown = document.getElementById('profile-dropdown');
+
+            if (profileBtn && profileDropdown) {
+                profileBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    console.log('Toggling profile dropdown');
+                    profileDropdown.classList.toggle('hidden');
+                    if (notificationDropdown && !notificationDropdown.classList.contains('hidden')) {
+                        notificationDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (notificationDropdown && !notificationDropdown.classList.contains('hidden')) {
+                    if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
+                        console.log('Closing notification dropdown (clicked outside)');
+                        notificationDropdown.classList.add('hidden');
+                    }
+                }
+                
+                if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                    if (!profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+                        console.log('Closing profile dropdown (clicked outside)');
+                        profileDropdown.classList.add('hidden');
+                    }
+                }
+            });
+
+            // Close dropdowns on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (notificationDropdown) notificationDropdown.classList.add('hidden');
+                    if (profileDropdown) profileDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded');
+            initializeMobileMenu();
+            initializeHeaderDropdowns();
+        });
+    </script>
+</body>
+</html>

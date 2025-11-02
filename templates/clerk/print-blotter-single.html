@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blotter Record - {{ blotter.case_number }}</title>
+    <style>
+        @media print {
+            @page {
+                size: letter;
+                margin: 0.5in;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #000;
+            padding-bottom: 20px;
+        }
+        
+        .header img {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .header h1 {
+            margin: 10px 0 5px;
+            font-size: 24px;
+            text-transform: uppercase;
+        }
+        
+        .header h2 {
+            margin: 5px 0;
+            font-size: 18px;
+            font-weight: normal;
+        }
+        
+        .header p {
+            margin: 3px 0;
+            font-size: 14px;
+        }
+        
+        .document-title {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .case-number {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .info-section {
+            margin-bottom: 25px;
+        }
+        
+        .info-section h3 {
+            background: #f0f0f0;
+            padding: 8px 12px;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            border-left: 4px solid #000;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .info-item {
+            margin-bottom: 10px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .info-value {
+            font-size: 14px;
+            margin-top: 3px;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .description-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            background: #f9f9f9;
+            margin-top: 5px;
+            min-height: 80px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: #fff;
+            color: #000;
+        }
+        
+        .status-pending { border: 2px solid #666; }
+        .status-under_investigation { border: 2px solid #333; }
+        .status-resolved { border: 2px solid #000; font-weight: bold; }
+        .status-closed { background: #e5e7eb; border: 2px solid #999; }
+        
+        .priority-high { border: 3px solid #000; font-weight: bold; }
+        .priority-medium { border: 2px solid #333; }
+        .priority-low { border: 1px solid #666; }
+        
+        .footer-note {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #000;
+            color: white;
+            border: 2px solid #000;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        
+        .print-button:hover {
+            background: #333;
+            border-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button no-print" onclick="window.print()">
+        <i class="fas fa-print"></i> Print
+    </button>
+
+    <div class="header">
+        {% if barangay_info and barangay_info.logo %}
+        <img src="{{ url_for('static', filename='uploads/' + barangay_info.logo) }}" alt="Barangay Logo">
+        {% endif %}
+        <h1>{{ barangay_info.barangay_name if barangay_info else 'Barangay' }}</h1>
+        <h2>{{ barangay_info.municipality if barangay_info else 'Municipality' }}, {{ barangay_info.province if barangay_info else 'Province' }}</h2>
+        <p>{{ barangay_info.contact_number if barangay_info else '' }}</p>
+        <p>{{ barangay_info.email if barangay_info else '' }}</p>
+    </div>
+
+    <div class="document-title">BLOTTER RECORD</div>
+    <div class="case-number">Case Number: {{ blotter.case_number }}</div>
+
+    <div class="info-section">
+        <h3>Incident Information</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Incident Date:</div>
+                <div class="info-value">{{ blotter.incident_date.strftime('%B %d, %Y') if blotter.incident_date else 'N/A' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Incident Time:</div>
+                <div class="info-value">{{ blotter.incident_time.strftime('%I:%M %p') if blotter.incident_time else 'N/A' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Incident Type:</div>
+                <div class="info-value">{{ blotter.incident_type.replace('_', ' ').title() if blotter.incident_type else 'N/A' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Location:</div>
+                <div class="info-value">{{ blotter.incident_place or 'N/A' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Status:</div>
+                <div class="info-value">
+                    <span class="status-badge status-{{ blotter.status }}">
+                        {{ blotter.status.replace('_', ' ').title() if blotter.status else 'N/A' }}
+                    </span>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Priority:</div>
+                <div class="info-value">
+                    <span class="status-badge priority-{{ blotter.priority }}">
+                        {{ blotter.priority.title() if blotter.priority else 'N/A' }}
+                    </span>
+                </div>
+            </div>
+            <div class="info-item full-width">
+                <div class="info-label">Incident Description:</div>
+                <div class="description-box">{{ blotter.incident_description or 'No description provided' }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h3>Complainant Information</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Name:</div>
+                <div class="info-value">{{ blotter.complainant_name or 'N/A' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Address:</div>
+                <div class="info-value">{{ blotter.complainant_address or 'N/A' }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h3>Respondent Information</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Name:</div>
+                <div class="info-value">{{ blotter.respondent_name or 'N/A' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Address:</div>
+                <div class="info-value">{{ blotter.respondent_address or 'N/A' }}</div>
+            </div>
+        </div>
+    </div>
+
+    {% if blotter.remarks or blotter.resolution_details %}
+    <div class="info-section">
+        <h3>Additional Information</h3>
+        <div class="info-grid">
+            {% if blotter.remarks %}
+            <div class="info-item full-width">
+                <div class="info-label">Remarks:</div>
+                <div class="description-box">{{ blotter.remarks }}</div>
+            </div>
+            {% endif %}
+            {% if blotter.resolution_details %}
+            <div class="info-item full-width">
+                <div class="info-label">Resolution Details:</div>
+                <div class="description-box">{{ blotter.resolution_details }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="info-section">
+        <h3>Record Information</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Reported By:</div>
+                <div class="info-value">{{ blotter.reported_by or 'N/A' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Reporter Type:</div>
+                <div class="info-value">{{ blotter.reporter_type.replace('_', ' ').title() if blotter.reporter_type else 'N/A' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Recorded By:</div>
+                <div class="info-value">{{ blotter.recorder.full_name if blotter.recorder else 'N/A' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Date Recorded:</div>
+                <div class="info-value">{{ blotter.created_at.strftime('%B %d, %Y %I:%M %p') if blotter.created_at else 'N/A' }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        <p>This is a computer-generated document. No signature is required.</p>
+        <p>Printed on: {{ current_datetime }}</p>
+    </div>
+
+    <script>
+        // Auto-print on load
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('auto_print') === 'true') {
+                setTimeout(() => window.print(), 500);
+            }
+        };
+    </script>
+</body>
+</html>

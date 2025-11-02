@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Requests - iSerbisyo Resident</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        purple: {
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            200: '#e9d5ff',
+                            300: '#d8b4fe',
+                            400: '#c084fc',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            700: '#7c3aed',
+                            800: '#6b21a8',
+                            900: '#581c87'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-purple-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar Container - Always render, let the sidebar component handle its own visibility -->
+        {% include 'components/resident-sidebar.html' %}
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 lg:pl-64">
+            <!-- Header Container -->
+            {% include 'components/resident-header.html' %}
+
+            <!-- Main content area -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <!-- Certificate Requests Content -->
+                <div class="py-3 sm:py-4 lg:py-6 pl-4 sm:pl-6 lg:pl-8 pr-4 sm:pr-6 lg:pr-8 xl:pr-10">
+                    <div class="max-w-full mx-auto">
+                        <!-- Modern Page Header -->
+                        <div class="mb-6 sm:mb-8">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <div class="flex items-center space-x-3 sm:space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                                                <i class="fas fa-certificate text-white text-lg sm:text-xl"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Certificate Requests</h1>
+                                            <p class="text-gray-600 mt-1 text-sm sm:text-base">Request and track your barangay certificates</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                                        <span class="inline-flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-800">
+                                            <span class="w-2 h-2 mr-1.5 sm:mr-2 bg-purple-500 rounded-full"></span>
+                                            <span class="hidden sm:inline">{{ cert_stats.pending + cert_stats.processing }} Active Requests</span>
+                                            <span class="sm:hidden">{{ cert_stats.pending + cert_stats.processing }} Active</span>
+                                        </span>
+                                        <button onclick="showNewRequestModal()" class="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors duration-200 text-sm sm:text-base">
+                                            <i class="fas fa-plus mr-1.5 sm:mr-2 text-xs sm:text-sm"></i>
+                                            <span class="hidden sm:inline">New Request</span>
+                                            <span class="sm:hidden">New</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Request Stats -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
+                            <div class="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg border border-gray-200">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-file-alt text-purple-600 text-xs sm:text-sm"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3 sm:ml-4">
+                                        <p class="text-xs sm:text-sm font-medium text-gray-600">Total</p>
+                                        <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ cert_stats.total }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg border border-gray-200">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-clock text-orange-600 text-xs sm:text-sm"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3 sm:ml-4">
+                                        <p class="text-xs sm:text-sm font-medium text-gray-600">Pending</p>
+                                        <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ cert_stats.pending }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg border border-gray-200">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-check-circle text-green-600 text-xs sm:text-sm"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3 sm:ml-4">
+                                        <p class="text-xs sm:text-sm font-medium text-gray-600">Approved</p>
+                                        <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ cert_stats.approved }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg border border-gray-200">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-download text-blue-600 text-xs sm:text-sm"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3 sm:ml-4">
+                                        <p class="text-xs sm:text-sm font-medium text-gray-600">Ready</p>
+                                        <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ cert_stats.ready }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
+                            <form method="GET" action="{{ url_for('resident.certificates') }}" class="flex flex-col gap-3 sm:gap-4">
+                                <div class="flex-1">
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-search text-gray-400 text-sm"></i>
+                                        </div>
+                                        <input type="text" name="search" value="{{ search_query }}" placeholder="Search certificate requests..." 
+                                               class="block w-full pl-9 sm:pl-10 pr-3 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                                    <select name="type" class="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-white" onchange="this.form.submit()">
+                                        <option value="">All Types</option>
+                                        {% for cert_type in certificate_types %}
+                                        <option value="{{ cert_type }}" {% if cert_type == certificate_type %}selected{% endif %}>{{ cert_type.title() }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select name="status" class="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-white" onchange="this.form.submit()">
+                                        <option value="">All Status</option>
+                                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                                        <option value="processing" {% if status_filter == 'processing' %}selected{% endif %}>Processing</option>
+                                        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Approved</option>
+                                        <option value="ready" {% if status_filter == 'ready' %}selected{% endif %}>Ready</option>
+                                        <option value="claimed" {% if status_filter == 'claimed' %}selected{% endif %}>Completed</option>
+                                        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                    </select>
+                                    <button type="submit" class="px-4 py-2 sm:py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors text-sm sm:text-base">
+                                        <i class="fas fa-search mr-1 sm:mr-0"></i>
+                                        <span class="sm:hidden">Search</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Certificate Requests List/Table -->
+                        <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                            <div class="p-4 sm:p-6 border-b border-gray-200">
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-900">Your Certificate Requests</h3>
+                            </div>
+                            
+                            {% if certificates %}
+                                <!-- Mobile Card View -->
+                                <div class="block lg:hidden divide-y divide-gray-200">
+                                    {% for certificate in certificates %}
+                                    <div class="p-4 hover:bg-gray-50">
+                                        <!-- Certificate Info -->
+                                        <div class="flex items-start space-x-3 mb-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="h-10 w-10 rounded-lg bg-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% elif certificate.status == 'cancelled' %}red{% else %}purple{% endif %}-100 flex items-center justify-center">
+                                                    <i class="fas fa-{% if certificate.status == 'cancelled' %}ban{% else %}certificate{% endif %} text-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% elif certificate.status == 'cancelled' %}red{% else %}purple{% endif %}-600 text-sm"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-start justify-between">
+                                                    <div>
+                                                        <h4 class="text-sm font-semibold text-gray-900">{{ certificate.certificate_type.title() }}</h4>
+                                                        <p class="text-xs text-gray-500 mt-0.5">REQ-{{ certificate.id }}-{{ certificate.request_date.strftime('%Y') }}</p>
+                                                    </div>
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% elif certificate.status == 'cancelled' %}red{% else %}gray{% endif %}-100 text-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% elif certificate.status == 'cancelled' %}red{% else %}gray{% endif %}-800">
+                                                        <span class="w-1.5 h-1.5 mr-1 bg-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% elif certificate.status == 'cancelled' %}red{% else %}gray{% endif %}-500 rounded-full"></span>
+                                                        {% if certificate.status == 'ready' %}Ready{% elif certificate.status == 'cancelled' %}Cancel{% else %}{{ certificate.status.title() }}{% endif %}
+                                                    </span>
+                                                </div>
+                                                <div class="mt-2 grid grid-cols-2 gap-2 text-xs">
+                                                    <div>
+                                                        <span class="text-gray-500">Date:</span>
+                                                        <span class="text-gray-900 font-medium ml-1">{{ certificate.request_date.strftime('%b %d, %Y') }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="text-gray-500">Time:</span>
+                                                        <span class="text-gray-900 font-medium ml-1">{{ certificate.request_date.strftime('%I:%M %p') }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-1 text-xs">
+                                                    <span class="text-gray-500">Purpose:</span>
+                                                    <span class="text-gray-900 ml-1">{{ certificate.purpose or 'General Purpose' }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Action Buttons -->
+                                        <div class="flex gap-2 pt-3 border-t border-gray-100">
+                                            <!-- View Button -->
+                                            <button type="button" 
+                                                    class="flex-1 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors certificate-action" 
+                                                    data-action="view" 
+                                                    data-id="{{ certificate.id }}">
+                                                <i class="fas fa-eye mr-1.5 text-xs"></i>
+                                                View
+                                            </button>
+                                            
+                                            <!-- Edit Button - Only for pending status -->
+                                            {% if certificate.status == 'pending' %}
+                                            <button type="button" 
+                                                    class="flex-1 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors certificate-action" 
+                                                    data-action="edit" 
+                                                    data-id="{{ certificate.id }}">
+                                                <i class="fas fa-edit mr-1.5 text-xs"></i>
+                                                Edit
+                                            </button>
+                                            {% endif %}
+                                            
+                                            <!-- Cancel Button - Only for pending status -->
+                                            {% if certificate.status == 'pending' %}
+                                            <button type="button" 
+                                                    class="flex-1 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors certificate-action" 
+                                                    data-action="cancel" 
+                                                    data-id="{{ certificate.id }}">
+                                                <i class="fas fa-times mr-1.5 text-xs"></i>
+                                                Cancel
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                
+                                <!-- Desktop Table View -->
+                                <div class="hidden lg:block overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Certificate Type
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Request Date
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Status
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Purpose
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Actions
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            {% for certificate in certificates %}
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-8 w-8">
+                                                            <div class="h-8 w-8 rounded-lg bg-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% elif certificate.status == 'cancelled' %}red{% else %}purple{% endif %}-100 flex items-center justify-center">
+                                                                <i class="fas fa-{% if certificate.status == 'cancelled' %}ban{% else %}certificate{% endif %} text-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% elif certificate.status == 'cancelled' %}red{% else %}purple{% endif %}-600 text-sm"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div class="ml-4">
+                                                            <div class="text-sm font-medium text-gray-900">{{ certificate.certificate_type.title() }}</div>
+                                                            <div class="text-sm text-gray-500">REQ-{{ certificate.id }}-{{ certificate.request_date.strftime('%Y') }}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">{{ certificate.request_date.strftime('%b %d, %Y') }}</div>
+                                                    <div class="text-sm text-gray-500">{{ certificate.request_date.strftime('%I:%M %p') }}</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% elif certificate.status == 'cancelled' %}red{% else %}gray{% endif %}-100 text-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% elif certificate.status == 'cancelled' %}red{% else %}gray{% endif %}-800">
+                                                        <span class="w-1.5 h-1.5 mr-1.5 bg-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% elif certificate.status == 'cancelled' %}red{% else %}gray{% endif %}-500 rounded-full"></span>
+                                                        {% if certificate.status == 'ready' %}Ready for Pickup{% elif certificate.status == 'cancelled' %}Cancelled{% else %}{{ certificate.status.title() }}{% endif %}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    {{ certificate.purpose or 'General Purpose' }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    <div class="flex space-x-2">
+                                                        <!-- View Button -->
+                                                        <button type="button" 
+                                                                class="p-2 text-purple-600 hover:text-purple-900 hover:bg-purple-50 rounded-lg transition-colors certificate-action" 
+                                                                data-action="view" 
+                                                                data-id="{{ certificate.id }}" 
+                                                                title="View Details">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        
+                                                        <!-- Edit Button - Only for pending status -->
+                                                        {% if certificate.status == 'pending' %}
+                                                        <button type="button" 
+                                                                class="p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-colors certificate-action" 
+                                                                data-action="edit" 
+                                                                data-id="{{ certificate.id }}" 
+                                                                title="Edit Request">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        {% endif %}
+                                                        
+                                                        <!-- Cancel Button - Only for pending status -->
+                                                        {% if certificate.status == 'pending' %}
+                                                        <button type="button" 
+                                                                class="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors certificate-action" 
+                                                                data-action="cancel" 
+                                                                data-id="{{ certificate.id }}" 
+                                                                title="Cancel Request">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <!-- Empty State -->
+                                <div class="px-3 sm:px-6 py-8 sm:py-12 text-center">
+                                    <div class="flex flex-col items-center">
+                                        <i class="fas fa-certificate text-gray-400 text-3xl sm:text-4xl mb-3 sm:mb-4"></i>
+                                        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">No certificate requests found</h3>
+                                        <p class="text-gray-500 mb-4 text-sm sm:text-base">
+                                            {% if search_query or certificate_type or status_filter %}
+                                                Try adjusting your search filters.
+                                            {% else %}
+                                                You haven't made any certificate requests yet.
+                                            {% endif %}
+                                        </p>
+                                        <button onclick="showNewRequestModal()" class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors text-sm sm:text-base">
+                                            <i class="fas fa-plus mr-2"></i>
+                                            Request Certificate
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Pagination -->
+                            <div class="bg-white px-6 py-3 border-t border-gray-200 flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <p class="text-sm text-gray-700">
+                                        Showing <span class="font-medium">1</span> to <span class="font-medium">{{ certificates|length }}</span> of <span class="font-medium">{{ certificates|length }}</span> requests
+                                        {% if search_query or certificate_type or status_filter %}
+                                        <span class="text-purple-600">(filtered)</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                {% if search_query or certificate_type or status_filter %}
+                                <div class="flex items-center space-x-2">
+                                    <a href="{{ url_for('resident.certificates') }}" class="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-500 hover:bg-gray-50">
+                                        Clear Filters
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- New Request Modal -->
+    <div id="newRequestModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-lg w-full p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">New Certificate Request</h3>
+                    <button onclick="hideNewRequestModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="newRequestForm" method="POST" action="{{ url_for('resident.request_certificate') }}">
+                    <div class="space-y-6">
+                        <!-- Certificate Type -->
+                        <div>
+                            <label for="certificate_type" class="block text-sm font-medium text-gray-700 mb-2">
+                                Certificate Type <span class="text-red-500">*</span>
+                            </label>
+                            <select id="certificate_type" name="certificate_type" required 
+                                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-white">
+                                <option value="">Select certificate type</option>
+                                {% if available_cert_types %}
+                                    {% for cert_type in available_cert_types %}
+                                    <option value="{{ cert_type.code }}" data-fee="{{ cert_type.fee }}">{{ cert_type.name }}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    <option value="barangay_clearance" data-fee="50.00">Barangay Clearance</option>
+                                    <option value="certificate_of_residency" data-fee="30.00">Certificate of Residency</option>
+                                    <option value="certificate_of_indigency" data-fee="25.00">Certificate of Indigency</option>
+                                    <option value="business_permit" data-fee="200.00">Business Permit</option>
+                                {% endif %}
+                            </select>
+                        </div>
+
+                        <!-- Purpose -->
+                        <div>
+                            <label for="purpose" class="block text-sm font-medium text-gray-700 mb-2">
+                                Purpose <span class="text-red-500">*</span>
+                            </label>
+                            <select id="purpose" name="purpose" required 
+                                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-white">
+                                <option value="">Select purpose</option>
+                                <option value="employment">Employment/Job Application</option>
+                                <option value="bank_requirements">Bank Requirements</option>
+                                <option value="loan_application">Loan Application</option>
+                                <option value="school_requirements">School Requirements</option>
+                                <option value="travel_abroad">Travel Abroad</option>
+                                <option value="business_registration">Business Registration</option>
+                                <option value="legal_purposes">Legal Purposes</option>
+                                <option value="government_transaction">Government Transaction</option>
+                                <option value="insurance_claim">Insurance Claim</option>
+                                <option value="medical_assistance">Medical Assistance</option>
+                                <option value="scholarship_application">Scholarship Application</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Other Purpose (shown when "Other" is selected) -->
+                        <div id="otherPurposeDiv" class="hidden">
+                            <label for="other_purpose" class="block text-sm font-medium text-gray-700 mb-2">
+                                Please specify purpose
+                            </label>
+                            <input type="text" id="other_purpose" name="other_purpose" 
+                                   placeholder="Enter specific purpose"
+                                   class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+
+                        <!-- Additional Notes -->
+                        <div>
+                            <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
+                                Additional Notes (Optional)
+                            </label>
+                            <textarea id="notes" name="notes" rows="3" 
+                                      placeholder="Any additional information or special requests"
+                                      class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"></textarea>
+                        </div>
+
+                        <!-- Fee Information -->
+                        <div id="feeInfo" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-info-circle text-blue-600 mt-0.5 mr-2"></i>
+                                <div class="text-sm text-blue-800">
+                                    <p class="font-medium mb-1">Processing Information:</p>
+                                    <ul class="list-disc list-inside space-y-1 text-xs">
+                                        <li>Processing time: 1-3 business days</li>
+                                        <li id="feeDisplay">Payment required upon pickup</li>
+                                        <li>Bring valid ID when claiming</li>
+                                        <li>Office hours: Mon-Fri 8:00 AM - 5:00 PM</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+                        <button type="button" onclick="hideNewRequestModal()" 
+                                class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Certificate Modal -->
+    <div id="viewCertificateModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-2xl w-full p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Certificate Request Details</h3>
+                    <button onclick="hideViewModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div id="viewModalContent" class="space-y-6">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+                
+                <div class="flex justify-end mt-6 pt-4 border-t border-gray-200">
+                    <button onclick="hideViewModal()" 
+                            class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Certificate Modal -->
+    <div id="editCertificateModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-lg w-full p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Edit Certificate Request</h3>
+                    <button onclick="hideEditModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="editCertificateForm" method="POST">
+                    <div class="space-y-6">
+                        <!-- Certificate Type Display -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Certificate Type
+                            </label>
+                            <div id="editCertificateType" class="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700">
+                                <!-- Will be populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Purpose -->
+                        <div>
+                            <label for="editPurpose" class="block text-sm font-medium text-gray-700 mb-2">
+                                Purpose <span class="text-red-500">*</span>
+                            </label>
+                            <select id="editPurpose" name="purpose" required 
+                                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-white">
+                                <option value="">Select purpose</option>
+                                <option value="employment">Employment/Job Application</option>
+                                <option value="bank_requirements">Bank Requirements</option>
+                                <option value="loan_application">Loan Application</option>
+                                <option value="school_requirements">School Requirements</option>
+                                <option value="travel_abroad">Travel Abroad</option>
+                                <option value="business_registration">Business Registration</option>
+                                <option value="legal_purposes">Legal Purposes</option>
+                                <option value="government_transaction">Government Transaction</option>
+                                <option value="insurance_claim">Insurance Claim</option>
+                                <option value="medical_assistance">Medical Assistance</option>
+                                <option value="scholarship_application">Scholarship Application</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Other Purpose (shown when "Other" is selected) -->
+                        <div id="editOtherPurposeDiv" class="hidden">
+                            <label for="editOtherPurpose" class="block text-sm font-medium text-gray-700 mb-2">
+                                Please specify purpose
+                            </label>
+                            <input type="text" id="editOtherPurpose" name="other_purpose" 
+                                   placeholder="Enter specific purpose"
+                                   class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+
+                        <!-- Additional Notes -->
+                        <div>
+                            <label for="editNotes" class="block text-sm font-medium text-gray-700 mb-2">
+                                Additional Notes (Optional)
+                            </label>
+                            <textarea id="editNotes" name="notes" rows="3" 
+                                      placeholder="Any additional information or special requests"
+                                      class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+                        <button type="button" onclick="hideEditModal()" 
+                                class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium">
+                            <i class="fas fa-save mr-2"></i>
+                            Update Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Enable debug logging
+        console.log('Certificate page loaded successfully');
+        
+        // Certificate management functions
+        function showNewRequestModal() {
+            console.log('Opening new request modal');
+            document.getElementById('newRequestModal').classList.remove('hidden');
+            // Reset form when opening
+            document.getElementById('newRequestForm').reset();
+            document.getElementById('otherPurposeDiv').classList.add('hidden');
+        }
+
+        function hideNewRequestModal() {
+            document.getElementById('newRequestModal').classList.add('hidden');
+        }
+
+        function hideViewModal() {
+            try {
+                const modal = document.getElementById('viewCertificateModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error hiding view modal:', error);
+            }
+        }
+
+        function hideEditModal() {
+            try {
+                const modal = document.getElementById('editCertificateModal');
+                const form = document.getElementById('editCertificateForm');
+                const otherPurposeDiv = document.getElementById('editOtherPurposeDiv');
+                const otherPurposeInput = document.getElementById('editOtherPurpose');
+                
+                if (modal) modal.classList.add('hidden');
+                if (form) form.reset();
+                if (otherPurposeDiv) otherPurposeDiv.classList.add('hidden');
+                if (otherPurposeInput) otherPurposeInput.required = false;
+            } catch (error) {
+                console.error('Error hiding edit modal:', error);
+            }
+        }
+
+        function viewCertificate(id) {
+            try {
+                // Try to find certificate data from either mobile card or desktop table
+                let button = document.querySelector(`button[data-action="view"][data-id="${id}"]`);
+                if (!button) {
+                    alert('Certificate data not found.');
+                    return;
+                }
+                
+                // Check if we're in mobile view (card) or desktop view (table)
+                const parentDiv = button.closest('.p-4.hover\\:bg-gray-50'); // Mobile card
+                const parentRow = button.closest('tr'); // Desktop table row
+                
+                let certificateType, requestId, requestDate, requestTime, status, purpose;
+                
+                if (parentDiv) {
+                    // Mobile card view - extract from card structure
+                    const titleElement = parentDiv.querySelector('.text-sm.font-semibold');
+                    const idElement = parentDiv.querySelector('.text-xs.text-gray-500');
+                    const dateElement = parentDiv.querySelector('.text-gray-900.font-medium');
+                    const timeElement = parentDiv.querySelectorAll('.text-gray-900.font-medium')[1];
+                    const statusBadge = parentDiv.querySelector('span.inline-flex.items-center');
+                    const purposeText = parentDiv.querySelector('.text-xs:last-child .text-gray-900');
+                    
+                    certificateType = titleElement?.textContent || 'N/A';
+                    requestId = idElement?.textContent || 'N/A';
+                    requestDate = dateElement?.textContent || 'N/A';
+                    requestTime = timeElement?.textContent || 'N/A';
+                    status = statusBadge?.textContent.trim() || 'N/A';
+                    purpose = purposeText?.textContent || 'N/A';
+                } else if (parentRow) {
+                    // Desktop table view - extract from table cells
+                    const cells = parentRow.querySelectorAll('td');
+                    if (cells.length < 4) {
+                        alert('Invalid certificate data.');
+                        return;
+                    }
+                    
+                    const typeCell = cells[0];
+                    const dateCell = cells[1];
+                    const statusCell = cells[2];
+                    const purposeCell = cells[3];
+                    
+                    certificateType = typeCell.querySelector('.text-sm.font-medium')?.textContent || 'N/A';
+                    requestId = typeCell.querySelector('.text-sm.text-gray-500')?.textContent || 'N/A';
+                    requestDate = dateCell.querySelector('.text-sm.text-gray-900')?.textContent || 'N/A';
+                    requestTime = dateCell.querySelector('.text-sm.text-gray-500')?.textContent || 'N/A';
+                    const statusBadge = statusCell.querySelector('span');
+                    status = statusBadge?.textContent.trim() || 'N/A';
+                    purpose = purposeCell.textContent.trim() || 'N/A';
+                } else {
+                    alert('Certificate data not found.');
+                    return;
+                }
+                
+                // Create the modal content
+                const modalContent = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Request ID</label>
+                                <div class="text-sm text-gray-900 font-mono bg-gray-50 px-3 py-2 rounded">${requestId}</div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Certificate Type</label>
+                                <div class="text-sm text-gray-900">${certificateType}</div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
+                                <div class="text-sm text-gray-900">${purpose}</div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Request Date</label>
+                                <div class="text-sm text-gray-900">${requestDate}</div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Request Time</label>
+                                <div class="text-sm text-gray-900">${requestTime}</div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Current Status</label>
+                                <div class="text-sm">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">${status}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-start">
+                            <i class="fas fa-info-circle text-blue-600 mt-0.5 mr-2"></i>
+                            <div class="text-sm text-blue-800">
+                                <p class="font-medium mb-2">Processing Information:</p>
+                                <ul class="list-disc list-inside space-y-1">
+                                    <li>Processing time: 1-3 business days</li>
+                                    <li>Office hours: Monday-Friday 8:00 AM - 5:00 PM</li>
+                                    <li>Bring valid ID when claiming certificate</li>
+                                    <li>Payment required upon pickup</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('viewModalContent').innerHTML = modalContent;
+                document.getElementById('viewCertificateModal').classList.remove('hidden');
+            } catch (error) {
+                console.error('Error in viewCertificate:', error);
+                alert('Error loading certificate details. Please try again.');
+            }
+        }
+
+        function editCertificate(id) {
+            try {
+                // Try to find certificate data from either mobile card or desktop table
+                let button = document.querySelector(`button[data-action="edit"][data-id="${id}"]`);
+                if (!button) {
+                    alert('Certificate data not found.');
+                    return;
+                }
+                
+                // Check if we're in mobile view (card) or desktop view (table)
+                const parentDiv = button.closest('.p-4.hover\\:bg-gray-50'); // Mobile card
+                const parentRow = button.closest('tr'); // Desktop table row
+                
+                let certificateType, currentPurpose;
+                
+                if (parentDiv) {
+                    // Mobile card view
+                    const titleElement = parentDiv.querySelector('.text-sm.font-semibold');
+                    const purposeText = parentDiv.querySelector('.text-xs:last-child .text-gray-900');
+                    
+                    certificateType = titleElement?.textContent || 'N/A';
+                    currentPurpose = purposeText?.textContent || '';
+                } else if (parentRow) {
+                    // Desktop table view
+                    const cells = parentRow.querySelectorAll('td');
+                    if (cells.length < 4) {
+                        alert('Invalid certificate data.');
+                        return;
+                    }
+                    
+                    const typeCell = cells[0];
+                    const purposeCell = cells[3];
+                    
+                    certificateType = typeCell.querySelector('.text-sm.font-medium')?.textContent || 'N/A';
+                    currentPurpose = purposeCell.textContent.trim() || '';
+                } else {
+                    alert('Certificate data not found.');
+                    return;
+                }
+                
+                // Set the form action
+                const editForm = document.getElementById('editCertificateForm');
+                if (editForm) {
+                    editForm.action = `/resident/certificate/${id}/edit`;
+                }
+                
+                // Populate the form
+                const certificateTypeElement = document.getElementById('editCertificateType');
+                if (certificateTypeElement) {
+                    certificateTypeElement.textContent = certificateType;
+                }
+                
+                // Set purpose - check if it's a standard purpose or "other"
+                const purposeSelect = document.getElementById('editPurpose');
+                const otherPurposeDiv = document.getElementById('editOtherPurposeDiv');
+                const otherPurposeInput = document.getElementById('editOtherPurpose');
+                
+                if (purposeSelect) {
+                    // Reset form first
+                    purposeSelect.value = '';
+                    if (otherPurposeDiv) otherPurposeDiv.classList.add('hidden');
+                    if (otherPurposeInput) {
+                        otherPurposeInput.value = '';
+                        otherPurposeInput.required = false;
+                    }
+                    
+                    // Try to match with standard purposes
+                    let purposeFound = false;
+                    const currentPurposeLower = currentPurpose.toLowerCase();
+                    
+                    // Map common purpose values
+                    const purposeMap = {
+                        'employment/job application': 'employment',
+                        'employment': 'employment',
+                        'bank requirements': 'bank_requirements',
+                        'loan application': 'loan_application',
+                        'school requirements': 'school_requirements',
+                        'travel abroad': 'travel_abroad',
+                        'business registration': 'business_registration',
+                        'legal purposes': 'legal_purposes',
+                        'government transaction': 'government_transaction',
+                        'insurance claim': 'insurance_claim',
+                        'medical assistance': 'medical_assistance',
+                        'scholarship application': 'scholarship_application'
+                    };
+                    
+                    // Check if current purpose matches any standard purpose
+                    for (let option of purposeSelect.options) {
+                        if (option.value && (option.value === currentPurpose || 
+                            option.text.toLowerCase() === currentPurposeLower ||
+                            purposeMap[currentPurposeLower] === option.value)) {
+                            option.selected = true;
+                            purposeFound = true;
+                            break;
+                        }
+                    }
+                    
+                    // If purpose not found in standard options, set as "other"
+                    if (!purposeFound && currentPurpose && currentPurpose !== 'General Purpose') {
+                        purposeSelect.value = 'other';
+                        if (otherPurposeDiv) otherPurposeDiv.classList.remove('hidden');
+                        if (otherPurposeInput) {
+                            otherPurposeInput.value = currentPurpose;
+                            otherPurposeInput.required = true;
+                        }
+                    }
+                }
+                
+                // Show the modal
+                document.getElementById('editCertificateModal').classList.remove('hidden');
+            } catch (error) {
+                console.error('Error in editCertificate:', error);
+                alert('Error loading edit form. Please try again.');
+            }
+        }
+
+        function cancelCertificate(id) {
+            try {
+                // This would cancel the certificate request (only for pending requests)
+                if (confirm('Are you sure you want to cancel certificate request ID: ' + id + '?\n\nThis action cannot be undone.')) {
+                    // Create a form and submit it
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/resident/certificate/${id}/cancel`;
+                    form.style.display = 'none';
+                    
+                    // Add CSRF token if needed (Flask-WTF)
+                    const csrfToken = document.querySelector('meta[name=csrf-token]');
+                    if (csrfToken) {
+                        const tokenInput = document.createElement('input');
+                        tokenInput.type = 'hidden';
+                        tokenInput.name = 'csrf_token';
+                        tokenInput.value = csrfToken.getAttribute('content');
+                        form.appendChild(tokenInput);
+                    }
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            } catch (error) {
+                console.error('Error in cancelCertificate:', error);
+                alert('Error cancelling certificate. Please try again.');
+            }
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('newRequestModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideNewRequestModal();
+            }
+        });
+        
+        document.getElementById('viewCertificateModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideViewModal();
+            }
+        });
+        
+        document.getElementById('editCertificateModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideEditModal();
+            }
+        });
+
+        // Handle purpose selection - show/hide other purpose field (New Request)
+        document.getElementById('purpose').addEventListener('change', function() {
+            const otherPurposeDiv = document.getElementById('otherPurposeDiv');
+            const otherPurposeInput = document.getElementById('other_purpose');
+            
+            if (this.value === 'other') {
+                otherPurposeDiv.classList.remove('hidden');
+                otherPurposeInput.required = true;
+            } else {
+                otherPurposeDiv.classList.add('hidden');
+                otherPurposeInput.required = false;
+                otherPurposeInput.value = '';
+            }
+        });
+        
+        // Handle purpose selection - show/hide other purpose field (Edit Form)
+        document.getElementById('editPurpose').addEventListener('change', function() {
+            try {
+                const otherPurposeDiv = document.getElementById('editOtherPurposeDiv');
+                const otherPurposeInput = document.getElementById('editOtherPurpose');
+                
+                if (this.value === 'other') {
+                    if (otherPurposeDiv) otherPurposeDiv.classList.remove('hidden');
+                    if (otherPurposeInput) otherPurposeInput.required = true;
+                } else {
+                    if (otherPurposeDiv) otherPurposeDiv.classList.add('hidden');
+                    if (otherPurposeInput) {
+                        otherPurposeInput.required = false;
+                        otherPurposeInput.value = '';
+                    }
+                }
+            } catch (error) {
+                console.error('Error in edit purpose change handler:', error);
+            }
+        });
+
+        // Handle certificate type selection - show dynamic fee info
+        document.getElementById('certificate_type').addEventListener('change', function() {
+            const feeDisplay = document.getElementById('feeDisplay');
+            const selectedOption = this.options[this.selectedIndex];
+            const fee = selectedOption.getAttribute('data-fee');
+            
+            if (this.value && fee) {
+                const formattedFee = parseFloat(fee).toFixed(2);
+                feeDisplay.textContent = `Fee: ₱${formattedFee} - Payment required upon pickup`;
+            } else {
+                feeDisplay.textContent = 'Payment required upon pickup';
+            }
+        });
+
+        // Form validation
+        document.getElementById('newRequestForm').addEventListener('submit', function(e) {
+            console.log('Form submission started');
+            
+            const certificateType = document.getElementById('certificate_type').value;
+            const purpose = document.getElementById('purpose').value;
+            const otherPurpose = document.getElementById('other_purpose').value;
+
+            console.log('Form data:', {
+                certificateType,
+                purpose,
+                otherPurpose
+            });
+
+            if (!certificateType) {
+                console.error('Validation failed: No certificate type');
+                e.preventDefault();
+                alert('Please select a certificate type.');
+                document.getElementById('certificate_type').focus();
+                return false;
+            }
+
+            if (!purpose) {
+                console.error('Validation failed: No purpose');
+                e.preventDefault();
+                alert('Please select a purpose.');
+                document.getElementById('purpose').focus();
+                return false;
+            }
+
+            if (purpose === 'other' && !otherPurpose.trim()) {
+                console.error('Validation failed: Other purpose not specified');
+                e.preventDefault();
+                alert('Please specify the purpose.');
+                document.getElementById('other_purpose').focus();
+                return false;
+            }
+
+            console.log('Validation passed, submitting form...');
+
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
+                submitBtn.disabled = true;
+            }
+
+            // Allow form to submit
+            return true;
+        });
+        
+        // Edit form validation
+        document.getElementById('editCertificateForm').addEventListener('submit', function(e) {
+            try {
+                const purpose = document.getElementById('editPurpose').value;
+                const otherPurpose = document.getElementById('editOtherPurpose').value;
+
+                if (!purpose) {
+                    e.preventDefault();
+                    alert('Please select a purpose.');
+                    return;
+                }
+
+                if (purpose === 'other' && !otherPurpose.trim()) {
+                    e.preventDefault();
+                    alert('Please specify the purpose.');
+                    return;
+                }
+
+                // Show loading state
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
+                    submitBtn.disabled = true;
+                }
+            } catch (error) {
+                console.error('Error in edit form validation:', error);
+                alert('Error submitting form. Please try again.');
+                e.preventDefault();
+            }
+
+            // Note: Form will submit normally, loading state will be reset on page reload
+        });
+
+        // Mobile menu initialization
+        function initializeMobileMenu() {
+            console.log('Initializing mobile menu');
+            
+            const mobileMenuBtn = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            if (!mobileMenuBtn || !sidebar || !overlay) {
+                console.warn('Mobile menu elements not found', {
+                    mobileMenuBtn: !!mobileMenuBtn,
+                    sidebar: !!sidebar,
+                    overlay: !!overlay
+                });
+                return;
+            }
+
+            // Open sidebar
+            mobileMenuBtn.addEventListener('click', function() {
+                console.log('Opening mobile menu');
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            });
+
+            // Close sidebar via overlay
+            overlay.addEventListener('click', function() {
+                console.log('Closing mobile menu via overlay');
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                document.body.style.overflow = ''; // Restore scrolling
+            });
+
+            // Close sidebar on window resize if screen becomes large
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1024) { // lg breakpoint
+                    sidebar.classList.remove('translate-x-0', '-translate-x-full');
+                    overlay.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+
+        // Header dropdowns initialization (notifications, profile)
+        function initializeHeaderDropdowns() {
+            console.log('Initializing header dropdowns');
+            
+            // Notification dropdown
+            const notificationBtn = document.getElementById('notifications-toggle');
+            const notificationDropdown = document.getElementById('notifications-dropdown');
+
+            if (notificationBtn && notificationDropdown) {
+                notificationBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    console.log('Toggling notification dropdown');
+                    notificationDropdown.classList.toggle('hidden');
+                    // Close profile dropdown if open
+                    const profileDropdown = document.getElementById('profile-dropdown');
+                    if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                        profileDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Profile dropdown
+            const profileBtn = document.getElementById('profile-toggle');
+            const profileDropdown = document.getElementById('profile-dropdown');
+
+            if (profileBtn && profileDropdown) {
+                profileBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    console.log('Toggling profile dropdown');
+                    profileDropdown.classList.toggle('hidden');
+                    // Close notification dropdown if open
+                    if (notificationDropdown && !notificationDropdown.classList.contains('hidden')) {
+                        notificationDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (notificationDropdown && !notificationDropdown.classList.contains('hidden')) {
+                    if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
+                        console.log('Closing notification dropdown (clicked outside)');
+                        notificationDropdown.classList.add('hidden');
+                    }
+                }
+                
+                if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                    if (!profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) {
+                        console.log('Closing profile dropdown (clicked outside)');
+                        profileDropdown.classList.add('hidden');
+                    }
+                }
+            });
+
+            // Close dropdowns on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    if (notificationDropdown) notificationDropdown.classList.add('hidden');
+                    if (profileDropdown) profileDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Event delegation for certificate action buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Certificates page loaded successfully');
+            
+            // Initialize mobile menu and header dropdowns
+            initializeMobileMenu();
+            initializeHeaderDropdowns();
+            
+            // Add event listener for all certificate action buttons
+            document.addEventListener('click', function(e) {
+                const button = e.target.closest('.certificate-action');
+                if (!button) return;
+
+                const action = button.getAttribute('data-action');
+                const id = button.getAttribute('data-id');
+
+                if (!action || !id) return;
+
+                switch (action) {
+                    case 'view':
+                        viewCertificate(id);
+                        break;
+                    case 'edit':
+                        editCertificate(id);
+                        break;
+                    case 'cancel':
+                        cancelCertificate(id);
+                        break;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

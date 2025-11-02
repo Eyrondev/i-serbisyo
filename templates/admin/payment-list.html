@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment List - iSerBisyo Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',                           
+                            800: '#1e40af',
+                            900: '#1e3a8a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar Container -->
+        <div class="hidden lg:block">
+            {% include 'components/admin-sidebar.html' %}
+        </div>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 lg:pl-64">
+            <!-- Header Container -->
+            {% include 'components/admin-header.html' %}
+            <div id="admin-header"></div>
+
+            <!-- Main content area -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <!-- Payment List Content -->
+                <div class="py-3 sm:py-4 lg:py-6">
+                    <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+                        <!-- Modern Page Header -->
+                        <div class="mb-8">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                                    <div class="flex items-center space-x-4 mb-4 lg:mb-0">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                                            <i class="fas fa-list-check text-white text-2xl"></i>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
+                                                Payment List
+                                            </h1>
+                                            <p class="text-gray-600 text-lg">Completed and paid certificates automatically logged here for payment tracking</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-3">
+                                        <button onclick="printPaymentReport()" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-sm font-medium rounded-lg hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-300">
+                                            <i class="fas fa-print mr-2"></i>
+                                            Print Report
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Payment Stats - Full Width -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+                            <!-- Total Revenue -->
+                            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-emerald-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-emerald-600 uppercase tracking-wide">Total Revenue</p>
+                                            <p class="text-3xl font-bold text-emerald-900 mt-2">₱{{ "{:,.2f}".format(stats.total_revenue) }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-coins text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- This Month -->
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-blue-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-blue-600 uppercase tracking-wide">This Month</p>
+                                            <p class="text-3xl font-bold text-blue-900 mt-2">₱{{ "{:,.2f}".format(stats.month_revenue) }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-calendar text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Transactions -->
+                            <div class="bg-gradient-to-br from-violet-50 to-violet-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-violet-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-violet-600 uppercase tracking-wide">Transactions</p>
+                                            <p class="text-3xl font-bold text-violet-900 mt-2">{{ stats.total_transactions }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-violet-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-exchange-alt text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Service Fees Overview -->
+                        <div class="bg-white shadow-sm rounded-lg p-4 mb-4 border border-gray-100">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="text-sm font-semibold text-gray-900">Service Fees</h3>
+                                <button onclick="refreshServiceFees()" class="text-xs text-blue-600 hover:text-blue-800 flex items-center">
+                                    <i class="fas fa-sync-alt mr-1"></i>Refresh
+                                </button>
+                            </div>
+                            <div id="service-fees-container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                                <!-- Loading placeholder -->
+                                <div class="col-span-full text-center py-4">
+                                    <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                                    <p class="text-xs text-gray-500 mt-2">Loading service fees...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filters -->
+                        <div class="bg-white shadow-sm rounded-lg p-4 mb-4 border border-gray-100">
+                            <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Search</label>
+                                    <div class="relative">
+                                        <input type="text" id="filter_search" placeholder="Search payments..." class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                        <i class="fas fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Service Type</label>
+                                    <select id="filter_service" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                        <option value="">All Services</option>
+                                        <option value="barangay_clearance">Barangay Clearance</option>
+                                        <option value="certificate_of_residency">Residency Certificate</option>
+                                        <option value="certificate_of_indigency">Indigency Certificate</option>
+                                        <option value="business_permit">Business Permit</option>
+                                        <option value="health_certificate">Health Certificate</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Payment Status</label>
+                                    <select id="filter_status" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                        <option value="">All Status</option>
+                                        <option value="paid">Paid</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="overdue">Overdue</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Payment Method</label>
+                                    <select id="filter_method" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                        <option value="">All Methods</option>
+                                        <option value="cash">Cash</option>
+                                        <option value="gcash">GCash</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Date</label>
+                                    <input type="date" id="filter_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payments Table -->
+                        <div class="bg-white shadow-sm rounded-lg border border-gray-100">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment ID</th>
+                                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resident</th>
+                                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Method</th>
+                                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% for payment in payments.items %}
+                                        <tr class="hover:bg-gray-50" data-payment-id="{{ payment.id }}">
+                                            <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-900 font-medium">{{ payment.payment_number }}</td>
+                                            <td class="px-3 py-3 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">{{ payment.payer_name }}</div>
+                                                <div class="text-xs text-gray-500">{{ payment.payer_email or 'No email' }}</div>
+                                            </td>
+                                            <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-900">
+                                                {{ payment.service_type.replace('_', ' ').title() }}
+                                            </td>
+                                            <td class="px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                ₱{{ "{:,.2f}".format(payment.amount) }}
+                                            </td>
+                                            <td class="px-3 py-3 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ payment.method_badge_class }}">
+                                                    {% if payment.payment_method == 'gcash' %}
+                                                        <i class="fas fa-mobile-alt mr-1"></i>GCash
+                                                    {% elif payment.payment_method == 'cash' %}
+                                                        <i class="fas fa-money-bill mr-1"></i>Cash
+                                                    {% else %}
+                                                        <i class="fas fa-question mr-1"></i>{{ payment.payment_method.title() }}
+                                                    {% endif %}
+                                                </span>
+                                            </td>
+                                            <td class="px-3 py-3 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ payment.status_badge_class }}">
+                                                    {% if payment.is_overdue %}
+                                                        Overdue
+                                                    {% else %}
+                                                        {{ payment.payment_status.title() }}
+                                                    {% endif %}
+                                                </span>
+                                            </td>
+                                            <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                {{ payment.created_at.strftime('%b %d, %Y') }}
+                                            </td>
+                                            <td class="px-3 py-3 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-2">
+                                                    <button data-action="view" data-payment-id="{{ payment.id }}" class="payment-action-btn text-blue-600 hover:text-blue-900 text-xs" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    {% if payment.payment_status == 'paid' %}
+                                                        <button data-action="generate-receipt" data-payment-id="{{ payment.id }}" class="payment-action-btn text-green-600 hover:text-green-900 text-xs" title="Generate Receipt">
+                                                            <i class="fas fa-receipt"></i>
+                                                        </button>
+                                                        <button data-action="print-receipt" data-payment-id="{{ payment.id }}" class="payment-action-btn text-purple-600 hover:text-purple-900 text-xs" title="Print Receipt">
+                                                            <i class="fas fa-print"></i>
+                                                        </button>
+                                                    {% elif payment.payment_status == 'pending' %}
+                                                        <button data-action="mark-paid" data-payment-id="{{ payment.id }}" class="payment-action-btn text-green-600 hover:text-green-900 text-xs" title="Mark as Paid">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                        <button data-action="edit" data-payment-id="{{ payment.id }}" class="payment-action-btn text-orange-600 hover:text-orange-900 text-xs" title="Edit Payment">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                    {% elif payment.payment_status == 'failed' %}
+                                                        <button data-action="retry" data-payment-id="{{ payment.id }}" class="payment-action-btn text-orange-600 hover:text-orange-900 text-xs" title="Retry Payment">
+                                                            <i class="fas fa-redo"></i>
+                                                        </button>
+                                                        <button data-action="delete" data-payment-id="{{ payment.id }}" class="payment-action-btn text-red-600 hover:text-red-900 text-xs" title="Delete Payment">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        
+                                        {% if not payments.items %}
+                                        <tr>
+                                            <td colspan="8" class="px-3 py-8 text-center text-gray-500">
+                                                <div class="flex flex-col items-center justify-center">
+                                                    <i class="fas fa-list-check text-4xl text-gray-300 mb-4"></i>
+                                                    <p class="text-lg font-medium">No completed certificates awaiting payment</p>
+                                                    <p class="text-sm">Mark certificates as completed to see them in the payment list</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div class="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
+                                <div class="text-xs text-gray-500">
+                                    Showing {{ ((payments.page - 1) * payments.per_page + 1) if payments.items else 0 }} to {{ (payments.page * payments.per_page) if (payments.page * payments.per_page) < payments.total else payments.total }} of {{ payments.total }} payments
+                                </div>
+                                {% if payments.pages > 1 %}
+                                <div class="flex space-x-1">
+                                    {% if payments.has_prev %}
+                                        <a href="{{ url_for('admin.payments', page=payments.prev_num, **current_filters) }}" class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700">Previous</a>
+                                    {% endif %}
+                                    
+                                    {% for page_num in payments.iter_pages() %}
+                                        {% if page_num %}
+                                            {% if page_num != payments.page %}
+                                                <a href="{{ url_for('admin.payments', page=page_num, **current_filters) }}" class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700">{{ page_num }}</a>
+                                            {% else %}
+                                                <span class="px-2 py-1 text-xs bg-primary-600 text-white rounded">{{ page_num }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="px-2 py-1 text-xs text-gray-500">...</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if payments.has_next %}
+                                        <a href="{{ url_for('admin.payments', page=payments.next_num, **current_filters) }}" class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700">Next</a>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+
+
+    <!-- Include SweetAlert2 for better modals -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        // Payment list management functions
+        let certificateTypes = {};
+
+        // Load and display service fees from database
+        function loadServiceFees() {
+            fetch('/admin/api/certificate-types')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        certificateTypes = {};
+                        data.certificate_types.forEach(type => {
+                            certificateTypes[type.code] = type;
+                        });
+                        displayServiceFees(data.certificate_types);
+                    } else {
+                        console.error('Failed to load certificate types:', data.message);
+                        showServiceFeesError();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading certificate types:', error);
+                    showServiceFeesError();
+                });
+        }
+
+        // Display service fees dynamically
+        function displayServiceFees(types) {
+            const container = document.getElementById('service-fees-container');
+            
+            // Clear loading state
+            container.innerHTML = '';
+            
+            // Icon mapping for different certificate types
+            const iconMap = {
+                'barangay_clearance': { icon: 'fas fa-certificate', color: 'blue' },
+                'certificate_of_residency': { icon: 'fas fa-id-card', color: 'green' },
+                'certificate_of_indigency': { icon: 'fas fa-file-alt', color: 'yellow' },
+                'business_permit': { icon: 'fas fa-business-time', color: 'purple' },
+                'health_certificate': { icon: 'fas fa-file-medical', color: 'red' },
+                'good_moral_character': { icon: 'fas fa-stamp', color: 'indigo' }
+            };
+            
+            // Display active certificate types
+            const activeTypes = types.filter(type => type.is_active).slice(0, 6); // Limit to 6 items
+            
+            activeTypes.forEach(type => {
+                const iconInfo = iconMap[type.code] || { icon: 'fas fa-file', color: 'gray' };
+                
+                const feeItem = document.createElement('div');
+                feeItem.className = 'text-center';
+                feeItem.innerHTML = `
+                    <div class="w-10 h-10 bg-${iconInfo.color}-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                        <i class="${iconInfo.icon} text-${iconInfo.color}-600 text-sm"></i>
+                    </div>
+                    <p class="text-xs text-gray-600">${type.name}</p>
+                    <p class="text-sm font-bold text-gray-900">${type.formatted_fee}</p>
+                `;
+                container.appendChild(feeItem);
+            });
+            
+            // Add "Other Services" if less than 6 types or if there are more types
+            if (activeTypes.length < types.length || activeTypes.length < 6) {
+                const otherItem = document.createElement('div');
+                otherItem.className = 'text-center';
+                otherItem.innerHTML = `
+                    <div class="w-10 h-10 bg-gray-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                        <i class="fas fa-ellipsis-h text-gray-600 text-sm"></i>
+                    </div>
+                    <p class="text-xs text-gray-600">Other Services</p>
+                    <p class="text-sm font-bold text-gray-900">Varies</p>
+                `;
+                container.appendChild(otherItem);
+            }
+        }
+
+        // Show error state for service fees
+        function showServiceFeesError() {
+            const container = document.getElementById('service-fees-container');
+            container.innerHTML = `
+                <div class="col-span-full text-center py-4">
+                    <i class="fas fa-exclamation-triangle text-yellow-500 text-lg mb-2"></i>
+                    <p class="text-xs text-gray-500">Failed to load service fees</p>
+                    <button onclick="loadServiceFees()" class="text-xs text-blue-600 hover:text-blue-800 mt-1">
+                        Try again
+                    </button>
+                </div>
+            `;
+        }
+
+        // Refresh service fees
+        function refreshServiceFees() {
+            const container = document.getElementById('service-fees-container');
+            container.innerHTML = `
+                <div class="col-span-full text-center py-4">
+                    <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                    <p class="text-xs text-gray-500 mt-2">Refreshing service fees...</p>
+                </div>
+            `;
+            loadServiceFees();
+        }
+
+        function viewPayment(paymentId) {
+            fetch(`/admin/api/payment-list/${paymentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const payment = data.payment;
+                        Swal.fire({
+                            title: `Payment Details - ${payment.payment_number}`,
+                            html: `
+                                <div class="text-left space-y-3">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <strong>Payer:</strong><br>
+                                            ${payment.payer_name}<br>
+                                            <small class="text-gray-600">${payment.payer_email || 'No email'}</small>
+                                        </div>
+                                        <div>
+                                            <strong>Service:</strong><br>
+                                            ${payment.service_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}<br>
+                                            <small class="text-gray-600">${payment.service_description || 'No description'}</small>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <strong>Amount:</strong><br>
+                                            <span class="text-lg font-bold text-green-600">${payment.formatted_amount}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Status:</strong><br>
+                                            <span class="px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(payment.payment_status)}">
+                                                ${payment.payment_status.charAt(0).toUpperCase() + payment.payment_status.slice(1)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <strong>Payment Method:</strong><br>
+                                            ${payment.payment_method.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                        </div>
+                                        <div>
+                                            <strong>Created:</strong><br>
+                                            ${new Date(payment.created_at).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                    ${payment.receipt_number ? `
+                                        <div>
+                                            <strong>Receipt Number:</strong><br>
+                                            ${payment.receipt_number}
+                                        </div>
+                                    ` : ''}
+                                    ${payment.is_overdue ? `
+                                        <div class="bg-red-50 border border-red-200 rounded p-3">
+                                            <strong class="text-red-600">⚠️ Overdue Payment</strong><br>
+                                            <small>This payment is ${payment.days_overdue} days overdue</small>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `,
+                            width: '600px',
+                            showConfirmButton: true,
+                            confirmButtonText: 'Close',
+                            customClass: {
+                                popup: 'text-left'
+                            }
+                        });
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    Swal.fire('Error', 'Failed to fetch payment details', 'error');
+                });
+        }
+
+        function markAsPaid(paymentId) {
+            Swal.fire({
+                title: 'Mark Payment as Paid',
+                text: 'Are you sure you want to mark this payment as paid?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, mark as paid',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/api/payment-list/${paymentId}/mark-paid`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'mark_paid'
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: data.message,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', 'Failed to process payment', 'error');
+                    });
+                }
+            });
+        }
+
+        function editPayment(paymentId) {
+            fetch(`/admin/api/payment-list/${paymentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const payment = data.payment;
+                        Swal.fire({
+                            title: 'Edit Payment',
+                            html: `
+                                <form id="editPaymentForm" class="space-y-4 text-left">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Payer Name</label>
+                                            <input type="text" id="edit_payer_name" value="${payment.payer_name}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                            <input type="email" id="edit_payer_email" value="${payment.payer_email || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                                            <input type="number" id="edit_amount" value="${payment.amount}" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                                            <select id="edit_payment_method" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                                <option value="cash" ${payment.payment_method === 'cash' ? 'selected' : ''}>Cash</option>
+                                                <option value="gcash" ${payment.payment_method === 'gcash' ? 'selected' : ''}>GCash</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Service Description</label>
+                                        <textarea id="edit_service_description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">${payment.service_description || ''}</textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                                        <textarea id="edit_notes" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-emerald-500 focus:border-emerald-500">${payment.notes || ''}</textarea>
+                                    </div>
+                                </form>
+                            `,
+                            width: '600px',
+                            showCancelButton: true,
+                            confirmButtonColor: '#10b981',
+                            cancelButtonColor: '#6b7280',
+                            confirmButtonText: 'Update Payment',
+                            cancelButtonText: 'Cancel',
+                            preConfirm: () => {
+                                const form = document.getElementById('editPaymentForm');
+                                const formData = {
+                                    payer_name: document.getElementById('edit_payer_name').value,
+                                    payer_email: document.getElementById('edit_payer_email').value,
+                                    amount: document.getElementById('edit_amount').value,
+                                    payment_method: document.getElementById('edit_payment_method').value,
+                                    service_description: document.getElementById('edit_service_description').value,
+                                    notes: document.getElementById('edit_notes').value
+                                };
+                                
+                                // Validate required fields
+                                if (!formData.payer_name || !formData.amount) {
+                                    Swal.showValidationMessage('Please fill in all required fields');
+                                    return false;
+                                }
+                                
+                                return formData;
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                fetch(`/admin/api/payment-list/${paymentId}`, {
+                                    method: 'PUT',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify(result.value)
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire({
+                                            title: 'Success!',
+                                            text: data.message,
+                                            icon: 'success',
+                                            timer: 2000,
+                                            showConfirmButton: false
+                                        }).then(() => {
+                                            location.reload();
+                                        });
+                                    } else {
+                                        Swal.fire('Error', data.message, 'error');
+                                    }
+                                })
+                                .catch(error => {
+                                    Swal.fire('Error', 'Failed to update payment', 'error');
+                                });
+                            }
+                        });
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    Swal.fire('Error', 'Failed to fetch payment details', 'error');
+                });
+        }
+
+        function deletePayment(paymentId) {
+            Swal.fire({
+                title: 'Delete Payment',
+                text: 'Are you sure you want to delete this payment? This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, delete it',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/api/payment-list/${paymentId}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: data.message,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', 'Failed to delete payment', 'error');
+                    });
+                }
+            });
+        }
+
+        function generateReceipt(paymentId) {
+            // Implement receipt generation
+            Swal.fire({
+                title: 'Generate Receipt',
+                text: 'Receipt generation functionality will be implemented here.',
+                icon: 'info'
+            });
+        }
+
+        function printReceipt(paymentId) {
+            // Implement receipt printing
+            Swal.fire({
+                title: 'Print Receipt',
+                text: 'Receipt printing functionality will be implemented here.',
+                icon: 'info'
+            });
+        }
+
+        function retryPayment(paymentId) {
+            Swal.fire({
+                title: 'Retry Payment',
+                text: 'Do you want to mark this payment as pending to retry?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#f59e0b',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, retry payment',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/api/payment-list/${paymentId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            payment_status: 'pending'
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Payment status updated to pending',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', 'Failed to retry payment', 'error');
+                    });
+                }
+            });
+        }
+
+        // Helper function to get status badge class
+        function getStatusBadgeClass(status) {
+            const classes = {
+                'paid': 'bg-green-100 text-green-800',
+                'pending': 'bg-yellow-100 text-yellow-800',
+                'failed': 'bg-red-100 text-red-800',
+                'cancelled': 'bg-gray-100 text-gray-800',
+                'refunded': 'bg-purple-100 text-purple-800'
+            };
+            return classes[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        // Print payment report function
+        function printPaymentReport() {
+            // Show filter modal before printing
+            Swal.fire({
+                title: 'Print Payment Report',
+                html: `
+                    <div class="text-left space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Date From</label>
+                                <input type="date" id="print_date_from" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Date To</label>
+                                <input type="date" id="print_date_to" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+                            <select id="print_payment_method" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+                                <option value="">All Methods</option>
+                                <option value="cash">Cash</option>
+                                <option value="gcash">GCash</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Certificate Type</label>
+                            <select id="print_certificate_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-green-500 focus:border-green-500">
+                                <option value="">All Certificates</option>
+                                <option value="barangay_clearance">Barangay Clearance</option>
+                                <option value="certificate_of_residency">Certificate of Residency</option>
+                                <option value="certificate_of_indigency">Certificate of Indigency</option>
+                                <option value="business_permit">Business Permit</option>
+                                <option value="health_certificate">Health Certificate</option>
+                                <option value="good_moral_character">Good Moral Character</option>
+                            </select>
+                        </div>
+                        
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+                            <p class="text-xs text-blue-800">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Leave filters empty to include all records in the report.
+                            </p>
+                        </div>
+                    </div>
+                `,
+                width: '500px',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: '<i class="fas fa-print mr-2"></i>Print Report',
+                cancelButtonText: 'Cancel',
+                preConfirm: () => {
+                    return {
+                        dateFrom: document.getElementById('print_date_from').value,
+                        dateTo: document.getElementById('print_date_to').value,
+                        paymentMethod: document.getElementById('print_payment_method').value,
+                        certificateType: document.getElementById('print_certificate_type').value
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    generatePrintReport(result.value);
+                }
+            });
+        }
+
+        // Generate and print the report with filters
+        function generatePrintReport(filters) {
+            // Create a print-friendly version of the page
+            const printWindow = window.open('', '_blank');
+            
+            // Get current date for the report
+            const currentDate = new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            // Build the print content
+            let printContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Payment List Report - ${currentDate}</title>
+                    <style>
+                        @media print {
+                            @page { margin: 0.5in; }
+                        }
+                        body {
+                            font-family: 'Times New Roman', Times, serif;
+                            margin: 20px;
+                            color: #000;
+                        }
+                        .header {
+                            text-align: center;
+                            margin-bottom: 30px;
+                            border-bottom: 2px solid #000;
+                            padding-bottom: 15px;
+                        }
+                        .header h1 {
+                            margin: 0;
+                            color: #000;
+                            font-size: 24px;
+                            font-weight: bold;
+                            text-transform: uppercase;
+                        }
+                        .header p {
+                            margin: 5px 0;
+                            color: #000;
+                            font-size: 12px;
+                        }
+                        .stats {
+                            display: grid;
+                            grid-template-columns: repeat(3, 1fr);
+                            gap: 15px;
+                            margin-bottom: 25px;
+                        }
+                        .stat-card {
+                            border: 1px solid #000;
+                            padding: 12px;
+                            text-align: center;
+                        }
+                        .stat-card h3 {
+                            margin: 0 0 8px 0;
+                            color: #000;
+                            font-size: 11px;
+                            text-transform: uppercase;
+                            font-weight: bold;
+                        }
+                        .stat-card p {
+                            margin: 0;
+                            font-size: 20px;
+                            font-weight: bold;
+                            color: #000;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 20px;
+                        }
+                        th, td {
+                            border: 1px solid #000;
+                            padding: 8px;
+                            text-align: left;
+                            font-size: 11px;
+                        }
+                        th {
+                            background-color: #fff;
+                            color: #000;
+                            font-weight: bold;
+                            text-transform: uppercase;
+                        }
+                        tr:nth-child(even) {
+                            background-color: #fff;
+                        }
+                        .status-badge {
+                            font-size: 11px;
+                            font-weight: bold;
+                        }
+                        .footer {
+                            margin-top: 30px;
+                            padding-top: 15px;
+                            border-top: 1px solid #000;
+                            text-align: center;
+                            color: #000;
+                            font-size: 10px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>Payment List Report</h1>
+                        <p><strong>Barangay Management System</strong></p>
+                        <p>Generated on: ${currentDate}</p>
+                        ${filters.dateFrom || filters.dateTo || filters.paymentMethod || filters.certificateType ? `
+                        <p style="font-size: 11px; margin-top: 10px;">
+                            <strong>Filters Applied:</strong>
+                            ${filters.dateFrom ? `Date From: ${new Date(filters.dateFrom).toLocaleDateString()} ` : ''}
+                            ${filters.dateTo ? `Date To: ${new Date(filters.dateTo).toLocaleDateString()} ` : ''}
+                            ${filters.paymentMethod ? `Payment Method: ${filters.paymentMethod.toUpperCase()} ` : ''}
+                            ${filters.certificateType ? `Certificate: ${filters.certificateType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} ` : ''}
+                        </p>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="stats">
+                        <div class="stat-card">
+                            <h3>Total Revenue</h3>
+                            <p>{{ "₱{:,.2f}".format(stats.total_revenue) }}</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>This Month</h3>
+                            <p>{{ "₱{:,.2f}".format(stats.month_revenue) }}</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Transactions</h3>
+                            <p>{{ stats.total_transactions }}</p>
+                        </div>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Payment ID</th>
+                                <th>Resident</th>
+                                <th>Service</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Get all payment rows from the table
+            const paymentRows = document.querySelectorAll('tbody tr[data-payment-id]');
+            
+            let filteredCount = 0;
+            let totalFilteredAmount = 0;
+            
+            if (paymentRows.length > 0) {
+                paymentRows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 7) {
+                        const paymentId = cells[0].textContent.trim();
+                        const resident = cells[1].querySelector('.text-sm')?.textContent.trim() || '';
+                        const service = cells[2].textContent.trim();
+                        const amount = cells[3].textContent.trim();
+                        const method = cells[4].textContent.trim().toLowerCase();
+                        const status = cells[5].textContent.trim();
+                        const dateText = cells[6].textContent.trim();
+                        
+                        // Parse the date
+                        const paymentDate = new Date(dateText);
+                        
+                        // Apply filters
+                        let includeRow = true;
+                        
+                        // Date from filter
+                        if (filters.dateFrom) {
+                            const filterDateFrom = new Date(filters.dateFrom);
+                            if (paymentDate < filterDateFrom) includeRow = false;
+                        }
+                        
+                        // Date to filter
+                        if (filters.dateTo) {
+                            const filterDateTo = new Date(filters.dateTo);
+                            filterDateTo.setHours(23, 59, 59); // Include the entire day
+                            if (paymentDate > filterDateTo) includeRow = false;
+                        }
+                        
+                        // Payment method filter
+                        if (filters.paymentMethod) {
+                            if (!method.includes(filters.paymentMethod.toLowerCase())) includeRow = false;
+                        }
+                        
+                        // Certificate type filter
+                        if (filters.certificateType) {
+                            const certTypeName = filters.certificateType.replace(/_/g, ' ').toLowerCase();
+                            if (!service.toLowerCase().includes(certTypeName)) includeRow = false;
+                        }
+                        
+                        // Add row if it passes all filters
+                        if (includeRow) {
+                            filteredCount++;
+                            printContent += `
+                                <tr>
+                                    <td>${paymentId}</td>
+                                    <td>${resident}</td>
+                                    <td>${service}</td>
+                                    <td><strong>${amount}</strong></td>
+                                    <td>${method.charAt(0).toUpperCase() + method.slice(1)}</td>
+                                    <td><strong>${status}</strong></td>
+                                    <td>${dateText}</td>
+                                </tr>
+                            `;
+                        }
+                    }
+                });
+                
+                // If no records matched the filters
+                if (filteredCount === 0) {
+                    printContent += `
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px; color: #000;">
+                                No payment records match the selected filters
+                            </td>
+                        </tr>
+                    `;
+                }
+            } else {
+                printContent += `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #000;">
+                            No payment records found
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            printContent += `
+                        </tbody>
+                    </table>
+                    
+                    ${filteredCount > 0 ? `
+                    <div style="margin-top: 20px; padding: 10px; border: 1px solid #000; text-align: right;">
+                        <strong>Total Records in Report: ${filteredCount}</strong>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="footer">
+                        <p>This is a computer-generated report from the Barangay Management System</p>
+                        <p>Printed on: ${new Date().toLocaleString()}</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            // Write content to print window
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            
+            // Wait for content to load, then print
+            printWindow.onload = function() {
+                printWindow.focus();
+                printWindow.print();
+            };
+        }
+
+        // Add event listeners when document is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load service fees from database
+            loadServiceFees();
+            
+            // Automatic filtering functionality
+            const filterSearch = document.getElementById('filter_search');
+            const filterService = document.getElementById('filter_service');
+            const filterStatus = document.getElementById('filter_status');
+            const filterMethod = document.getElementById('filter_method');
+            const filterDate = document.getElementById('filter_date');
+            
+            // Debounce function for search input
+            let searchTimeout;
+            function debounceSearch() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(applyFilters, 500);
+            }
+            
+            // Apply filters function
+            function applyFilters() {
+                const searchValue = filterSearch.value.toLowerCase();
+                const serviceValue = filterService.value.toLowerCase();
+                const statusValue = filterStatus.value.toLowerCase();
+                const methodValue = filterMethod.value.toLowerCase();
+                const dateValue = filterDate.value;
+                
+                const paymentRows = document.querySelectorAll('tbody tr[data-payment-id]');
+                
+                paymentRows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 7) {
+                        const paymentId = cells[0].textContent.toLowerCase();
+                        const resident = cells[1].textContent.toLowerCase();
+                        const service = cells[2].textContent.toLowerCase();
+                        const method = cells[4].textContent.toLowerCase();
+                        const status = cells[5].textContent.toLowerCase();
+                        const dateText = cells[6].textContent.trim();
+                        
+                        let showRow = true;
+                        
+                        // Search filter (searches in payment ID and resident name)
+                        if (searchValue && !paymentId.includes(searchValue) && !resident.includes(searchValue)) {
+                            showRow = false;
+                        }
+                        
+                        // Service type filter
+                        if (serviceValue && !service.includes(serviceValue.replace(/_/g, ' '))) {
+                            showRow = false;
+                        }
+                        
+                        // Status filter
+                        if (statusValue && !status.includes(statusValue)) {
+                            showRow = false;
+                        }
+                        
+                        // Method filter
+                        if (methodValue && !method.includes(methodValue)) {
+                            showRow = false;
+                        }
+                        
+                        // Date filter
+                        if (dateValue && dateText) {
+                            const rowDate = new Date(dateText).toISOString().split('T')[0];
+                            if (rowDate !== dateValue) {
+                                showRow = false;
+                            }
+                        }
+                        
+                        row.style.display = showRow ? '' : 'none';
+                    }
+                });
+            }
+            
+            // Add event listeners for automatic filtering
+            if (filterSearch) filterSearch.addEventListener('input', debounceSearch);
+            if (filterService) filterService.addEventListener('change', applyFilters);
+            if (filterStatus) filterStatus.addEventListener('change', applyFilters);
+            if (filterMethod) filterMethod.addEventListener('change', applyFilters);
+            if (filterDate) filterDate.addEventListener('change', applyFilters);
+
+            // Event delegation for payment action buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.payment-action-btn')) {
+                    const button = e.target.closest('.payment-action-btn');
+                    const action = button.getAttribute('data-action');
+                    const paymentId = button.getAttribute('data-payment-id');
+                    
+                    switch(action) {
+                        case 'view':
+                            viewPayment(paymentId);
+                            break;
+                        case 'generate-receipt':
+                            generateReceipt(paymentId);
+                            break;
+                        case 'print-receipt':
+                            printReceipt(paymentId);
+                            break;
+                        case 'mark-paid':
+                            markAsPaid(paymentId);
+                            break;
+                        case 'edit':
+                            editPayment(paymentId);
+                            break;
+                        case 'retry':
+                            retryPayment(paymentId);
+                            break;
+                        case 'delete':
+                            deletePayment(paymentId);
+                            break;
+                    }
+                }
+            });
+        });
+    </script>
+
+    <!-- Load admin components -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Registration Successful - i-Serbisyo{% endblock %}
+
+{% block meta %}
+    <meta name="description" content="Registration Successful - i-Serbisyo Barangay Management System">
+    <meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block body_class %}bg-gradient-to-br from-primary-50 to-secondary-50 min-h-screen{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Success Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 text-center">
+            <!-- Success Icon -->
+            <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-6">
+                <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+
+            <!-- Title -->
+            <h1 class="text-2xl font-bold text-gray-900 mb-4">Registration Successful!</h1>
+            
+            <!-- Message -->
+            <div class="space-y-4 mb-8">
+                <p class="text-gray-600">
+                    Thank you for registering with i-Serbisyo! Your account has been created successfully.
+                </p>
+                
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <svg class="h-5 w-5 text-yellow-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <div class="text-left">
+                            <h3 class="text-sm font-medium text-yellow-800">Account Pending Verification</h3>
+                            <p class="text-sm text-yellow-700 mt-1">
+                                Your account is currently pending verification. Our staff will review your documents and approve your account within 1-2 business days.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- What's Next -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">What happens next?</h3>
+                <div class="space-y-3 text-left">
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-primary-100 flex items-center justify-center">
+                            <span class="text-xs font-medium text-primary-600">1</span>
+                        </div>
+                        <p class="text-sm text-gray-600">We'll review your submitted documents and personal information</p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-primary-100 flex items-center justify-center">
+                            <span class="text-xs font-medium text-primary-600">2</span>
+                        </div>
+                        <p class="text-sm text-gray-600">You'll receive an email notification once your account is approved</p>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-primary-100 flex items-center justify-center">
+                            <span class="text-xs font-medium text-primary-600">3</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Once approved, you can log in and access all barangay services</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="space-y-4">
+                <a href="{{ url_for('public.index') }}" 
+                   class="w-full bg-primary-600 text-white py-3 px-6 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200 inline-block font-medium">
+                    Return to Homepage
+                </a>
+                
+                <p class="text-sm text-gray-500">
+                    Need help? <a href="{{ url_for('public.contact') }}" class="text-primary-600 hover:text-primary-500 font-medium">Contact us</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Important Notes:</h3>
+            <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex items-start space-x-2">
+                    <svg class="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Your registration reference number will be sent to your email</span>
+                </li>
+                <li class="flex items-start space-x-2">
+                    <svg class="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Keep your registration details safe for future reference</span>
+                </li>
+                <li class="flex items-start space-x-2">
+                    <svg class="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>You may visit the barangay office for any urgent concerns</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-redirect to homepage after 30 seconds
+    setTimeout(() => {
+        window.location.href = "{{ url_for('public.index') }}";
+    }, 30000);
+</script>
+{% endblock %}

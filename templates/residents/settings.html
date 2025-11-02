@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - iSerbisyo Resident</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        purple: {
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            200: '#e9d5ff',
+                            300: '#d8b4fe',
+                            400: '#c084fc',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            700: '#7c3aed',
+                            800: '#6b21a8',
+                            900: '#581c87'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-purple-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar Container - Always render, let the sidebar component handle its own visibility -->
+        {% include 'components/resident-sidebar.html' %}
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 lg:pl-64">
+            <!-- Header Container -->
+            {% include 'components/resident-header.html' %}
+
+            <!-- Main content area -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <!-- Settings Content -->
+                <div class="py-3 sm:py-4 lg:py-6 pl-4 sm:pl-6 lg:pl-8 pr-4 sm:pr-6 lg:pr-8 xl:pr-10">
+                    <div class="max-w-full mx-auto">
+                        <!-- Modern Page Header -->
+                        <div class="mb-6 sm:mb-8">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                <div class="flex items-center">
+                                    <div class="flex items-center space-x-3 sm:space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                                                <i class="fas fa-cog text-white text-lg sm:text-xl"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Account Settings</h1>
+                                            <p class="text-gray-600 mt-1 text-sm sm:text-base">Manage your account preferences and security</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings Sections -->
+                        <div class="space-y-4 sm:space-y-6">
+                            <!-- Account Information -->
+                            <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+                                    <i class="fas fa-user-circle mr-2 text-purple-600 text-sm sm:text-base"></i>
+                                    Account Information
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 bg-gray-50 rounded-lg gap-2 sm:gap-0">
+                                        <div>
+                                            <p class="text-xs sm:text-sm font-medium text-gray-700">Username</p>
+                                            <p class="text-sm sm:text-base text-gray-900 break-all">{{ current_user.username }}</p>
+                                        </div>
+                                        <div class="text-gray-400 text-xs sm:text-sm">
+                                            <i class="fas fa-lock text-xs"></i>
+                                            <span class="ml-1">Cannot be changed</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p class="text-xs sm:text-sm font-medium text-gray-700">Account Created</p>
+                                            <p class="text-sm sm:text-base text-gray-900">{{ current_user.created_at.strftime('%B %d, %Y') if current_user.created_at else 'N/A' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Security Settings -->
+                            <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+                                    <i class="fas fa-shield-alt mr-2 text-purple-600 text-sm sm:text-base"></i>
+                                    Security & Privacy
+                                </h3>
+                                
+                                <!-- Change Password Form -->
+                                <div class="mb-6 sm:mb-8">
+                                    <h4 class="text-sm sm:text-base font-medium text-gray-900 mb-3 sm:mb-4">Change Password</h4>
+                                    <form method="POST" action="{{ url_for('resident.change_password') }}" class="space-y-3 sm:space-y-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                                            <div>
+                                                <label for="current_password" class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                                                    Current Password <span class="text-red-500">*</span>
+                                                </label>
+                                                <div class="relative">
+                                                    <input type="password" id="current_password" name="current_password" required
+                                                           class="block w-full px-3 py-2 pr-10 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                                    <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center toggle-password" 
+                                                            data-target="current_password">
+                                                        <i class="fas fa-eye text-gray-400 hover:text-gray-600 text-sm"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div></div> <!-- Empty space for layout -->
+                                            <div>
+                                                <label for="new_password" class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                                                    New Password <span class="text-red-500">*</span>
+                                                </label>
+                                                <div class="relative">
+                                                    <input type="password" id="new_password" name="new_password" required 
+                                                           minlength="8"
+                                                           class="block w-full px-3 py-2 pr-10 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                                    <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center toggle-password" 
+                                                            data-target="new_password">
+                                                        <i class="fas fa-eye text-gray-400 hover:text-gray-600 text-sm"></i>
+                                                    </button>
+                                                </div>
+                                                <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters long</p>
+                                            </div>
+                                            <div>
+                                                <label for="confirm_password" class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                                                    Confirm New Password <span class="text-red-500">*</span>
+                                                </label>
+                                                <div class="relative">
+                                                    <input type="password" id="confirm_password" name="confirm_password" required
+                                                           class="block w-full px-3 py-2 pr-10 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500">
+                                                    <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center toggle-password" 
+                                                            data-target="confirm_password">
+                                                        <i class="fas fa-eye text-gray-400 hover:text-gray-600 text-sm"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-end pt-2">
+                                            <button type="submit" 
+                                                    class="px-4 sm:px-6 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors text-sm sm:text-base">
+                                                <i class="fas fa-key mr-1.5 sm:mr-2 text-xs sm:text-sm"></i>
+                                                <span class="hidden sm:inline">Update Password</span>
+                                                <span class="sm:hidden">Update</span>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Account Actions -->
+                            <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+                                    <i class="fas fa-exclamation-triangle mr-2 text-red-600 text-sm sm:text-base"></i>
+                                    Account Actions
+                                </h3>
+                                <div class="space-y-3 sm:space-y-4">
+                                    <div class="p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg">
+                                        <div class="flex items-start">
+                                            <i class="fas fa-info-circle text-red-500 mt-0.5 mr-2 sm:mr-3 text-sm flex-shrink-0"></i>
+                                            <div class="flex-1">
+                                                <h4 class="text-xs sm:text-sm font-medium text-red-800">Account Deactivation</h4>
+                                                <p class="text-xs sm:text-sm text-red-700 mt-1">
+                                                    If you need to deactivate your account, please contact the barangay administration office.
+                                                    This action cannot be undone through the system.
+                                                </p>
+                                                <p class="text-xs text-red-600 mt-2">
+                                                    <i class="fas fa-phone mr-1"></i>
+                                                    Contact: [Barangay Phone Number] | Email: [Barangay Email]
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- JavaScript for Settings -->
+    <script>
+        // Enable debug logging
+        console.log('Settings page loaded successfully');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize mobile menu
+            initializeMobileMenu();
+            
+            // Initialize header dropdowns
+            initializeHeaderDropdowns();
+            
+            // Password visibility toggle
+            const toggleButtons = document.querySelectorAll('.toggle-password');
+            
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.dataset.target;
+                    const input = document.getElementById(targetId);
+                    const icon = this.querySelector('i');
+                    
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
+            });
+
+            // Password confirmation validation
+            const newPassword = document.getElementById('new_password');
+            const confirmPassword = document.getElementById('confirm_password');
+            
+            function validatePasswords() {
+                if (confirmPassword.value && newPassword.value !== confirmPassword.value) {
+                    confirmPassword.setCustomValidity('Passwords do not match');
+                } else {
+                    confirmPassword.setCustomValidity('');
+                }
+            }
+            
+            newPassword.addEventListener('input', validatePasswords);
+            confirmPassword.addEventListener('input', validatePasswords);
+
+            // Form submission validation
+            const passwordForm = document.querySelector('form[action*="change_password"]');
+            if (passwordForm) {
+                passwordForm.addEventListener('submit', function(e) {
+                    if (newPassword.value !== confirmPassword.value) {
+                        e.preventDefault();
+                        alert('New password and confirmation do not match.');
+                        return false;
+                    }
+                });
+            }
+        });
+        
+        // Mobile menu toggle functionality
+        function initializeMobileMenu() {
+            const mobileMenuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+        if (mobileMenuToggle && sidebar && overlay) {
+            console.log('Mobile menu initialized');
+            mobileMenuToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Toggle sidebar visibility
+                const isHidden = sidebar.classList.contains('-translate-x-full');
+                if (isHidden) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                    overlay.classList.remove('hidden');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                    overlay.classList.add('hidden');
+                }
+            });
+
+            // Close sidebar when clicking overlay
+            overlay.addEventListener('click', function() {
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+                overlay.classList.add('hidden');
+            });
+        }
+    }
+
+    // Header dropdown functionality
+    function initializeHeaderDropdowns() {
+        const notificationsToggle = document.getElementById('notifications-toggle');
+        const notificationsDropdown = document.getElementById('notifications-dropdown');
+        
+        if (notificationsToggle && notificationsDropdown) {
+            notificationsToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                notificationsDropdown.classList.toggle('hidden');
+                const profileDropdown = document.getElementById('profile-dropdown');
+                if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                    profileDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        const profileToggle = document.getElementById('profile-toggle');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        
+        if (profileToggle && profileDropdown) {
+            profileToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                profileDropdown.classList.toggle('hidden');
+                if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
+                    notificationsDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (notificationsDropdown && !event.target.closest('#notifications-toggle') && !event.target.closest('#notifications-dropdown')) {
+                notificationsDropdown.classList.add('hidden');
+            }
+            
+            if (profileDropdown && !event.target.closest('#profile-toggle') && !event.target.closest('#profile-dropdown')) {
+                profileDropdown.classList.add('hidden');
+            }
+        });
+    }
+    </script>
+</body>
+</html>

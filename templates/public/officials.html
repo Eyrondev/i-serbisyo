@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Meet your Barangay Officials - i-Serbisyo. Get to know your local government representatives and their contact information.">
+    <meta name="keywords" content="barangay officials, local government, representatives, contacts">
+    <meta name="author" content="i-Serbisyo">
+    
+    <title>Barangay Officials - i-Serbisyo</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/iserbisyo_icon.png') }}">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'pulse-slow': 'pulse 3s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Alpine.js for interactive components -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Navigation Loader -->
+    <script src="../assets/js/navigation-loader.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="bg-gray-50" x-data="officialsPage()">
+    <!-- Loading Screen -->
+    {% include 'components/loading-screen.html' %}
+    
+    <!-- Navigation Container -->
+    <!-- Include your original navigation -->
+    {% include 'components/navigation.html' %}
+
+    <!-- Page Header -->
+    <div class="relative bg-gradient-to-r from-primary-600 to-primary-800 pt-16 overflow-hidden" style="background-image: url('../../static/images/landing_page_bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Barangay Officials</h1>
+                <p class="text-xl text-blue-100 max-w-3xl mx-auto">
+                    Meet your dedicated local government representatives committed to serving our community.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center space-x-2 py-3 text-sm">
+                <a href="{{ url_for('public.index') }}" class="text-gray-500 hover:text-gray-700">Home</a>
+                <svg class="h-4 w-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-gray-900 font-medium">Officials</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="py-12">
+        <!-- Barangay Captain -->
+        {% set captain = officials|selectattr('position', 'equalto', 'Barangay Captain')|first %}
+        {% if captain %}
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="lg:grid lg:grid-cols-3">
+                    <div class="lg:col-span-1">
+                        {% if captain.profile_picture %}
+                            <img class="w-full h-64 lg:h-full object-cover" src="{{ url_for('static', filename='uploads/profiles/' + captain.profile_picture) }}" alt="{{ captain.name }}">
+                        {% else %}
+                            <img class="w-full h-64 lg:h-full object-cover" src="{{ url_for('static', filename='images/no-picture.jpg') }}" alt="{{ captain.name }}">
+                        {% endif %}
+                    </div>
+                    <div class="lg:col-span-2 p-8 lg:p-12">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Hon. {{ captain.name }}</h2>
+                                <p class="text-lg text-primary-600 font-semibold">{{ captain.position }}</p>
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-600 mb-6 leading-relaxed">
+                            {% if captain.committee %}
+                                {{ captain.committee }}
+                            {% else %}
+                                With years of dedicated public service, our Barangay Captain leads our community
+                                with integrity, innovation, and a deep commitment to community development.
+                            {% endif %}
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-2">Contact Information</h4>
+                                <div class="space-y-2 text-sm text-gray-600">
+                                    {% if captain.phone %}
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                        </svg>
+                                        {{ captain.phone }}
+                                    </div>
+                                    {% endif %}
+                                    {% if captain.email %}
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        </svg>
+                                        {{ captain.email }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-2">Term Information</h4>
+                                <div class="space-y-1 text-sm text-gray-600">
+                                    {% if captain.term_start and captain.term_end %}
+                                    <div>Term: {{ captain.term_start.strftime('%B %Y') }} - {{ captain.term_end.strftime('%B %Y') }}</div>
+                                    {% else %}
+                                    <div>Monday - Friday: 8:00 AM - 5:00 PM</div>
+                                    <div>Saturday: 8:00 AM - 12:00 PM</div>
+                                    <div>Sunday: Closed</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Barangay Council -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Sangguniang Barangay</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    The legislative body of our barangay, working together to create policies and programs for community development.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% set councilors = officials|selectattr('position', 'equalto', 'Barangay Councilor')|list %}
+                {% for councilor in councilors %}
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    {% if councilor.profile_picture %}
+                        <img class="w-full h-48 object-cover" src="{{ url_for('static', filename='uploads/profiles/' + councilor.profile_picture) }}" alt="{{ councilor.name }}">
+                    {% else %}
+                        <img class="w-full h-48 object-cover" src="{{ url_for('static', filename='images/no-picture.jpg') }}" alt="{{ councilor.name }}">
+                    {% endif %}
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-1">Hon. {{ councilor.name }}</h3>
+                        <p class="text-primary-600 font-medium mb-3">{{ councilor.position }}</p>
+                        {% if councilor.committee %}
+                        <p class="text-gray-600 text-sm mb-4">{{ councilor.committee }}</p>
+                        {% else %}
+                        <p class="text-gray-600 text-sm mb-4">Committee Member</p>
+                        {% endif %}
+                        
+                        <div class="space-y-2 text-sm text-gray-500">
+                            {% if councilor.phone %}
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                </svg>
+                                {{ councilor.phone }}
+                            </div>
+                            {% endif %}
+                            {% if councilor.email %}
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                {{ councilor.email }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Key Personnel -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Key Personnel</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Essential staff members who ensure the smooth operation of barangay services.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% set key_personnel = officials|rejectattr('position', 'equalto', 'Barangay Captain')|rejectattr('position', 'equalto', 'Barangay Councilor')|list %}
+                {% for personnel in key_personnel %}
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    {% if personnel.profile_picture %}
+                        <img class="w-full h-48 object-cover" src="{{ url_for('static', filename='uploads/profiles/' + personnel.profile_picture) }}" alt="{{ personnel.name }}">
+                    {% else %}
+                        <img class="w-full h-48 object-cover" src="{{ url_for('static', filename='images/no-picture.jpg') }}" alt="{{ personnel.name }}">
+                    {% endif %}
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-1">{{ personnel.name }}</h3>
+                        <p class="text-primary-600 font-medium mb-3">{{ personnel.position }}</p>
+                        {% if personnel.committee %}
+                        <p class="text-gray-600 text-sm mb-4">{{ personnel.committee }}</p>
+                        {% else %}
+                        <p class="text-gray-600 text-sm mb-4">Administrative Services</p>
+                        {% endif %}
+                        
+                        <div class="space-y-2 text-sm text-gray-500">
+                            {% if personnel.phone %}
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                </svg>
+                                {{ personnel.phone }}
+                            </div>
+                            {% endif %}
+                            {% if personnel.email %}
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                {{ personnel.email }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+     <!-- Footer -->
+    {% include 'components/footer.html' %}
+
+    <!-- JavaScript -->
+    <!-- Main JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

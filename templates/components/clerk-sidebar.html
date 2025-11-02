@@ -1,0 +1,233 @@
+<!-- Mobile Sidebar Overlay -->
+<div id="sidebar-overlay" class="mobile-overlay lg:hidden"></div>
+
+<!-- Admin Sidebar -->
+<aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col transform transition-transform duration-300 lg:translate-x-0 bg-white border-r border-gray-200 shadow-sm -translate-x-full lg:translate-x-0 sidebar-mobile lg:sidebar-desktop">
+  <!-- Logo -->
+  <div class="flex items-center justify-center h-16 border-b border-gray-200">
+    <a class="flex items-center">
+      <img src="{{ url_for('static', filename='images/iserbisyo_icon.png') }}" alt="iSerbisyo Logo" class="h-6 sm:h-8 w-auto mr-2">
+      <span class="text-base sm:text-lg font-bold text-gray-900 hidden sm:block">iSerbisyo</span>
+      <span class="text-sm font-bold text-gray-900 sm:hidden">iS</span>
+    </a>
+  </div>
+  
+  <!-- Admin info -->
+  <div class="flex flex-col items-center p-3 sm:p-4 border-b border-gray-200">
+    <div class="relative w-12 sm:w-16 h-12 sm:h-16 rounded-full bg-primary-100 flex items-center justify-center mb-2 border-2 border-primary-200">
+      <span class="text-lg sm:text-xl font-bold text-primary-600" id="admin-initial">A</span>
+      <div class="absolute bottom-0 right-0 w-3 sm:w-4 h-3 sm:h-4 rounded-full bg-green-500 border-2 border-white"></div>
+    </div>
+    <h5 class="text-xs sm:text-sm font-semibold text-gray-900 mb-0.5 text-center truncate max-w-full px-2" id="admin-name">Clerk User</h5>
+    <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" id="admin-role">
+      <span class="w-1.5 h-1.5 mr-1 rounded-full bg-green-500"></span>
+      Clerk
+    </span>
+  </div>
+  
+  <!-- Navigation -->
+  <div class="flex-1 overflow-y-auto py-3 sm:py-4 px-2 sm:px-3 mobile-scroll">
+    <ul class="space-y-1">
+      <!-- Dashboard Link -->
+      <li>
+        <a href="{{ url_for('clerk.dashboard') }}" class="nav-link flex items-center px-3 sm:px-4 py-2.5 text-sm font-medium text-gray-900 rounded-lg hover:bg-gray-100 group transition-all duration-200 min-h-[44px]" data-page="dashboard">
+          <i class="fas fa-gauge-high w-4 sm:w-5 h-4 sm:h-5 text-primary-500 mr-2 sm:mr-2.5"></i>
+          <span class="text-xs sm:text-sm">Dashboard</span>
+        </a>
+      </li>
+      
+      <!-- Pending Residents -->
+      <li>
+        <a href="{{ url_for('clerk.pending_residents') }}" class="nav-link flex items-center px-3 sm:px-4 py-2.5 text-sm font-medium text-gray-900 rounded-lg hover:bg-gray-100 group transition-all duration-200 min-h-[44px]" data-page="pending-residents">
+          <i class="fas fa-clock w-4 sm:w-5 h-4 sm:h-5 text-primary-500 mr-2 sm:mr-2.5"></i>
+          <span class="text-xs sm:text-sm">Pending Residents</span>
+          {% if notification_counts.pending_residents > 0 %}
+          <span id="pending-residents-badge" class="ml-auto inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            {{ notification_counts.pending_residents }}
+          </span>
+          {% endif %}
+        </a>
+      </li>
+      
+      <!-- Officials Management -->
+      <li>
+        <a href="{{ url_for('clerk.officials') }}" class="nav-link flex items-center px-3 sm:px-4 py-2.5 text-sm font-medium text-gray-900 rounded-lg hover:bg-gray-100 group transition-all duration-200 min-h-[44px]" data-page="officials">
+          <i class="fas fa-users w-4 sm:w-5 h-4 sm:h-5 text-primary-500 mr-2 sm:mr-2.5"></i>
+          <span class="text-xs sm:text-sm">Officials Management</span>
+        </a>
+      </li>
+      
+      <!-- Resident Information -->
+      <li>
+        <a href="{{ url_for('clerk.residents') }}" class="nav-link flex items-center px-3 sm:px-4 py-2.5 text-sm font-medium text-gray-900 rounded-lg hover:bg-gray-100 group transition-all duration-200 min-h-[44px]" data-page="residents">
+          <i class="fas fa-user w-4 sm:w-5 h-4 sm:h-5 text-primary-500 mr-2 sm:mr-2.5"></i>
+          <span class="text-xs sm:text-sm">Resident Information</span>
+        </a>
+      </li>
+      
+      <!-- Certificate Requests -->
+      <li>
+        <a href="{{ url_for('clerk.certificates') }}" class="nav-link flex items-center px-3 sm:px-4 py-2.5 text-sm font-medium text-gray-900 rounded-lg hover:bg-gray-100 group transition-all duration-200 min-h-[44px]" data-page="certificates">
+          <i class="fas fa-certificate w-4 sm:w-5 h-4 sm:h-5 text-primary-500 mr-2 sm:mr-2.5"></i>
+          <span class="text-xs sm:text-sm">Certificate Requests</span>
+          {% if notification_counts.certificate_requests > 0 %}
+          <span id="certificate-requests-badge" class="ml-auto inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+            {{ notification_counts.certificate_requests }}
+          </span>
+          {% endif %}
+        </a>
+      </li>
+      
+      <!-- Blotter Records -->
+      <li>
+        <a href="{{ url_for('clerk.blotter') }}" class="nav-link flex items-center px-3 sm:px-4 py-2.5 text-sm font-medium text-gray-900 rounded-lg hover:bg-gray-100 group transition-all duration-200 min-h-[44px]" data-page="blotter">
+          <i class="fas fa-file-text w-4 sm:w-5 h-4 sm:h-5 text-primary-500 mr-2 sm:mr-2.5"></i>
+          <span class="text-xs sm:text-sm">Blotter Records</span>
+        </a>
+      </li>
+      
+      <!-- Announcements -->
+      <li>
+        <a href="{{ url_for('clerk.announcements') }}" class="nav-link flex items-center px-3 sm:px-4 py-2.5 text-sm font-medium text-gray-900 rounded-lg hover:bg-gray-100 group transition-all duration-200 min-h-[44px]" data-page="announcements">
+          <i class="fas fa-bullhorn w-4 sm:w-5 h-4 sm:h-5 text-primary-500 mr-2 sm:mr-2.5"></i>
+          <span class="text-xs sm:text-sm">Announcements</span>
+        </a>
+      </li>
+      
+      <!-- Payment List -->
+      <li>
+        <a href="{{ url_for('clerk.payment_list') }}" class="nav-link flex items-center px-3 sm:px-4 py-2.5 text-sm font-medium text-gray-900 rounded-lg hover:bg-gray-100 group transition-all duration-200 min-h-[44px]" data-page="payment-list">
+          <i class="fas fa-list-check w-4 sm:w-5 h-4 sm:h-5 text-primary-500 mr-2 sm:mr-2.5"></i>
+          <span class="text-xs sm:text-sm">Payment List</span>
+        </a>
+      </li>
+      
+    </ul>
+  </div>
+
+  
+  <!-- Footer/Bottom Section -->
+  <div class="p-3 sm:p-4 border-t border-gray-200">
+    
+        <!-- Settings -->
+    <a href="{{ url_for('clerk.settings') }}" class="nav-link flex items-center px-3 sm:px-4 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-100 group transition-all duration-200 mb-2 min-h-[44px]" data-page="settings">
+      <i class="fas fa-cog w-4 sm:w-5 h-4 sm:h-5 text-gray-400 mr-2 sm:mr-2.5"></i>
+      <span class="text-xs sm:text-sm">Settings</span>
+    </a>
+    
+    <!-- Logout -->
+    <a href="{{ url_for('auth.logout') }}" class="flex items-center px-3 sm:px-4 py-2.5 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 group transition-all duration-200 min-h-[44px]">
+      <i class="fas fa-sign-out-alt w-4 sm:w-5 h-4 sm:h-5 text-red-500 mr-2 sm:mr-2.5"></i>
+      <span class="text-xs sm:text-sm">Logout</span>
+    </a>
+  </div>
+</aside>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to set active sidebar link
+    function setActiveLink() {
+        // Get current page from URL
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-link[data-page]');
+        
+        // Remove active classes from all links
+        navLinks.forEach(link => {
+            link.classList.remove('bg-primary-500', 'text-white');
+            link.classList.add('text-gray-900', 'hover:bg-gray-100');
+            
+            // Reset icon colors
+            const icon = link.querySelector('i');
+            if (icon) {
+                icon.classList.remove('text-white');
+                icon.classList.add('text-primary-500');
+            }
+            
+            // Reset text colors
+            const spans = link.querySelectorAll('span');
+            spans.forEach(span => {
+                if (!span.classList.contains('bg-red-100') && !span.classList.contains('bg-yellow-100')) {
+                    span.classList.remove('text-white');
+                }
+            });
+        });
+        
+        // Find and activate current page link - use more precise matching
+        let activeLink = null;
+        let exactMatch = false;
+        
+        navLinks.forEach(link => {
+            const page = link.getAttribute('data-page');
+            let isMatch = false;
+            
+            // Check for exact matches first (more specific)
+            if (page === 'dashboard' && (currentPath === '/admin' || currentPath === '/admin/' || currentPath.endsWith('/dashboard'))) {
+                isMatch = true;
+            } else if (page === 'pending-residents' && currentPath.includes('pending-residents')) {
+                isMatch = true;
+            } else if (page === 'residents' && currentPath.includes('residents') && !currentPath.includes('pending-residents')) {
+                isMatch = true;
+            } else if (page !== 'dashboard' && page !== 'residents' && page !== 'pending-residents' && currentPath.includes(page)) {
+                isMatch = true;
+            }
+            
+            if (isMatch) {
+                // Prioritize exact matches over partial matches
+                if (!exactMatch || currentPath.endsWith(page) || currentPath.includes('/' + page)) {
+                    if (activeLink && exactMatch) {
+                        // Don't override if we already have an exact match
+                        return;
+                    }
+                    
+                    activeLink = link;
+                    exactMatch = currentPath.endsWith(page) || currentPath.includes('/' + page);
+                }
+            }
+        });
+        
+        // Apply active state to the selected link
+        if (activeLink) {
+            activeLink.classList.remove('text-gray-900', 'hover:bg-gray-100');
+            activeLink.classList.add('bg-primary-500', 'text-white');
+            
+            // Make icon white
+            const icon = activeLink.querySelector('i');
+            if (icon) {
+                icon.classList.remove('text-primary-500');
+                icon.classList.add('text-white');
+            }
+            
+            // Make text white (except badges)
+            const spans = activeLink.querySelectorAll('span');
+            spans.forEach(span => {
+                if (!span.classList.contains('bg-red-100') && !span.classList.contains('bg-yellow-100')) {
+                    span.classList.add('text-white');
+                }
+            });
+        }
+    }
+    
+    // Set active link on page load
+    setActiveLink();
+    
+    // Add click handlers to update active state
+    const navLinks = document.querySelectorAll('.nav-link[data-page]');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            // Store the clicked page in localStorage for persistence
+            const page = this.getAttribute('data-page');
+            localStorage.setItem('activeAdminPage', page);
+        });
+    });
+    
+    // Check localStorage for active page (in case of page refresh)
+    const storedActivePage = localStorage.getItem('activeAdminPage');
+    if (storedActivePage) {
+        const currentPath = window.location.pathname;
+        if (currentPath.includes(storedActivePage) || 
+            (storedActivePage === 'dashboard' && (currentPath === '/admin' || currentPath === '/admin/'))) {
+            // Active state will be set by setActiveLink() function above
+        }
+    }
+});
+</script>

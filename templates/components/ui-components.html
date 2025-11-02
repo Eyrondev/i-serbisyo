@@ -1,0 +1,309 @@
+<!-- Reusable UI Components -->
+
+<!-- Card Components -->
+<div class="component-library">
+    
+    <!-- Basic Card -->
+    <div class="card mb-6">
+        <div class="card-header">
+            <h3 class="text-lg font-semibold text-gray-900">Card Title</h3>
+        </div>
+        <div class="card-body">
+            <p class="text-gray-600">Card content goes here...</p>
+        </div>
+    </div>
+
+    <!-- Feature Card -->
+    <div class="feature-card group hover:shadow-lg transition-all duration-300 cursor-pointer">
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden p-6">
+            <div class="flex items-center space-x-4 mb-4">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center group-hover:bg-primary-200 transition-colors duration-300">
+                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors duration-300">Feature Title</h3>
+                    <p class="text-sm text-gray-500">Feature subtitle</p>
+                </div>
+            </div>
+            <p class="text-gray-600 leading-relaxed">Feature description goes here...</p>
+        </div>
+    </div>
+
+    <!-- Statistics Card -->
+    <div class="stats-card">
+        <div class="bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-lg text-white p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-primary-100 text-sm font-medium">Total Residents</p>
+                    <p class="text-3xl font-bold counter" data-target="1234" data-duration="2000">0</p>
+                </div>
+                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-primary-100 text-sm">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M7 14l3-3 3 3 5-5-1.41-1.42L13 11.17l-3-3L7 11.17 2.41 6.59 1 8l6 6z"/>
+                </svg>
+                <span>12% increase from last month</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Card -->
+    <div class="service-card group">
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
+            <div class="aspect-w-16 aspect-h-9 bg-gradient-to-br from-blue-400 to-blue-600">
+                <div class="flex items-center justify-center">
+                    <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors duration-300">Barangay Certificate</h3>
+                <p class="text-gray-600 text-sm leading-relaxed mb-4">Official document certifying residency and good moral character within the barangay.</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500">Processing: 1-2 days</span>
+                    <button class="btn btn-primary btn-sm">Apply Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Official Card -->
+    <div class="official-card">
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
+            <div class="aspect-w-1 aspect-h-1 bg-gray-200">
+                <img class="w-full h-48 object-cover" src="https://via.placeholder.com/300x300" alt="Official Photo">
+            </div>
+            <div class="p-6 text-center">
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">Juan Dela Cruz</h3>
+                <p class="text-primary-600 font-medium mb-2">Barangay Captain</p>
+                <p class="text-gray-600 text-sm leading-relaxed mb-4">Leading the community with dedication and transparency for the past 6 years.</p>
+                <div class="flex justify-center space-x-3">
+                    <a href="#" class="text-gray-400 hover:text-primary-600 transition-colors duration-200">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-primary-600 transition-colors duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcement Card -->
+    <div class="announcement-card">
+        <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300">
+            <div class="aspect-w-16 aspect-h-9 bg-gray-200">
+                <img class="w-full h-48 object-cover" src="https://via.placeholder.com/600x300" alt="Announcement Image">
+            </div>
+            <div class="p-6">
+                <div class="flex items-center space-x-2 text-sm text-gray-500 mb-3">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span>January 15, 2025</span>
+                    <span>•</span>
+                    <span class="badge badge-primary">Community Event</span>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-3 line-clamp-2">Community Meeting: Budget Planning for 2025</h3>
+                <p class="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-4">Join us for our quarterly community meeting where we'll discuss the budget allocation for various barangay projects...</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2 text-sm text-gray-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        </svg>
+                        <span>Barangay Hall</span>
+                    </div>
+                    <button class="btn btn-primary btn-sm">Read More</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Button Components -->
+<div class="button-components space-y-4 p-6">
+    
+    <!-- Primary Buttons -->
+    <div class="space-x-4">
+        <button class="btn btn-primary">Primary Button</button>
+        <button class="btn btn-primary btn-lg">Large Primary</button>
+        <button class="btn btn-primary btn-sm">Small Primary</button>
+    </div>
+
+    <!-- Secondary Buttons -->
+    <div class="space-x-4">
+        <button class="btn btn-secondary">Secondary Button</button>
+        <button class="btn btn-secondary" disabled>Disabled</button>
+    </div>
+
+    <!-- Icon Buttons -->
+    <div class="space-x-4">
+        <button class="btn btn-primary">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Add New
+        </button>
+        
+        <button class="btn btn-danger">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+            Delete
+        </button>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fixed bottom-6 right-6 w-14 h-14 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 flex items-center justify-center z-40">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+    </button>
+
+</div>
+
+<!-- Form Components -->
+<div class="form-components space-y-6 p-6">
+    
+    <!-- Input Group -->
+    <div class="form-group">
+        <label class="form-label" for="example-input">Full Name</label>
+        <input type="text" id="example-input" class="form-input" placeholder="Enter your full name" required>
+    </div>
+
+    <!-- Input with Icon -->
+    <div class="form-group">
+        <label class="form-label" for="email-input">Email Address</label>
+        <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <input type="email" id="email-input" class="form-input pl-10" placeholder="your@email.com" required>
+        </div>
+    </div>
+
+    <!-- Select Dropdown -->
+    <div class="form-group">
+        <label class="form-label" for="service-select">Service Type</label>
+        <select id="service-select" class="form-select" required>
+            <option value="">Select a service</option>
+            <option value="barangay-certificate">Barangay Certificate</option>
+            <option value="business-permit">Business Permit</option>
+            <option value="indigency-certificate">Indigency Certificate</option>
+        </select>
+    </div>
+
+    <!-- Textarea -->
+    <div class="form-group">
+        <label class="form-label" for="message-textarea">Message</label>
+        <textarea id="message-textarea" class="form-textarea" rows="4" placeholder="Enter your message here..."></textarea>
+    </div>
+
+    <!-- Checkbox -->
+    <div class="form-group">
+        <div class="flex items-center">
+            <input type="checkbox" id="terms-checkbox" class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 focus:ring-2">
+            <label for="terms-checkbox" class="ml-2 text-sm text-gray-700">
+                I agree to the <a href="#" class="text-primary-600 hover:text-primary-700">Terms and Conditions</a>
+            </label>
+        </div>
+    </div>
+
+    <!-- Radio Buttons -->
+    <div class="form-group">
+        <label class="form-label">Gender</label>
+        <div class="space-y-2">
+            <div class="flex items-center">
+                <input type="radio" id="male" name="gender" value="male" class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 focus:ring-2">
+                <label for="male" class="ml-2 text-sm text-gray-700">Male</label>
+            </div>
+            <div class="flex items-center">
+                <input type="radio" id="female" name="gender" value="female" class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 focus:ring-2">
+                <label for="female" class="ml-2 text-sm text-gray-700">Female</label>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal Components -->
+<div class="modal-components">
+    
+    <!-- Basic Modal -->
+    <div id="example-modal" class="modal hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="modal-backdrop flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            
+            <!-- Modal Panel -->
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Modal Title</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">Modal content goes here...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" class="btn btn-danger" data-modal-close="example-modal">Delete</button>
+                    <button type="button" class="btn btn-secondary mr-3" data-modal-close="example-modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Badge and Alert Components -->
+<div class="badge-alert-components space-y-4 p-6">
+    
+    <!-- Badges -->
+    <div class="space-x-2">
+        <span class="badge badge-primary">New</span>
+        <span class="badge badge-success">Approved</span>
+        <span class="badge badge-warning">Pending</span>
+        <span class="badge badge-danger">Rejected</span>
+    </div>
+
+    <!-- Alerts -->
+    <div class="alert alert-success">
+        <strong>Success!</strong> Your application has been submitted successfully.
+    </div>
+    
+    <div class="alert alert-warning">
+        <strong>Warning!</strong> Please review your information before submitting.
+    </div>
+    
+    <div class="alert alert-error">
+        <strong>Error!</strong> There was a problem processing your request.
+    </div>
+    
+    <div class="alert alert-info">
+        <strong>Info!</strong> Your application is currently being processed.
+    </div>
+
+</div>

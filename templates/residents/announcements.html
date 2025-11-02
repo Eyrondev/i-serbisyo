@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements - iSerbisyo Resident</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        purple: {
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            200: '#e9d5ff',
+                            300: '#d8b4fe',
+                            400: '#c084fc',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            700: '#7c3aed',
+                            800: '#6b21a8',
+                            900: '#581c87'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-purple-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar Container - Always render, let the sidebar component handle its own visibility -->
+        {% include 'components/resident-sidebar.html' %}
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 lg:pl-64">
+            <!-- Header Container -->
+            {% include 'components/resident-header.html' %}
+
+            <!-- Main content area -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <!-- Announcements Content -->
+                <div class="py-3 sm:py-4 lg:py-6 pl-4 sm:pl-6 lg:pl-8 pr-4 sm:pr-6 lg:pr-8 xl:pr-10">
+                    <div class="max-w-full mx-auto">
+                        <!-- Modern Page Header -->
+                        <div class="mb-6 sm:mb-8">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <div class="flex items-center space-x-3 sm:space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                                                <i class="fas fa-bullhorn text-white text-lg sm:text-xl"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Barangay Announcements</h1>
+                                            <p class="text-gray-600 mt-1 text-sm sm:text-base">Stay updated with the latest news and announcements</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="inline-flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-800">
+                                            <span class="w-2 h-2 mr-1.5 sm:mr-2 bg-purple-500 rounded-full"></span>
+                                            <span class="hidden sm:inline">{{ announcement_stats.urgent + announcement_stats.high }} Priority Today</span>
+                                            <span class="sm:hidden">{{ announcement_stats.urgent + announcement_stats.high }} Priority</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filters and Search -->
+                        <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
+                            <form method="GET" action="{{ url_for('resident.announcements') }}" class="flex flex-col gap-3 sm:gap-4">
+                                <div class="flex-1">
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-search text-gray-400 text-sm"></i>
+                                        </div>
+                                        <input type="text" name="search" value="{{ search_query }}" placeholder="Search announcements..." 
+                                               class="block w-full pl-9 sm:pl-10 pr-3 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500">
+                                    </div>
+                                </div>
+                                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                                    <select name="category" class="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-white" onchange="this.form.submit()">
+                                        <option value="">All Categories</option>
+                                        {% for category in categories %}
+                                        <option value="{{ category }}" {% if category == category_filter %}selected{% endif %}>{{ category.title() }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select name="sort" class="flex-1 sm:flex-none px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 bg-white" onchange="this.form.submit()">
+                                        <option value="latest" {% if sort_order == 'latest' %}selected{% endif %}>Latest First</option>
+                                        <option value="oldest" {% if sort_order == 'oldest' %}selected{% endif %}>Oldest First</option>
+                                        <option value="priority" {% if sort_order == 'priority' %}selected{% endif %}>Most Important</option>
+                                    </select>
+                                    <button type="submit" class="px-4 py-2 sm:py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors text-sm sm:text-base">
+                                        <i class="fas fa-search mr-1 sm:mr-0"></i>
+                                        <span class="sm:hidden">Search</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Announcements List -->
+                        <div class="space-y-4 sm:space-y-6">
+                            {% if announcements %}
+                                {% for announcement in announcements %}
+                                <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                                    <div class="p-4 sm:p-6">
+                                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-0">
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-{% if announcement.priority == 'urgent' %}red{% elif announcement.priority == 'high' %}orange{% elif announcement.priority == 'medium' %}blue{% else %}gray{% endif %}-100 text-{% if announcement.priority == 'urgent' %}red{% elif announcement.priority == 'high' %}orange{% elif announcement.priority == 'medium' %}blue{% else %}gray{% endif %}-800">
+                                                    <i class="fas fa-{% if announcement.priority == 'urgent' %}exclamation-triangle{% elif announcement.priority == 'high' %}exclamation{% elif announcement.priority == 'medium' %}info-circle{% else %}bullhorn{% endif %} mr-1 sm:mr-1.5"></i>
+                                                    {{ announcement.priority.title() }}
+                                                </span>
+                                                <span class="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    <span class="w-1.5 h-1.5 mr-1 sm:mr-1.5 bg-green-500 rounded-full"></span>
+                                                    {{ announcement.status.title() }}
+                                                </span>
+                                            </div>
+                                            <div class="flex items-center space-x-1 sm:space-x-2">
+                                                <button type="button" 
+                                                        class="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors announcement-action" 
+                                                        data-action="bookmark" 
+                                                        data-id="{{ announcement.id }}" 
+                                                        title="Bookmark" 
+                                                        aria-label="Bookmark announcement">
+                                                    <i class="fas fa-bookmark text-sm" aria-hidden="true"></i>
+                                                </button>
+                                                <button type="button" 
+                                                        class="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors announcement-action" 
+                                                        data-action="share" 
+                                                        data-id="{{ announcement.id }}" 
+                                                        title="Share" 
+                                                        aria-label="Share announcement">
+                                                    <i class="fas fa-share text-sm" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mt-3 sm:mt-4">{{ announcement.title }}</h3>
+                                        <p class="text-gray-600 mt-2 text-sm sm:text-base">{{ announcement.content[:200] }}{% if announcement.content|length > 200 %}...{% endif %}</p>
+                                        
+                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 gap-3 sm:gap-0">
+                                            <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                                                <div class="flex items-center text-xs sm:text-sm text-gray-500">
+                                                    <i class="fas fa-calendar mr-1.5 sm:mr-2"></i>
+                                                    <span>{{ announcement.created_at.strftime('%b %d, %Y') }}</span>
+                                                </div>
+                                                <div class="flex items-center text-xs sm:text-sm text-gray-500">
+                                                    <i class="fas fa-clock mr-1.5 sm:mr-2"></i>
+                                                    <span>{{ announcement.created_at.strftime('%I:%M %p') }}</span>
+                                                </div>
+                                                {% if announcement.author %}
+                                                <div class="flex items-center text-xs sm:text-sm text-gray-500">
+                                                    <i class="fas fa-user mr-1.5 sm:mr-2"></i>
+                                                    <span>{{ announcement.author }}</span>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="flex space-x-2">
+                                                <button type="button" 
+                                                        class="bg-purple-50 hover:bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors announcement-action" 
+                                                        data-action="view" 
+                                                        data-id="{{ announcement.id }}" 
+                                                        aria-label="Read more about this announcement">
+                                                    <i class="fas fa-eye mr-1" aria-hidden="true"></i>
+                                                    <span class="hidden sm:inline">Read More</span>
+                                                    <span class="sm:hidden">Read</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-8 sm:p-12 text-center">
+                                    <div class="flex flex-col items-center">
+                                        <i class="fas fa-bullhorn text-gray-400 text-3xl sm:text-4xl mb-3 sm:mb-4"></i>
+                                        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">No announcements found</h3>
+                                        <p class="text-gray-500 text-sm sm:text-base">
+                                            {% if search_query or category_filter %}
+                                                Try adjusting your search filters or check back later for new announcements.
+                                            {% else %}
+                                                Check back later for new announcements from the barangay office.
+                                            {% endif %}
+                                        </p>
+                                        {% if search_query or category_filter %}
+                                        <a href="{{ url_for('resident.announcements') }}" class="mt-4 inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors text-sm sm:text-base">
+                                            <i class="fas fa-refresh mr-2"></i>
+                                            Clear Filters
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <!-- Load More Button (if needed for pagination) -->
+                            {% if announcements|length >= 10 %}
+                            <div class="text-center pt-2">
+                                <button type="button" 
+                                        class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors duration-200 announcement-action text-sm sm:text-base" 
+                                        data-action="loadmore" 
+                                        aria-label="Load more announcements">
+                                    <i class="fas fa-chevron-down mr-2" aria-hidden="true"></i>
+                                    Load More Announcements
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- Scripts -->
+    <script>
+        // Enable debug logging
+        console.log('Announcements page loaded successfully');
+        
+        // Announcement management functions
+        function viewAnnouncement(id) {
+            try {
+                alert('Viewing announcement details for ID: ' + id + '\n\nThis would open a detailed view of the announcement with full content and any attachments.');
+            } catch (error) {
+                console.error('Error viewing announcement:', error);
+                alert('Error loading announcement details. Please try again.');
+            }
+        }
+
+        function bookmarkAnnouncement(id) {
+            try {
+                alert('Bookmarked announcement ID: ' + id + '\n\nThis announcement has been saved to your bookmarks for easy access later.');
+            } catch (error) {
+                console.error('Error bookmarking announcement:', error);
+                alert('Error bookmarking announcement. Please try again.');
+            }
+        }
+
+        function shareAnnouncement(id) {
+            try {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Barangay Announcement',
+                        text: 'Check out this announcement from our barangay.',
+                        url: window.location.href + '?announcement=' + id
+                    }).catch(console.error);
+                } else {
+                    // Fallback for browsers that don't support Web Share API
+                    const url = window.location.href + '?announcement=' + id;
+                    navigator.clipboard.writeText(url).then(() => {
+                        alert('Announcement link copied to clipboard!');
+                    }).catch(() => {
+                        alert('Share announcement ID: ' + id + '\n\nLink: ' + url);
+                    });
+                }
+            } catch (error) {
+                console.error('Error sharing announcement:', error);
+                alert('Error sharing announcement. Please try again.');
+            }
+        }
+
+        function loadMoreAnnouncements() {
+            try {
+                alert('Loading more announcements...\n\nThis would load additional announcements from the database using pagination.');
+            } catch (error) {
+                console.error('Error loading more announcements:', error);
+                alert('Error loading more announcements. Please try again.');
+            }
+        }
+
+        // Event delegation for announcement action buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize mobile menu
+            initializeMobileMenu();
+            
+            // Initialize header dropdowns
+            initializeHeaderDropdowns();
+            
+            // Add event listener for all announcement action buttons
+            document.addEventListener('click', function(e) {
+                const button = e.target.closest('.announcement-action');
+                if (!button) return;
+
+                const action = button.getAttribute('data-action');
+                const id = button.getAttribute('data-id');
+
+                switch (action) {
+                    case 'view':
+                        if (id) viewAnnouncement(id);
+                        break;
+                    case 'bookmark':
+                        if (id) bookmarkAnnouncement(id);
+                        break;
+                    case 'share':
+                        if (id) shareAnnouncement(id);
+                        break;
+                    case 'loadmore':
+                        loadMoreAnnouncements();
+                        break;
+                }
+            });
+
+            // Search form auto-submit on enter
+            const searchInput = document.querySelector('input[name="search"]');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        this.form.submit();
+                    }
+                });
+            }
+        });
+        
+        // Mobile menu toggle functionality
+        function initializeMobileMenu() {
+            const mobileMenuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            if (mobileMenuToggle && sidebar && overlay) {
+                console.log('Mobile menu initialized');
+                mobileMenuToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Toggle sidebar visibility
+                    const isHidden = sidebar.classList.contains('-translate-x-full');
+                    if (isHidden) {
+                        sidebar.classList.remove('-translate-x-full');
+                        sidebar.classList.add('translate-x-0');
+                        overlay.classList.remove('hidden');
+                    } else {
+                        sidebar.classList.add('-translate-x-full');
+                        sidebar.classList.remove('translate-x-0');
+                        overlay.classList.add('hidden');
+                    }
+                });
+
+                // Close sidebar when clicking overlay
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                    overlay.classList.add('hidden');
+                });
+            }
+        }
+
+        // Header dropdown functionality
+        function initializeHeaderDropdowns() {
+            const notificationsToggle = document.getElementById('notifications-toggle');
+            const notificationsDropdown = document.getElementById('notifications-dropdown');
+            
+            if (notificationsToggle && notificationsDropdown) {
+                notificationsToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    notificationsDropdown.classList.toggle('hidden');
+                    const profileDropdown = document.getElementById('profile-dropdown');
+                    if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                        profileDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            const profileToggle = document.getElementById('profile-toggle');
+            const profileDropdown = document.getElementById('profile-dropdown');
+            
+            if (profileToggle && profileDropdown) {
+                profileToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    profileDropdown.classList.toggle('hidden');
+                    if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
+                        notificationsDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(event) {
+                if (notificationsDropdown && !event.target.closest('#notifications-toggle') && !event.target.closest('#notifications-dropdown')) {
+                    notificationsDropdown.classList.add('hidden');
+                }
+                
+                if (profileDropdown && !event.target.closest('#profile-toggle') && !event.target.closest('#profile-dropdown')) {
+                    profileDropdown.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

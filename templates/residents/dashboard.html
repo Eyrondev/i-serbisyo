@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident Dashboard - iSerbisyo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        purple: {
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            200: '#e9d5ff',
+                            300: '#d8b4fe',
+                            400: '#c084fc',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            700: '#7c3aed',
+                            800: '#6b21a8',
+                            900: '#581c87'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-purple-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar Container - Always render, let the sidebar component handle its own visibility -->
+        {% include 'components/resident-sidebar.html' %}
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 lg:pl-64">
+            <!-- Header Container -->
+            {% include 'components/resident-header.html' %}
+
+            <!-- Main Dashboard Content -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <!-- Dashboard Content -->
+                <div class="py-3 sm:py-4 lg:py-6">
+                    <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+                        <!-- Modern Page Header -->
+                        <div class="mb-8">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                                                <i class="fas fa-gauge-high text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-2xl font-bold text-gray-900">Welcome, {{ resident.first_name if resident else 'Resident' }}!</h1>
+                                            <p class="text-gray-600 mt-1">Here's what's happening in your barangay account.</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        {% if resident and resident.status == 'approved' %}
+                                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                            <span class="w-2 h-2 mr-2 bg-green-500 rounded-full"></span>
+                                            Active Resident
+                                        </span>
+                                        {% elif resident and resident.status == 'pending' %}
+                                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                            <span class="w-2 h-2 mr-2 bg-yellow-500 rounded-full"></span>
+                                            Pending Approval
+                                        </span>
+                                        {% else %}
+                                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                            <span class="w-2 h-2 mr-2 bg-gray-500 rounded-full"></span>
+                                            Resident
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Stats -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-certificate text-purple-600 text-sm"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-gray-600">Certificate Requests</p>
+                                        <p class="text-2xl font-bold text-gray-900">{{ dashboard_stats.certificates.total }}</p>
+                                        <p class="text-xs text-gray-500">{{ dashboard_stats.certificates.pending }} pending, {{ dashboard_stats.certificates.approved }} approved</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-bullhorn text-blue-600 text-sm"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-gray-600">New Announcements</p>
+                                        <p class="text-2xl font-bold text-gray-900">{{ dashboard_stats.announcements }}</p>
+                                        <p class="text-xs text-gray-500">This week</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-check-circle text-green-600 text-sm"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-gray-600">Account Status</p>
+                                        <p class="text-2xl font-bold text-gray-900">{% if dashboard_stats.resident_status == 'approved' %}Active{% else %}{{ dashboard_stats.resident_status.title() }}{% endif %}</p>
+                                        <p class="text-xs text-gray-500">{% if dashboard_stats.is_voter %}Registered voter{% else %}Not a voter{% endif %}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Content Grid -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                            <!-- Recent Certificate Requests -->
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                                <div class="p-6 border-b border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-lg font-semibold text-gray-900">Recent Certificate Requests</h3>
+                                        <a href="{{ url_for('resident.certificates') }}" class="text-sm font-medium text-purple-600 hover:text-purple-500">View all</a>
+                                    </div>
+                                </div>
+                                <div class="divide-y divide-gray-200">
+                                    {% if recent_certificates %}
+                                        {% for certificate in recent_certificates %}
+                                        <div class="p-6">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="flex-shrink-0">
+                                                    <div class="w-8 h-8 bg-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% else %}red{% endif %}-100 rounded-lg flex items-center justify-center">
+                                                        <i class="fas fa-{% if certificate.status == 'pending' %}clock{% elif certificate.status in ['completed', 'ready', 'claimed'] %}check{% elif certificate.status == 'processing' %}cog{% else %}times{% endif %} text-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% else %}red{% endif %}-600 text-sm"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-sm font-medium text-gray-900">{{ certificate.certificate_type.title() }}</p>
+                                                    <p class="text-sm text-gray-500">Requested: {{ certificate.request_date.strftime('%b %d, %Y') }}</p>
+                                                </div>
+                                                <div class="flex-shrink-0">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% else %}red{% endif %}-100 text-{% if certificate.status == 'pending' %}orange{% elif certificate.status in ['completed', 'ready', 'claimed'] %}green{% elif certificate.status == 'processing' %}blue{% else %}red{% endif %}-800">
+                                                        {{ certificate.status.title() }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="p-6 text-center">
+                                            <div class="flex flex-col items-center">
+                                                <i class="fas fa-certificate text-gray-400 text-3xl mb-3"></i>
+                                                <h3 class="text-sm font-medium text-gray-900 mb-1">No certificate requests</h3>
+                                                <p class="text-sm text-gray-500">You haven't requested any certificates yet.</p>
+                                                <a href="{{ url_for('resident.certificates') }}" class="mt-3 text-sm font-medium text-purple-600 hover:text-purple-500">Request a certificate</a>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Recent Announcements -->
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                                <div class="p-6 border-b border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-lg font-semibold text-gray-900">Latest Announcements</h3>
+                                        <a href="{{ url_for('resident.announcements') }}" class="text-sm font-medium text-purple-600 hover:text-purple-500">View all</a>
+                                    </div>
+                                </div>
+                                <div class="divide-y divide-gray-200">
+                                    {% if recent_announcements %}
+                                        {% for announcement in recent_announcements %}
+                                        <div class="p-6">
+                                            <div class="flex items-start space-x-3">
+                                                <div class="flex-shrink-0">
+                                                    <div class="w-8 h-8 bg-{% if announcement.priority == 'urgent' %}red{% elif announcement.priority == 'high' %}orange{% elif announcement.priority == 'medium' %}blue{% else %}green{% endif %}-100 rounded-lg flex items-center justify-center">
+                                                        <i class="fas fa-{% if announcement.priority == 'urgent' %}exclamation-triangle{% elif announcement.priority == 'high' %}exclamation{% elif announcement.priority == 'medium' %}info-circle{% else %}bullhorn{% endif %} text-{% if announcement.priority == 'urgent' %}red{% elif announcement.priority == 'high' %}orange{% elif announcement.priority == 'medium' %}blue{% else %}green{% endif %}-600 text-sm"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-sm font-medium text-gray-900">{{ announcement.title }}</p>
+                                                    <p class="text-sm text-gray-500">{{ announcement.content[:80] }}{% if announcement.content|length > 80 %}...{% endif %}</p>
+                                                    <p class="text-xs text-gray-400 mt-1">{{ announcement.created_at.strftime('%b %d, %Y at %I:%M %p') }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="p-6 text-center">
+                                            <div class="flex flex-col items-center">
+                                                <i class="fas fa-bullhorn text-gray-400 text-3xl mb-3"></i>
+                                                <h3 class="text-sm font-medium text-gray-900 mb-1">No announcements</h3>
+                                                <p class="text-sm text-gray-500">There are no recent announcements to display.</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <a href="{{ url_for('resident.certificates') }}" class="flex items-center p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors duration-200 group">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-plus text-purple-600"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-purple-900">Request Certificate</p>
+                                        <p class="text-xs text-purple-600">Submit new request</p>
+                                    </div>
+                                </a>
+
+                                <a href="{{ url_for('resident.certificates') }}" class="flex items-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200 group">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-history text-blue-600"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-blue-900">Track Request</p>
+                                        <p class="text-xs text-blue-600">Check status</p>
+                                    </div>
+                                </a>
+
+                                <a href="{{ url_for('resident.announcements') }}" class="flex items-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors duration-200 group">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 bg-green-100 group-hover:bg-green-200 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-bullhorn text-green-600"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-green-900">View Updates</p>
+                                        <p class="text-xs text-green-600">Latest news</p>
+                                    </div>
+                                </a>
+
+                                <a href="#" class="flex items-center p-4 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors duration-200 group">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 bg-orange-100 group-hover:bg-orange-200 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-user text-orange-600"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm font-medium text-orange-900">Update Profile</p>
+                                        <p class="text-xs text-orange-600">Personal info</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize all interactive components
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMobileMenu();
+            initializeHeaderDropdowns();
+        });
+
+        // Mobile menu toggle functionality
+        function initializeMobileMenu() {
+            const mobileMenuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            console.log('Initializing mobile menu...', {
+                mobileMenuToggle: !!mobileMenuToggle,
+                sidebar: !!sidebar,
+                overlay: !!overlay
+            });
+
+            if (mobileMenuToggle && sidebar && overlay) {
+                mobileMenuToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Menu toggle clicked!');
+                    
+                    // Toggle sidebar visibility
+                    const isHidden = sidebar.classList.contains('-translate-x-full');
+                    if (isHidden) {
+                        sidebar.classList.remove('-translate-x-full');
+                        sidebar.classList.add('translate-x-0');
+                        overlay.classList.remove('hidden');
+                    } else {
+                        sidebar.classList.add('-translate-x-full');
+                        sidebar.classList.remove('translate-x-0');
+                        overlay.classList.add('hidden');
+                    }
+                });
+
+                // Close sidebar when clicking overlay
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                    overlay.classList.add('hidden');
+                });
+            } else {
+                console.error('Mobile menu elements not found:', {
+                    mobileMenuToggle: !!mobileMenuToggle,
+                    sidebar: !!sidebar,
+                    overlay: !!overlay
+                });
+            }
+        }
+
+        // Header dropdown functionality
+        function initializeHeaderDropdowns() {
+            const notificationsToggle = document.getElementById('notifications-toggle');
+            const notificationsDropdown = document.getElementById('notifications-dropdown');
+            
+            if (notificationsToggle && notificationsDropdown) {
+                notificationsToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    notificationsDropdown.classList.toggle('hidden');
+                    const profileDropdown = document.getElementById('profile-dropdown');
+                    if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                        profileDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            const profileToggle = document.getElementById('profile-toggle');
+            const profileDropdown = document.getElementById('profile-dropdown');
+            
+            if (profileToggle && profileDropdown) {
+                profileToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    profileDropdown.classList.toggle('hidden');
+                    if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
+                        notificationsDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(event) {
+                if (notificationsDropdown && !event.target.closest('#notifications-toggle') && !event.target.closest('#notifications-dropdown')) {
+                    notificationsDropdown.classList.add('hidden');
+                }
+                
+                if (profileDropdown && !event.target.closest('#profile-toggle') && !event.target.closest('#profile-dropdown')) {
+                    profileDropdown.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

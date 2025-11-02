@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Contact Us - i-Serbisyo Barangay Management System. Get in touch with your local government for assistance and inquiries.">
+    <meta name="keywords" content="contact, barangay office, feedback, inquiries, location, hours">
+    <meta name="author" content="i-Serbisyo">
+    
+    <title>Contact Us - i-Serbisyo</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/iserbisyo_icon.png') }}">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'pulse-slow': 'pulse 3s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Alpine.js for interactive components -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Navigation Loader -->
+    <script src="../assets/js/navigation-loader.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Loading Screen -->
+    {% include 'components/loading-screen.html' %}
+    
+    <!-- Navigation Container -->
+    <!-- Include your original navigation -->
+    {% include 'components/navigation.html' %}
+
+    <!-- Page Header -->
+    <div class="relative bg-gradient-to-r from-primary-600 to-primary-800 pt-16 overflow-hidden" style="background-image: url('../../static/images/landing_page_bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+        <div class="absolute inset-0 bg-black/40"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Contact Us</h1>
+                <p class="text-xl text-blue-100 max-w-3xl mx-auto">
+                    We're here to help! Reach out to us for any inquiries, feedback, or assistance you may need.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center space-x-2 py-3 text-sm">
+                <a href="{{ url_for('public.index') }}" class="text-gray-500 hover:text-gray-700">Home</a>
+                <svg class="h-4 w-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-gray-900 font-medium">Contact</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="py-12">
+        <!-- Contact Information Cards -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Office Location -->
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-300">
+                    <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Visit Our Office</h3>
+                    <p class="text-gray-600 mb-4">
+                        Hi-way<br>
+                        Partida<br>
+                        Norzagaray, Bulacan<br>
+                        Philippines
+                    </p>
+                    <button @click="showOnMap()" class="text-primary-600 hover:text-primary-700 font-medium text-sm">
+                        View on Map →
+                    </button>
+                </div>
+
+                <!-- Phone Contact -->
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-300">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Call Us</h3>
+                    <p class="text-gray-600 mb-4">
+                        Main Office: <strong>+63 123 456 7890</strong><br>
+                        Emergency: <strong>+63 999 123 4567</strong><br>
+                        Fax: <strong>+63 123 456 7891</strong>
+                    </p>
+                    <a href="tel:+63123456789" class="text-green-600 hover:text-green-700 font-medium text-sm">
+                        Call Now →
+                    </a>
+                </div>
+
+                <!-- Email Contact -->
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition-shadow duration-300">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Email Us</h3>
+                    <p class="text-gray-600 mb-4">
+                        General: <strong>info@iserbisyo.com</strong><br>
+                        Support: <strong>support@iserbisyo.com</strong><br>
+                        Captain: <strong>captain@iserbisyo.com</strong>
+                    </p>
+                    <a href="mailto:info@iserbisyo.com" class="text-blue-600 hover:text-blue-700 font-medium text-sm">
+                        Send Email →
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form and Map -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
+                    
+                    <!-- Success Message -->
+                    <div id="contact-success" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4" role="alert">
+                        <span class="block sm:inline" id="success-message">Thank you for your message! We will get back to you soon.</span>
+                    </div>
+                    
+                    <!-- Error Message -->
+                    <div id="contact-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+                        <span class="block sm:inline" id="error-message">There was an error sending your message. Please try again.</span>
+                    </div>
+                    
+                    <form id="contact-form" action="{{ url_for('public.submit_contact') }}" method="POST" class="space-y-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="name" name="name" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200"
+                                   placeholder="Enter your full name">
+                            <div class="error-message text-red-500 text-sm mt-1 hidden" data-field="name"></div>
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address <span class="text-red-500">*</span></label>
+                            <input type="email" id="email" name="email" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200"
+                                   placeholder="Enter your email address">
+                            <div class="error-message text-red-500 text-sm mt-1 hidden" data-field="email"></div>
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number (Optional)</label>
+                            <input type="tel" id="phone" name="phone" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200"
+                                   placeholder="Enter your phone number">
+                            <div class="error-message text-red-500 text-sm mt-1 hidden" data-field="phone"></div>
+                        </div>
+                        <div>
+                            <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Subject <span class="text-red-500">*</span></label>
+                            <input type="text" id="subject" name="subject" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200"
+                                   placeholder="What is this about?">
+                            <div class="error-message text-red-500 text-sm mt-1 hidden" data-field="subject"></div>
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Message <span class="text-red-500">*</span></label>
+                            <textarea id="message" name="message" rows="5" required 
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 resize-vertical"
+                                      placeholder="Type your message here..."></textarea>
+                            <div class="error-message text-red-500 text-sm mt-1 hidden" data-field="message"></div>
+                        </div>
+                        <button type="submit" id="submit-btn"
+                                class="w-full bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span id="submit-text">Send Message</span>
+                            <span id="submit-loading" class="hidden">
+                                <svg class="inline w-4 h-4 mr-2 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Sending...
+                            </span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Office Information and Map -->
+                <div class="space-y-8">
+                    <!-- Office Hours -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Office Hours</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Monday - Friday</span>
+                                <span class="font-medium text-gray-900">8:00 AM - 5:00 PM</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Saturday</span>
+                                <span class="font-medium text-gray-900">8:00 AM - 12:00 PM</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Sunday</span>
+                                <span class="font-medium text-red-600">Closed</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Holidays</span>
+                                <span class="font-medium text-red-600">Closed</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                            <div class="flex">
+                                <svg class="flex-shrink-0 h-5 w-5 text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-medium text-blue-800">Note:</h4>
+                                    <p class="text-sm text-blue-700">For emergency services, contact us 24/7 at +63 999 123 4567</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Google Maps -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">Find Us</h3>
+                        </div>
+                        <div class="relative">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3855.7781488385003!2d121.02098241157795!3d14.893678685568158!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397a907ecc9cdcf%3A0x78308760b6665312!2sPartida%20Barangay%20Hall%2C%20Tining%20Street%2C%20Norzagaray%2C%20Bulacan!5e0!3m2!1sen!2sph!4v1759332950620!5m2!1sen!2sph" 
+                                    width="100%" 
+                                    height="300" 
+                                    style="border:0;" 
+                                    allowfullscreen="" 
+                                    loading="lazy" 
+                                    referrerpolicy="no-referrer-when-downgrade"
+                                    class="w-full">
+                            </iframe>
+                        </div>
+                        <div class="px-6 pb-6">
+                            <button onclick="window.open('https://www.google.com/maps/search/Partida+Barangay+Hall,+Tining+Street,+Norzagaray,+Bulacan', '_blank')" 
+                                    class="w-full mt-4 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                                Open in Google Maps
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contacts -->
+                    <div class="bg-red-50 rounded-xl border border-red-200 p-6">
+                        <h3 class="text-xl font-semibold text-red-900 mb-4">Emergency Contacts</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-red-900">National Emergency</div>
+                                    <div class="text-sm text-red-700">911</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-red-900">Barangay Emergency</div>
+                                    <div class="text-sm text-red-700">+63 999 123 4567</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-red-900">Health Center</div>
+                                    <div class="text-sm text-red-700">+63 987 654 3210</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactForm = document.getElementById('contact-form');
+            const submitBtn = document.getElementById('submit-btn');
+            const submitText = document.getElementById('submit-text');
+            const submitLoading = document.getElementById('submit-loading');
+            const successAlert = document.getElementById('contact-success');
+            const errorAlert = document.getElementById('contact-error');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+
+            // Clear error messages
+            function clearErrors() {
+                const errorElements = document.querySelectorAll('.error-message');
+                errorElements.forEach(element => {
+                    element.classList.add('hidden');
+                    element.textContent = '';
+                });
+                
+                // Remove error border styling
+                const inputs = contactForm.querySelectorAll('input, textarea');
+                inputs.forEach(input => {
+                    input.classList.remove('border-red-500');
+                    input.classList.add('border-gray-300');
+                });
+            }
+
+            // Show field error
+            function showFieldError(fieldName, message) {
+                const errorElement = document.querySelector(`[data-field="${fieldName}"]`);
+                const inputElement = document.querySelector(`[name="${fieldName}"]`);
+                
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    errorElement.classList.remove('hidden');
+                }
+                
+                if (inputElement) {
+                    inputElement.classList.remove('border-gray-300');
+                    inputElement.classList.add('border-red-500');
+                }
+            }
+
+            // Show success message
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successAlert.classList.remove('hidden');
+                errorAlert.classList.add('hidden');
+                
+                // Scroll to success message
+                successAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Clear form
+                contactForm.reset();
+            }
+
+            // Show error message
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorAlert.classList.remove('hidden');
+                successAlert.classList.add('hidden');
+                
+                // Scroll to error message
+                errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            // Handle form submission
+            contactForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Clear previous errors and alerts
+                clearErrors();
+                successAlert.classList.add('hidden');
+                errorAlert.classList.add('hidden');
+                
+                // Disable submit button and show loading
+                submitBtn.disabled = true;
+                submitText.classList.add('hidden');
+                submitLoading.classList.remove('hidden');
+                
+                try {
+                    const formData = new FormData(contactForm);
+                    
+                    const response = await fetch(contactForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showSuccess(result.message);
+                    } else {
+                        if (result.errors) {
+                            // Show field-specific errors
+                            for (const [field, message] of Object.entries(result.errors)) {
+                                showFieldError(field, message);
+                            }
+                        } else {
+                            showError('Please correct the errors and try again.');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Contact form error:', error);
+                    showError('Sorry, there was an error sending your message. Please try again later.');
+                } finally {
+                    // Re-enable submit button and hide loading
+                    submitBtn.disabled = false;
+                    submitText.classList.remove('hidden');
+                    submitLoading.classList.add('hidden');
+                }
+            });
+
+            // Map functions for backward compatibility
+            window.showOnMap = function() {
+                alert('Map functionality would be implemented here');
+            };
+            
+            window.openGoogleMaps = function() {
+                const address = encodeURIComponent('Hi-way, Partida, Norzagaray, Bulacan');
+                window.open(`https://www.google.com/maps/search/${address}`, '_blank');
+            };
+        });
+    </script>
+    
+    <!-- Main JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

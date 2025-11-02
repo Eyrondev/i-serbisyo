@@ -1,0 +1,257 @@
+<!-- Navigation Component for Public Pages -->
+<nav class="bg-white/95 backdrop-blur-sm shadow-lg border-b border-gray-200 sticky top-0 z-50 transition-all duration-300" 
+     x-data="{ 
+         mobileMenuOpen: false,
+         scrolled: false,
+         init() {
+             this.updateScrollState();
+             window.addEventListener('scroll', () => {
+                 this.updateScrollState();
+             });
+         },
+         updateScrollState() {
+             this.scrolled = window.scrollY > 20;
+         }
+     }"
+     :class="scrolled ? 'shadow-xl bg-white/98 border-gray-300' : 'shadow-lg bg-white/95 border-gray-200'">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo and Brand -->
+            <div class="flex items-center space-x-4">
+                <img class="h-10 w-auto" src="{{ url_for('static', filename='images/iserbisyo_icon.png') }}" alt="i-Serbisyo Logo">
+                <div class="hidden sm:block">
+                    <h1 class="text-xl font-bold text-gray-900">i-Serbisyo</h1>
+                    <p class="text-xs text-gray-500">Barangay Management System</p>
+                </div>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="{{ url_for('public.index') }}" class="nav-link relative" data-page="home">
+                    <span class="text-gray-600 hover:text-primary-600 transition-colors duration-200">Home</span>
+                </a>
+                <a href="{{ url_for('public.about') }}" class="nav-link relative" data-page="about">
+                    <span class="text-gray-600 hover:text-primary-600 transition-colors duration-200">About</span>
+                </a>
+                <a href="{{ url_for('public.services') }}" class="nav-link relative" data-page="services">
+                    <span class="text-gray-600 hover:text-primary-600 transition-colors duration-200">Services</span>
+                </a>
+                <a href="{{ url_for('public.officials') }}" class="nav-link relative" data-page="officials">
+                    <span class="text-gray-600 hover:text-primary-600 transition-colors duration-200">Officials</span>
+                </a>
+                <a href="{{ url_for('public.announcements') }}" class="nav-link relative" data-page="announcements">
+                    <span class="text-gray-600 hover:text-primary-600 transition-colors duration-200">Announcements</span>
+                </a>
+                <a href="{{ url_for('public.contact') }}" class="nav-link relative" data-page="contact">
+                    <span class="text-gray-600 hover:text-primary-600 transition-colors duration-200">Contact</span>
+                </a>
+            </div>
+
+            <!-- Login Button -->
+            <div class="hidden md:flex items-center space-x-3">
+                <a href="{{ url_for('auth.login') }}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                    Login
+                </a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button @click="mobileMenuOpen = !mobileMenuOpen" 
+                    class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-primary-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 transition-colors duration-200">
+                <span class="sr-only">Open main menu</span>
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenuOpen" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 transform scale-100"
+             x-transition:leave-end="opacity-0 transform scale-95"
+             class="absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg md:hidden z-40">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="{{ url_for('public.index') }}" class="mobile-nav-link" data-page="home">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    Home
+                </a>
+                <a href="{{ url_for('public.about') }}" class="mobile-nav-link" data-page="about">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    About
+                </a>
+                <a href="{{ url_for('public.services') }}" class="mobile-nav-link" data-page="services">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Services
+                </a>
+                <a href="{{ url_for('public.officials') }}" class="mobile-nav-link" data-page="officials">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    Officials
+                </a>
+                <a href="{{ url_for('public.announcements') }}" class="mobile-nav-link" data-page="announcements">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>
+                    </svg>
+                    Announcements
+                </a>
+                <a href="{{ url_for('public.contact') }}" class="mobile-nav-link" data-page="contact">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    Contact
+                </a>
+                <div class="mt-4 pt-3 border-t border-gray-200">
+                    <a href="{{ url_for('auth.login') }}" class="block w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium text-center transition-colors duration-200">
+                        Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+/* Navigation Active States */
+.nav-link {
+    position: relative;
+    padding-bottom: 4px;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    transition: width 0.3s ease;
+    border-radius: 2px;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.nav-link.active::after {
+    width: 100%;
+    background: linear-gradient(90deg, #2563eb, #1d4ed8);
+}
+
+.nav-link.active span {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.mobile-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #4b5563;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.mobile-nav-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    transition: width 0.3s ease;
+}
+
+.mobile-nav-link:hover {
+    color: #2563eb;
+    background-color: #eff6ff;
+    padding-left: 1rem;
+}
+
+.mobile-nav-link:hover::before {
+    width: 4px;
+}
+
+.mobile-nav-link.active {
+    color: #2563eb;
+    background: linear-gradient(90deg, #eff6ff, #dbeafe);
+    font-weight: 600;
+    padding-left: 1rem;
+    box-shadow: 0 1px 3px 0 rgba(59, 130, 246, 0.1), 0 1px 2px 0 rgba(59, 130, 246, 0.06);
+}
+
+.mobile-nav-link.active::before {
+    width: 4px;
+}
+
+.mobile-nav-link.active svg {
+    color: #2563eb;
+    transform: scale(1.1);
+}
+</style>
+
+<script>
+    // Set active navigation link based on current page
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPath = window.location.pathname;
+        
+        // Get all navigation links
+        const navLinks = document.querySelectorAll('.nav-link');
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+        
+        // Function to check if link matches current path
+        function isActivePath(linkHref, currentPath) {
+            // Normalize paths - remove trailing slashes for comparison
+            const normalizedCurrent = currentPath.replace(/\/$/, '') || '/';
+            const normalizedLink = linkHref.replace(/\/$/, '') || '/';
+            
+            // Exact match - this is the most accurate
+            if (normalizedCurrent === normalizedLink) {
+                return true;
+            }
+            
+            // For non-home pages, check if the path contains the page name
+            if (normalizedLink !== '/') {
+                const pageName = normalizedLink.split('/').pop();
+                return normalizedCurrent.endsWith('/' + pageName) || normalizedCurrent === '/' + pageName;
+            }
+            
+            return false;
+        }
+        
+        // Set active state for desktop navigation
+        navLinks.forEach(link => {
+            const linkHref = link.getAttribute('href');
+            if (linkHref && isActivePath(linkHref, currentPath)) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+        
+        // Set active state for mobile navigation
+        mobileNavLinks.forEach(link => {
+            const linkHref = link.getAttribute('href');
+            if (linkHref && isActivePath(linkHref, currentPath)) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    });
+</script>

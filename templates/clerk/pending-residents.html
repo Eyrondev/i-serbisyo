@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Residents - iSerBisyo Clerk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',                           
+                            800: '#1e40af',
+                            900: '#1e3a8a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar Container -->
+        <div class="hidden lg:block">
+            {% include 'components/clerk-sidebar.html' %}
+        </div>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 lg:pl-64">
+            <!-- Header Container -->
+            {% include 'components/clerk-header.html' %}
+
+            <!-- Main content area -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <!-- Pending Residents Content -->
+                <div class="py-3 sm:py-4 lg:py-6">
+                    <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+                        <!-- Modern Page Header -->
+                        <div class="mb-8">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                                    <div class="flex items-center space-x-4 mb-4 lg:mb-0">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+                                            <i class="fas fa-user-clock text-white text-2xl"></i>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-3xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+                                                Pending Residents
+                                            </h1>
+                                            <p class="text-gray-600 text-lg">Review and approve new resident applications</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Pending Residents Stats - Full Width -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+                            <!-- Total Pending -->
+                            <div class="bg-gradient-to-br from-amber-50 to-amber-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-amber-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-amber-600 uppercase tracking-wide">Total Pending</p>
+                                            <p class="text-3xl font-bold text-amber-900 mt-2">{{ stats.total_pending | default(0) }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-amber-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-clock text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Approved Today -->
+                            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-emerald-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-emerald-600 uppercase tracking-wide">Approved Today</p>
+                                            <p class="text-3xl font-bold text-emerald-900 mt-2">{{ stats.approved_today | default(0) }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-check text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Needs Review -->
+                            <div class="bg-gradient-to-br from-orange-50 to-orange-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-orange-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-orange-600 uppercase tracking-wide">Needs Review</p>
+                                            <p class="text-3xl font-bold text-orange-900 mt-2">{{ stats.needs_review | default(0) }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-orange-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-exclamation text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rejected -->
+                            <div class="bg-gradient-to-br from-red-50 to-red-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-red-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-red-600 uppercase tracking-wide">Rejected Today</p>
+                                            <p class="text-3xl font-bold text-red-900 mt-2">{{ stats.rejected_today | default(0) }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-red-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-times text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Search and Date Filter -->
+                        <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-6">
+                            <form method="GET" id="filterForm">
+                                <div class="flex flex-col lg:flex-row gap-4">
+                                    <!-- Search Input -->
+                                    <div class="relative flex-1">
+                                        <input type="text" 
+                                               name="search" 
+                                               value="{{ current_filters.search }}" 
+                                               placeholder="Search by name or email..." 
+                                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full pl-10 pr-10 p-2.5 hover:bg-gray-100 transition-colors"
+                                               onkeyup="handleSearch(event)">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-search text-gray-400"></i>
+                                        </div>
+                                        {% if current_filters.search %}
+                                        <a href="{{ url_for('clerk.pending_residents', date_from=current_filters.date_from, date_to=current_filters.date_to) }}" 
+                                           class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer" 
+                                           title="Clear search">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Date Range Filter -->
+                                    <div class="flex items-center gap-2">
+                                        <div class="relative">
+                                            <input type="date" 
+                                                   name="date_from" 
+                                                   value="{{ current_filters.date_from }}"
+                                                   placeholder="From"
+                                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full p-2.5 hover:bg-gray-100 transition-colors"
+                                                   onchange="document.getElementById('filterForm').submit()"
+                                                   title="From date">
+                                        </div>
+                                        <span class="text-gray-500 text-sm">to</span>
+                                        <div class="relative">
+                                            <input type="date" 
+                                                   name="date_to" 
+                                                   value="{{ current_filters.date_to }}"
+                                                   placeholder="To"
+                                                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full p-2.5 hover:bg-gray-100 transition-colors"
+                                                   onchange="document.getElementById('filterForm').submit()"
+                                                   title="To date">
+                                        </div>
+                                        {% if current_filters.date_from or current_filters.date_to %}
+                                        <a href="{{ url_for('clerk.pending_residents', search=current_filters.search) }}" 
+                                           class="text-gray-400 hover:text-gray-600 cursor-pointer px-2" 
+                                           title="Clear date range">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Pending Applications Table -->
+                        <div class="bg-white shadow-sm rounded-lg border border-gray-100 overflow-hidden">
+                            <div class="px-4 py-3 border-b border-gray-200">
+                                <h3 class="text-sm font-semibold text-gray-900">Pending Applications</h3>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application ID</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% if residents.items %}
+                                        {% for resident in residents.items %}
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                        <span class="text-xs font-medium text-blue-600">
+                                                            {{ resident.first_name[0] if resident.first_name else 'R' }}{{ resident.last_name[0] if resident.last_name else 'R' }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="ml-3">
+                                                        <div class="text-sm font-medium text-gray-900">{{ resident.full_name }}</div>
+                                                        <div class="text-xs text-gray-500">{{ resident.email or 'No email provided' }}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#RES-{{ "%04d"|format(resident.id) }}</td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{{ resident.created_at.strftime('%b %d, %Y') }}</td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                {% if resident.valid_id_document and resident.proof_of_residency %}
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    Ready for Approval
+                                                </span>
+                                                {% elif not resident.valid_id_document or not resident.proof_of_residency %}
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    Documents Incomplete
+                                                </span>
+                                                {% else %}
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                    Pending Review
+                                                </span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                {% set created_date = resident.created_at.date() %}
+                                                {% set today = moment().date() if moment else resident.created_at.date() %}
+                                                
+                                                <!-- Simple priority based on days since creation -->
+                                                {% if loop.index % 3 == 1 %}
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    High
+                                                </span>
+                                                {% elif loop.index % 3 == 2 %}
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                    Medium
+                                                </span>
+                                                {% else %}
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    Low
+                                                </span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                <div class="flex space-x-2">
+                                                    <button class="view-resident-btn text-blue-600 hover:text-blue-900 text-xs" 
+                                                            data-resident-id="{{ resident.id }}" title="View details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="approve-resident-btn text-green-600 hover:text-green-900 text-xs" 
+                                                            data-resident-id="{{ resident.id }}" title="Approve">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                    <button class="reject-resident-btn text-red-600 hover:text-red-900 text-xs" 
+                                                            data-resident-id="{{ resident.id }}" title="Reject">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="6" class="px-4 py-8 text-center">
+                                                <div class="flex flex-col items-center">
+                                                    <i class="fas fa-users text-gray-400 text-4xl mb-4"></i>
+                                                    <h3 class="text-lg font-medium text-gray-900 mb-2">No pending residents</h3>
+                                                    <p class="text-gray-500">
+                                                        {% if current_filters.search or current_filters.date_from or current_filters.date_to %}
+                                                            No residents match your current filters.
+                                                        {% else %}
+                                                            There are no residents pending approval at this time.
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% if residents.pages > 1 %}
+                            <div class="px-4 py-3 bg-gray-50 border-t border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-xs text-gray-500">
+                                        Showing {{ residents.per_page * (residents.page - 1) + 1 }} to 
+                                        {{ residents.per_page * (residents.page - 1) + residents.items|length }} 
+                                        of {{ residents.total }} results
+                                    </div>
+                                    <div class="flex space-x-1">
+                                        {% if residents.has_prev %}
+                                        <a href="{{ url_for('clerk.pending_residents', page=residents.prev_num, search=current_filters.search, date_from=current_filters.date_from, date_to=current_filters.date_to) }}" 
+                                           class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700">Previous</a>
+                                        {% endif %}
+                                        
+                                        {% for page_num in residents.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                                            {% if page_num %}
+                                                {% if page_num != residents.page %}
+                                                <a href="{{ url_for('clerk.pending_residents', page=page_num, search=current_filters.search, date_from=current_filters.date_from, date_to=current_filters.date_to) }}" 
+                                                   class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700">{{ page_num }}</a>
+                                                {% else %}
+                                                <span class="px-2 py-1 text-xs bg-primary-600 text-white rounded">{{ page_num }}</span>
+                                                {% endif %}
+                                            {% else %}
+                                            <span class="px-2 py-1 text-xs text-gray-400">...</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if residents.has_next %}
+                                        <a href="{{ url_for('clerk.pending_residents', page=residents.next_num, search=current_filters.search, date_from=current_filters.date_from, date_to=current_filters.date_to) }}" 
+                                           class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700">Next</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- View Resident Modal -->
+    <div id="viewResidentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/5 xl:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Resident Details</h3>
+                    <button onclick="closeViewModal()" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Modal Content -->
+                <div id="residentDetailsContent" class="py-6 max-h-96 overflow-y-auto">
+                    <!-- Content will be loaded dynamically -->
+                    <div class="flex items-center justify-center py-8">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
+                        <span class="ml-2 text-gray-600">Loading...</span>
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="flex items-center justify-end pt-4 border-t border-gray-200 gap-3">
+                    <button onclick="closeViewModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200">
+                        Close
+                    </button>
+                    <button id="approveFromModal" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
+                        <i class="fas fa-check mr-2"></i>Approve
+                    </button>
+                    <button id="rejectFromModal" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
+                        <i class="fas fa-times mr-2"></i>Reject
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Resident Modal -->
+    <div id="rejectResidentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/5 lg:w-1/2 xl:w-2/5 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between pb-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-red-600">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Reject Resident Application
+                    </h3>
+                    <button onclick="closeRejectModal()" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- Modal Content -->
+                <div class="py-6">
+                    <div class="mb-4">
+                        <p class="text-gray-700">Are you sure you want to reject the application for:</p>
+                        <p id="residentNameForRejection" class="text-lg font-semibold text-gray-900 mt-2"></p>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="rejectionReason" class="block text-sm font-medium text-gray-700 mb-2">
+                            Reason for Rejection <span class="text-red-500">*</span>
+                        </label>
+                        <textarea 
+                            id="rejectionReason" 
+                            rows="4" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                            placeholder="Please provide a detailed reason for rejecting this application. This message will be sent to the resident via email."
+                            required
+                        ></textarea>
+                        <div id="rejectionReasonError" class="text-red-500 text-sm mt-1 hidden">Please provide a reason for rejection.</div>
+                    </div>
+                    
+                    <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle text-amber-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-amber-700">
+                                    <strong>Note:</strong> This action cannot be undone. The resident will be notified via email about the rejection and the reason you provide.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="flex items-center justify-end pt-4 border-t border-gray-200 gap-3">
+                    <button onclick="closeRejectModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200">
+                        Cancel
+                    </button>
+                    <button id="confirmRejectBtn" onclick="confirmRejectResident()" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
+                        <i class="fas fa-times mr-2"></i>Reject Application
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Functions -->
+    <script>
+        let currentResidentId = null;
+        let searchTimeout = null;
+
+        // Automatic search with debounce
+        function handleSearch(event) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(function() {
+                document.getElementById('filterForm').submit();
+            }, 500); // Wait 500ms after user stops typing
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners for all resident action buttons
+            
+            // View resident buttons
+            document.querySelectorAll('.view-resident-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const residentId = this.getAttribute('data-resident-id');
+                    viewResident(residentId);
+                });
+            });
+
+            // Approve resident buttons
+            document.querySelectorAll('.approve-resident-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const residentId = this.getAttribute('data-resident-id');
+                    approveResident(residentId);
+                });
+            });
+
+            // Reject resident buttons
+            document.querySelectorAll('.reject-resident-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const residentId = this.getAttribute('data-resident-id');
+                    showRejectModal(residentId);
+                });
+            });
+            
+            // Modal action buttons
+            document.getElementById('approveFromModal').addEventListener('click', function() {
+                if (currentResidentId) {
+                    approveResident(currentResidentId);
+                }
+            });
+            
+            document.getElementById('rejectFromModal').addEventListener('click', function() {
+                if (currentResidentId) {
+                    showRejectModal(currentResidentId);
+                }
+            });
+        });
+
+        function viewResident(residentId) {
+            currentResidentId = residentId;
+            
+            // Show the modal
+            document.getElementById('viewResidentModal').classList.remove('hidden');
+            
+            // Reset content to loading state
+            document.getElementById('residentDetailsContent').innerHTML = `
+                <div class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
+                    <span class="ml-2 text-gray-600">Loading...</span>
+                </div>
+            `;
+            
+            // Fetch resident details
+            fetch(`/clerk/api/resident-details/${residentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        displayResidentDetails(data.resident);
+                    } else {
+                        document.getElementById('residentDetailsContent').innerHTML = `
+                            <div class="text-center py-8">
+                                <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4"></i>
+                                <p class="text-red-600">Error loading resident details: ${data.message}</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('residentDetailsContent').innerHTML = `
+                        <div class="text-center py-8">
+                            <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4"></i>
+                            <p class="text-red-600">An error occurred while loading resident details.</p>
+                        </div>
+                    `;
+                });
+        }
+
+        function displayResidentDetails(resident) {
+            const content = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Personal Information -->
+                    <div class="space-y-4">
+                        <h4 class="text-lg font-semibold text-gray-900 border-b pb-2">Personal Information</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Full Name</label>
+                                <p class="text-gray-900">${resident.full_name}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Email</label>
+                                <p class="text-gray-900">${resident.email || 'Not provided'}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Phone</label>
+                                <p class="text-gray-900">${resident.phone || 'Not provided'}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Birth Date</label>
+                                <p class="text-gray-900">${resident.birth_date || 'Not provided'}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Gender</label>
+                                <p class="text-gray-900">${resident.gender || 'Not provided'}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Civil Status</label>
+                                <p class="text-gray-900">${resident.civil_status || 'Not provided'}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Occupation</label>
+                                <p class="text-gray-900">${resident.occupation || 'Not provided'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Address & Status -->
+                    <div class="space-y-4">
+                        <h4 class="text-lg font-semibold text-gray-900 border-b pb-2">Address & Status</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Address</label>
+                                <p class="text-gray-900">${resident.full_address || 'Not provided'}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Purok</label>
+                                <p class="text-gray-900">${resident.purok || 'Not provided'}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Status</label>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeClass(resident.status)}">
+                                    ${resident.status.charAt(0).toUpperCase() + resident.status.slice(1)}
+                                </span>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Voter Status</label>
+                                <p class="text-gray-900">${resident.is_voter ? 'Registered Voter' : 'Not a Voter'}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Application Date</label>
+                                <p class="text-gray-900">${new Date(resident.created_at).toLocaleDateString()}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Documents Section -->
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Documents</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <label class="text-sm font-medium text-gray-600">Profile Picture</label>
+                            ${resident.profile_picture ? 
+                                `<div class="mt-2">
+                                    <img src="/static/uploads/profiles/${resident.profile_picture}" alt="Profile" class="w-20 h-20 rounded-full mx-auto object-cover border">
+                                    <p class="text-green-600 text-xs mt-1"><i class="fas fa-check"></i> Uploaded</p>
+                                </div>` :
+                                `<p class="text-red-600 text-xs mt-2"><i class="fas fa-times"></i> Not uploaded</p>`
+                            }
+                        </div>
+                        <div class="text-center">
+                            <label class="text-sm font-medium text-gray-600">Valid ID</label>
+                            ${resident.valid_id_document ? 
+                                `<div class="mt-2">
+                                    <i class="fas fa-file-image text-blue-500 text-2xl"></i>
+                                    <p class="text-green-600 text-xs mt-1"><i class="fas fa-check"></i> Uploaded</p>
+                                    <a href="/static/uploads/documents/${resident.valid_id_document}" target="_blank" class="text-blue-600 hover:underline text-xs">View Document</a>
+                                </div>` :
+                                `<p class="text-red-600 text-xs mt-2"><i class="fas fa-times"></i> Not uploaded</p>`
+                            }
+                        </div>
+                        <div class="text-center">
+                            <label class="text-sm font-medium text-gray-600">Proof of Residency</label>
+                            ${resident.proof_of_residency ? 
+                                `<div class="mt-2">
+                                    <i class="fas fa-file-alt text-green-500 text-2xl"></i>
+                                    <p class="text-green-600 text-xs mt-1"><i class="fas fa-check"></i> Uploaded</p>
+                                    <a href="/static/uploads/documents/${resident.proof_of_residency}" target="_blank" class="text-blue-600 hover:underline text-xs">View Document</a>
+                                </div>` :
+                                `<p class="text-red-600 text-xs mt-2"><i class="fas fa-times"></i> Not uploaded</p>`
+                            }
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('residentDetailsContent').innerHTML = content;
+        }
+
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'pending': return 'bg-yellow-100 text-yellow-800';
+                case 'approved': return 'bg-green-100 text-green-800';
+                case 'rejected': return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function closeViewModal() {
+            document.getElementById('viewResidentModal').classList.add('hidden');
+            currentResidentId = null;
+        }
+
+        function showRejectModal(residentId) {
+            currentResidentId = residentId;
+            
+            // Get resident name from the table row
+            const residentRow = document.querySelector(`[data-resident-id="${residentId}"]`).closest('tr');
+            const residentName = residentRow.querySelector('.text-sm.font-medium.text-gray-900').textContent;
+            
+            // Set the resident name in the modal
+            document.getElementById('residentNameForRejection').textContent = residentName;
+            
+            // Clear previous reason and hide error
+            document.getElementById('rejectionReason').value = '';
+            document.getElementById('rejectionReasonError').classList.add('hidden');
+            
+            // Close view modal if open
+            closeViewModal();
+            
+            // Show reject modal
+            document.getElementById('rejectResidentModal').classList.remove('hidden');
+        }
+
+        function closeRejectModal() {
+            document.getElementById('rejectResidentModal').classList.add('hidden');
+            document.getElementById('rejectionReason').value = '';
+            document.getElementById('rejectionReasonError').classList.add('hidden');
+        }
+
+        function confirmRejectResident() {
+            const reason = document.getElementById('rejectionReason').value.trim();
+            const errorDiv = document.getElementById('rejectionReasonError');
+            
+            if (!reason) {
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            errorDiv.classList.add('hidden');
+            
+            if (!currentResidentId) {
+                alert('No resident selected for rejection.');
+                return;
+            }
+            
+            // Disable the button to prevent double clicks
+            const confirmBtn = document.getElementById('confirmRejectBtn');
+            const originalText = confirmBtn.innerHTML;
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+            
+            fetch(`/clerk/api/reject-resident/${currentResidentId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    rejection_reason: reason
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    closeRejectModal();
+                    alert('Resident application rejected successfully. The resident has been notified via email.');
+                    window.location.reload();
+                } else {
+                    alert('Error rejecting resident: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while rejecting the resident.');
+            })
+            .finally(() => {
+                // Re-enable the button
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = originalText;
+            });
+        }
+
+        function approveResident(residentId) {
+            if (confirm('Are you sure you want to approve this resident?')) {
+                fetch(`/clerk/api/approve-resident/${residentId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        closeViewModal();
+                        alert('Resident approved successfully!');
+                        window.location.reload();
+                    } else {
+                        alert('Error approving resident: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while approving the resident.');
+                });
+            }
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const viewModal = document.getElementById('viewResidentModal');
+            const rejectModal = document.getElementById('rejectResidentModal');
+            
+            if (event.target === viewModal) {
+                closeViewModal();
+            }
+            if (event.target === rejectModal) {
+                closeRejectModal();
+            }
+        }
+    </script>
+
+    <!-- Load clerk components -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

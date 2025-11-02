@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Residents Information - iSerBisyo Clerk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',                           
+                            800: '#1e40af',
+                            900: '#1e3a8a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar Container -->
+        <div class="hidden lg:block">
+            {% include 'components/clerk-sidebar.html' %}
+        </div>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 lg:pl-64">
+            <!-- Header Container -->
+            {% include 'components/clerk-header.html' %}
+
+            <!-- Main content area -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <!-- Residents Content -->
+                <div class="py-3 sm:py-4 lg:py-6">
+                    <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+                        <!-- Modern Page Header -->
+                        <div class="mb-8">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                                    <div class="flex items-center space-x-4 mb-4 lg:mb-0">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                                            <i class="fas fa-users text-white text-2xl"></i>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-3xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
+                                                Residents Information
+                                            </h1>
+                                            <p class="text-gray-600 text-lg">Manage and view resident database and records</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-3">
+                                        <button onclick="viewArchivedResidents()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:shadow-md transition-all duration-300">
+                                            <i class="fas fa-archive mr-2"></i>
+                                            Archived Residents
+                                        </button>
+                                        <button class="add-resident-btn inline-flex items-center px-6 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white text-sm font-medium rounded-lg hover:from-cyan-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-300">
+                                            <i class="fas fa-user-plus mr-2"></i>
+                                            Add Resident
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Residents Stats - Full Width -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 mb-6">
+                            <!-- Total Residents -->
+                            <div class="bg-gradient-to-br from-cyan-50 to-cyan-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-cyan-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-cyan-600 uppercase tracking-wide">Total Residents</p>
+                                            <p class="text-3xl font-bold text-cyan-900 mt-2">{{ stats.total_residents }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-cyan-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-users text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Male -->
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-blue-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-blue-600 uppercase tracking-wide">Male</p>
+                                            <p class="text-3xl font-bold text-blue-900 mt-2">{{ stats.male_count }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-mars text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Female -->
+                            <div class="bg-gradient-to-br from-pink-50 to-pink-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-pink-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-pink-600 uppercase tracking-wide">Female</p>
+                                            <p class="text-3xl font-bold text-pink-900 mt-2">{{ stats.female_count }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-pink-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-venus text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Senior Citizens -->
+                            <div class="bg-gradient-to-br from-purple-50 to-purple-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-purple-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-purple-600 uppercase tracking-wide">Senior Citizens</p>
+                                            <p class="text-3xl font-bold text-purple-900 mt-2">{{ stats.senior_count }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-walking text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PWD -->
+                            <div class="bg-gradient-to-br from-orange-50 to-orange-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-orange-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-orange-600 uppercase tracking-wide">PWD</p>
+                                            <p class="text-3xl font-bold text-orange-900 mt-2">{{ stats.pwd_count }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-orange-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-wheelchair text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Filters and Actions -->
+                        <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-6">
+                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                                <!-- Filters -->
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <div class="relative">
+                                        <select id="ageFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5 pr-8 hover:bg-gray-100 transition-colors">
+                                            <option value="">All Ages</option>
+                                            <option value="minor" {{ 'selected' if current_filters.age == 'minor' else '' }}>0-17 (Minor)</option>
+                                            <option value="adult" {{ 'selected' if current_filters.age == 'adult' else '' }}>18-59 (Adult)</option>
+                                            <option value="senior" {{ 'selected' if current_filters.age == 'senior' else '' }}>60+ (Senior)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="relative">
+                                        <select id="genderFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5 pr-8 hover:bg-gray-100 transition-colors">
+                                            <option value="">All Genders</option>
+                                            <option value="Male" {{ 'selected' if current_filters.gender == 'Male' else '' }}>Male</option>
+                                            <option value="Female" {{ 'selected' if current_filters.gender == 'Female' else '' }}>Female</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="relative">
+                                        <select id="statusFilter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5 pr-8 hover:bg-gray-100 transition-colors">
+                                            <option value="">All Status</option>
+                                            <option value="approved" {{ 'selected' if current_filters.status == 'approved' else '' }}>Active</option>
+                                            <option value="pending" {{ 'selected' if current_filters.status == 'pending' else '' }}>Pending</option>
+                                            <option value="inactive" {{ 'selected' if current_filters.status == 'inactive' else '' }}>Inactive</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="relative">
+                                        <input type="text" id="searchInput" placeholder="Search residents..." value="{{ current_filters.search or '' }}"
+                                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full pl-10 p-2.5 hover:bg-gray-100 transition-colors">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-search text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Residents Table -->
+                        <div class="bg-white shadow-sm rounded-lg border border-gray-100 overflow-hidden">
+                            <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                                <h3 class="text-sm font-semibold text-gray-900">Resident Records</h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs text-gray-500">View:</span>
+                                    <button id="gridViewBtn" class="px-2 py-1 text-xs bg-primary-600 text-white rounded">Grid</button>
+                                    <button id="tableViewBtn" class="px-2 py-1 text-xs text-gray-600 hover:text-gray-800">Table</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Grid View -->
+                            <div id="gridView" class="p-4">
+                                <div id="residentsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                                    {% if residents.items %}
+                                    {% for resident in residents.items %}
+                                    <div class="resident-card border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow"
+                                         data-name="{{ resident.full_name.lower() }}"
+                                         data-gender="{{ resident.gender or '' }}"
+                                         data-status="{{ resident.status }}"
+                                         data-age="{{ (resident.birth_date.year if resident.birth_date else 0) }}"
+                                         data-email="{{ resident.email or '' }}"
+                                         data-phone="{{ resident.phone or '' }}">
+                                        <div class="flex items-center space-x-3 mb-3">
+                                            <div class="h-10 w-10 rounded-full bg-gradient-to-r 
+                                                {% if resident.gender == 'Male' %}from-blue-500 to-blue-600
+                                                {% elif resident.gender == 'Female' %}from-pink-500 to-pink-600
+                                                {% else %}from-gray-500 to-gray-600{% endif %} 
+                                                flex items-center justify-center">
+                                                <span class="text-sm font-bold text-white">
+                                                    {{ resident.first_name[0] if resident.first_name else 'R' }}{{ resident.last_name[0] if resident.last_name else '' }}
+                                                </span>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <h4 class="text-sm font-semibold text-gray-900 truncate">{{ resident.full_name }}</h4>
+                                                <p class="text-xs text-gray-500">ID: RES-{{ '%04d'|format(resident.id) }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-1 text-xs">
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-500">Age:</span>
+                                                <span class="text-gray-900">
+                                                    {% if resident.birth_date %}
+                                                        {{ 2024 - resident.birth_date.year }}
+                                                    {% else %}
+                                                        N/A
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-500">Gender:</span>
+                                                <span class="text-gray-900">{{ resident.gender or 'Not specified' }}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-500">Address:</span>
+                                                <span class="text-gray-900 truncate">{{ resident.full_address if resident.full_address != 'No address provided' else 'Not provided' }}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-500">Status:</span>
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium 
+                                                    {% if resident.status == 'approved' %}bg-green-100 text-green-800
+                                                    {% elif resident.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                                    {% elif resident.status == 'inactive' %}bg-red-100 text-red-800
+                                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                                    {% if resident.status == 'approved' %}Active
+                                                    {% elif resident.status == 'pending' %}Pending
+                                                    {% elif resident.status == 'inactive' %}Inactive
+                                                    {% else %}{{ resident.status|title }}{% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3 flex space-x-2">
+                                            <button class="view-resident-btn flex-1 text-xs bg-blue-50 text-blue-700 py-1 px-2 rounded hover:bg-blue-100"
+                                                    data-resident-id="{{ resident.id }}">
+                                                <i class="fas fa-eye mr-1"></i>View
+                                            </button>
+                                            <button class="edit-resident-btn flex-1 text-xs bg-gray-50 text-gray-700 py-1 px-2 rounded hover:bg-gray-100"
+                                                    data-resident-id="{{ resident.id }}">
+                                                <i class="fas fa-edit mr-1"></i>Edit
+                                            </button>
+                                            <button class="archive-resident-btn flex-1 text-xs bg-orange-50 text-orange-700 py-1 px-2 rounded hover:bg-orange-100"
+                                                    data-resident-id="{{ resident.id }}">
+                                                <i class="fas fa-archive mr-1"></i>Archive
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    
+                                    <!-- Add Resident Card -->
+                                    <div class="border border-gray-300 border-dashed rounded-lg p-3 hover:shadow-md transition-shadow bg-gray-50">
+                                        <div class="flex flex-col items-center justify-center h-full text-center py-8">
+                                            <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center mb-3">
+                                                <i class="fas fa-plus text-gray-500"></i>
+                                            </div>
+                                            <h4 class="text-sm font-medium text-gray-600 mb-2">Add New Resident</h4>
+                                            <p class="text-xs text-gray-500 mb-3">Register a new resident to the system</p>
+                                            <button class="add-resident-btn text-xs bg-cyan-600 text-white py-1 px-3 rounded hover:bg-cyan-700 transition-colors">
+                                                <i class="fas fa-user-plus mr-1"></i>Add Resident
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    {% else %}
+                                    <!-- Empty State -->
+                                    <div class="col-span-full bg-gray-50 rounded-lg p-12 text-center">
+                                        <i class="fas fa-users text-gray-400 text-4xl mb-4"></i>
+                                        <h3 class="text-lg font-medium text-gray-900 mb-2">No residents found</h3>
+                                        <p class="text-gray-500 mb-4">Start by adding residents to the system or adjust your filters.</p>
+                                        <button class="add-resident-btn inline-flex items-center px-4 py-2 bg-cyan-600 text-white text-sm font-medium rounded-lg hover:bg-cyan-700">
+                                            <i class="fas fa-user-plus mr-2"></i>
+                                            Add First Resident
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Table View -->
+                            <div id="tableView" class="hidden">
+                                {% if residents.items %}
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resident</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                            {% for resident in residents.items %}
+                                            <tr class="resident-row hover:bg-gray-50"
+                                                data-name="{{ resident.full_name.lower() }}"
+                                                data-gender="{{ resident.gender or '' }}"
+                                                data-status="{{ resident.status }}"
+                                                data-age="{{ (resident.birth_date.year if resident.birth_date else 0) }}"
+                                                data-email="{{ resident.email or '' }}"
+                                                data-phone="{{ resident.phone or '' }}">
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-10 w-10">
+                                                            <div class="h-10 w-10 rounded-full bg-gradient-to-r 
+                                                                {% if resident.gender == 'Male' %}from-blue-500 to-blue-600
+                                                                {% elif resident.gender == 'Female' %}from-pink-500 to-pink-600
+                                                                {% else %}from-gray-500 to-gray-600{% endif %} 
+                                                                flex items-center justify-center">
+                                                                <span class="text-sm font-bold text-white">
+                                                                    {{ resident.first_name[0] if resident.first_name else 'R' }}{{ resident.last_name[0] if resident.last_name else '' }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="ml-4">
+                                                            <div class="text-sm font-medium text-gray-900">{{ resident.full_name }}</div>
+                                                            <div class="text-sm text-gray-500">ID: RES-{{ '%04d'|format(resident.id) }}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">{{ resident.email or 'No email' }}</div>
+                                                    <div class="text-sm text-gray-500">{{ resident.phone or 'No phone' }}</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">{{ resident.full_address if resident.full_address != 'No address provided' else 'Not provided' }}</div>
+                                                    <div class="text-sm text-gray-500">{{ resident.purok if resident.purok else '' }}</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">
+                                                        {% if resident.gender %}{{ resident.gender }}, {% endif %}
+                                                        {% if resident.birth_date %}Age {{ 2024 - resident.birth_date.year }}{% endif %}
+                                                    </div>
+                                                    <div class="text-sm text-gray-500">{{ resident.occupation or 'No occupation' }}</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                                                        {% if resident.status == 'approved' %}bg-green-100 text-green-800
+                                                        {% elif resident.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                                        {% elif resident.status == 'inactive' %}bg-red-100 text-red-800
+                                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                                        {% if resident.status == 'approved' %}Active
+                                                        {% elif resident.status == 'pending' %}Pending
+                                                        {% elif resident.status == 'inactive' %}Inactive
+                                                        {% else %}{{ resident.status|title }}{% endif %}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                    <div class="flex space-x-2">
+                                                        <button class="view-resident-btn text-indigo-600 hover:text-indigo-900" data-resident-id="{{ resident.id }}" title="View Details">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        <button class="edit-resident-btn text-blue-600 hover:text-blue-900" data-resident-id="{{ resident.id }}" title="Edit">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button class="archive-resident-btn text-orange-600 hover:text-orange-900" data-resident-id="{{ resident.id }}" title="Archive">
+                                                            <i class="fas fa-archive"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <!-- Empty State for Table View -->
+                                <div class="text-center py-12">
+                                    <i class="fas fa-users text-gray-400 text-4xl mb-4"></i>
+                                    <h3 class="text-lg font-medium text-gray-900 mb-2">No residents found</h3>
+                                    <p class="text-gray-500 mb-4">Start by adding residents to the system or adjust your filters.</p>
+                                    <button class="add-resident-btn inline-flex items-center px-4 py-2 bg-cyan-600 text-white text-sm font-medium rounded-lg hover:bg-cyan-700">
+                                        <i class="fas fa-user-plus mr-2"></i>
+                                        Add First Resident
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Pagination -->
+                            {% if residents.items %}
+                            <div class="px-4 py-3 bg-gray-50 border-t border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-xs text-gray-500">
+                                        Showing {{ ((residents.page - 1) * residents.per_page) + 1 }} to {{ ((residents.page - 1) * residents.per_page) + residents.items|length }} of {{ residents.total }} residents
+                                    </div>
+                                    <div class="flex space-x-1">
+                                        {% if residents.has_prev %}
+                                        <a href="{{ url_for('clerk.residents', page=residents.prev_num, age=current_filters.age, gender=current_filters.gender, status=current_filters.status, search=current_filters.search) }}" 
+                                           class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700">Previous</a>
+                                        {% else %}
+                                        <span class="px-2 py-1 text-xs text-gray-300">Previous</span>
+                                        {% endif %}
+                                        
+                                        <!-- Page numbers -->
+                                        {% for page_num in residents.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+                                            {% if page_num %}
+                                                {% if page_num != residents.page %}
+                                                <a href="{{ url_for('clerk.residents', page=page_num, age=current_filters.age, gender=current_filters.gender, status=current_filters.status, search=current_filters.search) }}" 
+                                                   class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700">{{ page_num }}</a>
+                                                {% else %}
+                                                <span class="px-2 py-1 text-xs bg-primary-600 text-white rounded">{{ page_num }}</span>
+                                                {% endif %}
+                                            {% else %}
+                                            <span class="px-2 py-1 text-xs text-gray-500">...</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if residents.has_next %}
+                                        <a href="{{ url_for('clerk.residents', page=residents.next_num, age=current_filters.age, gender=current_filters.gender, status=current_filters.status, search=current_filters.search) }}" 
+                                           class="px-2 py-1 text-xs text-gray-500 hover:text-gray-700">Next</a>
+                                        {% else %}
+                                        <span class="px-2 py-1 text-xs text-gray-300">Next</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add Resident Modal -->
+    <div id="addResidentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Add New Resident</h3>
+                </div>
+                <div class="p-6">
+                    <form class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                                <input type="text" name="first_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                                <input type="text" name="last_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Middle Name</label>
+                                <input type="text" name="middle_name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Suffix</label>
+                                <input type="text" name="suffix" placeholder="Jr., Sr., III, etc." class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                <input type="tel" name="phone" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">House Number</label>
+                                <input type="text" name="house_number" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Street</label>
+                                <input type="text" name="street" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Purok</label>
+                                <input type="text" name="purok" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Birth Date</label>
+                                <input type="date" name="birth_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Birth Place</label>
+                                <input type="text" name="birth_place" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                                <select name="gender" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Civil Status</label>
+                                <select name="civil_status" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                                    <option value="">Select Status</option>
+                                    <option value="Single">Single</option>
+                                    <option value="Married">Married</option>
+                                    <option value="Divorced">Divorced</option>
+                                    <option value="Widowed">Widowed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Occupation</label>
+                            <input type="text" name="occupation" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-cyan-500 focus:border-cyan-500">
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" name="is_voter" id="is_voter" class="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded">
+                            <label for="is_voter" class="ml-2 block text-sm text-gray-900">Registered Voter</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                    <button type="button" onclick="closeAddResidentModal()" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Cancel</button>
+                    <button type="button" onclick="submitAddResidentForm()" class="submit-btn px-4 py-2 text-sm bg-cyan-600 text-white rounded-lg hover:bg-cyan-700">Add Resident</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Resident Modal -->
+    <div id="viewResidentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">Resident Details</h3>
+                        <button onclick="closeViewResidentModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div id="viewResidentAvatar" class="h-20 w-20 rounded-full bg-gradient-to-r from-cyan-500 to-cyan-600 flex items-center justify-center">
+                            <span id="viewResidentInitials" class="text-xl font-bold text-white">R</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 id="viewResidentName" class="text-xl font-semibold text-gray-900">Resident Name</h4>
+                            <p id="viewResidentId" class="text-sm text-gray-500">ID: RES-0000</p>
+                            <p id="viewResidentStatus" class="text-sm">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <h5 class="font-medium text-gray-900 border-b pb-2">Personal Information</h5>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                                    <p id="viewFullName" class="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">-</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Gender</label>
+                                        <p id="viewGender" class="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">-</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Civil Status</label>
+                                        <p id="viewCivilStatus" class="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">-</p>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Birth Date</label>
+                                        <p id="viewBirthDate" class="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">-</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Birth Place</label>
+                                        <p id="viewBirthPlace" class="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">-</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Occupation</label>
+                                    <p id="viewOccupation" class="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">-</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <h5 class="font-medium text-gray-900 border-b pb-2">Contact & Address</h5>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Address</label>
+                                    <p id="viewAddress" class="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">-</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                                        <p id="viewEmail" class="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">-</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Phone</label>
+                                        <p id="viewPhone" class="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">-</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Voter Status</label>
+                                    <p id="viewVoterStatus" class="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                    <button onclick="closeViewResidentModal()" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Close</button>
+                    <button id="editFromViewBtn" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-edit mr-2"></i>Edit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize view switching functionality
+            initializeViewSwitching();
+            
+            // Initialize filtering functionality
+            initializeFilters();
+            
+            // Add event listeners for resident management buttons
+            document.querySelectorAll('.add-resident-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    openAddResidentModal();
+                });
+            });
+
+            document.querySelectorAll('.view-resident-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const residentId = this.getAttribute('data-resident-id');
+                    viewResident(residentId);
+                });
+            });
+
+            document.querySelectorAll('.edit-resident-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const residentId = this.getAttribute('data-resident-id');
+                    editResident(residentId);
+                });
+            });
+
+            document.querySelectorAll('.archive-resident-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const residentId = this.getAttribute('data-resident-id');
+                    archiveResident(residentId);
+                });
+            });
+        });
+
+        function initializeFilters() {
+            const ageFilter = document.getElementById('ageFilter');
+            const genderFilter = document.getElementById('genderFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const searchInput = document.getElementById('searchInput');
+
+            // Add event listeners for filters - trigger page reload with new parameters
+            if (ageFilter) {
+                ageFilter.addEventListener('change', applyFilters);
+            }
+            if (genderFilter) {
+                genderFilter.addEventListener('change', applyFilters);
+            }
+            if (statusFilter) {
+                statusFilter.addEventListener('change', applyFilters);
+            }
+            if (searchInput) {
+                searchInput.addEventListener('input', debounce(applyFilters, 500));
+            }
+        }
+
+        function applyFilters() {
+            const age = document.getElementById('ageFilter')?.value || '';
+            const gender = document.getElementById('genderFilter')?.value || '';
+            const status = document.getElementById('statusFilter')?.value || '';
+            const search = document.getElementById('searchInput')?.value || '';
+
+            // Build URL with current filters
+            const params = new URLSearchParams();
+            if (age) params.set('age', age);
+            if (gender) params.set('gender', gender);
+            if (status) params.set('status', status);
+            if (search) params.set('search', search);
+
+            // Redirect to filtered URL
+            window.location.href = `${window.location.pathname}?${params.toString()}`;
+        }
+
+        function openAddResidentModal() {
+            document.getElementById('addResidentModal').classList.remove('hidden');
+        }
+
+        function closeAddResidentModal() {
+            document.getElementById('addResidentModal').classList.add('hidden');
+            const form = document.querySelector('#addResidentModal form');
+            if (form) {
+                form.reset();
+                form.removeAttribute('data-resident-id');
+            }
+            document.querySelector('#addResidentModal h3').textContent = 'Add New Resident';
+            document.querySelector('#addResidentModal .submit-btn').textContent = 'Add Resident';
+        }
+
+        function submitAddResidentForm() {
+            const form = document.querySelector('#addResidentModal form');
+            const residentId = form ? form.getAttribute('data-resident-id') : null;
+            
+            if (!form) {
+                alert('Form not found. Please refresh the page.');
+                return;
+            }
+            
+            const formData = {
+                first_name: form.querySelector('input[name="first_name"]')?.value || '',
+                middle_name: form.querySelector('input[name="middle_name"]')?.value || '',
+                last_name: form.querySelector('input[name="last_name"]')?.value || '',
+                suffix: form.querySelector('input[name="suffix"]')?.value || '',
+                email: form.querySelector('input[name="email"]')?.value || '',
+                phone: form.querySelector('input[name="phone"]')?.value || '',
+                house_number: form.querySelector('input[name="house_number"]')?.value || '',
+                street: form.querySelector('input[name="street"]')?.value || '',
+                purok: form.querySelector('input[name="purok"]')?.value || '',
+                birth_date: form.querySelector('input[name="birth_date"]')?.value || '',
+                birth_place: form.querySelector('input[name="birth_place"]')?.value || '',
+                gender: form.querySelector('select[name="gender"]')?.value || '',
+                civil_status: form.querySelector('select[name="civil_status"]')?.value || '',
+                occupation: form.querySelector('input[name="occupation"]')?.value || '',
+                is_voter: form.querySelector('input[name="is_voter"]')?.checked || false
+            };
+
+            const url = residentId ? `/clerk/api/update-resident/${residentId}` : '/clerk/api/add-resident';
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: residentId ? 'Resident Updated!' : 'Resident Added!',
+                        text: data.message,
+                        confirmButtonColor: '#0891b2'
+                    }).then(() => {
+                        closeAddResidentModal();
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: data.message || 'An error occurred while saving the resident.',
+                        confirmButtonColor: '#ef4444'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Connection Error!',
+                    text: 'An error occurred while saving the resident. Please check your connection and try again.',
+                    confirmButtonColor: '#ef4444'
+                });
+            });
+        }
+
+        function viewResident(residentId) {
+            fetch(`/clerk/api/get-resident/${residentId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Populate view modal
+                    document.getElementById('viewResidentName').textContent = data.full_name;
+                    document.getElementById('viewResidentId').textContent = `ID: RES-${String(data.id).padStart(4, '0')}`;
+                    document.getElementById('viewFullName').textContent = data.full_name || '-';
+                    document.getElementById('viewGender').textContent = data.gender || 'Not specified';
+                    document.getElementById('viewCivilStatus').textContent = data.civil_status || 'Not specified';
+                    document.getElementById('viewBirthDate').textContent = data.birth_date ? new Date(data.birth_date).toLocaleDateString() : '-';
+                    document.getElementById('viewBirthPlace').textContent = data.birth_place || '-';
+                    document.getElementById('viewOccupation').textContent = data.occupation || '-';
+                    document.getElementById('viewAddress').textContent = data.full_address || '-';
+                    document.getElementById('viewEmail').textContent = data.email || '-';
+                    document.getElementById('viewPhone').textContent = data.phone || '-';
+                    document.getElementById('viewVoterStatus').textContent = data.is_voter ? 'Registered Voter' : 'Not Registered';
+
+                    // Set avatar initials
+                    const nameParts = data.full_name.split(' ');
+                    const initials = nameParts.length > 1 ? nameParts[0][0] + nameParts[nameParts.length-1][0] : nameParts[0].substring(0, 2);
+                    document.getElementById('viewResidentInitials').textContent = initials;
+
+                    // Set status badge
+                    const statusEl = document.getElementById('viewResidentStatus');
+                    let statusClass = 'bg-gray-100 text-gray-800';
+                    let statusText = data.status;
+                    
+                    if (data.status === 'approved') {
+                        statusClass = 'bg-green-100 text-green-800';
+                        statusText = 'Active';
+                    } else if (data.status === 'pending') {
+                        statusClass = 'bg-yellow-100 text-yellow-800';
+                        statusText = 'Pending';
+                    } else if (data.status === 'inactive') {
+                        statusClass = 'bg-red-100 text-red-800';
+                        statusText = 'Inactive';
+                    }
+                    
+                    statusEl.innerHTML = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">${statusText}</span>`;
+
+                    // Set edit button functionality
+                    document.getElementById('editFromViewBtn').onclick = function() {
+                        closeViewResidentModal();
+                        editResident(residentId);
+                    };
+
+                    // Show modal
+                    document.getElementById('viewResidentModal').classList.remove('hidden');
+                })
+                .catch(error => {
+                    alert('Error loading resident details: ' + error.message);
+                });
+        }
+
+        function closeViewResidentModal() {
+            document.getElementById('viewResidentModal').classList.add('hidden');
+        }
+
+        function editResident(residentId) {
+            fetch(`/clerk/api/get-resident/${residentId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const form = document.querySelector('#addResidentModal form');
+                    
+                    if (!form) {
+                        alert('Edit form not found. Please refresh the page.');
+                        return;
+                    }
+                    
+                    // Populate form fields
+                    form.querySelector('input[name="first_name"]').value = data.first_name || '';
+                    form.querySelector('input[name="middle_name"]').value = data.middle_name || '';
+                    form.querySelector('input[name="last_name"]').value = data.last_name || '';
+                    form.querySelector('input[name="suffix"]').value = data.suffix || '';
+                    form.querySelector('input[name="email"]').value = data.email || '';
+                    form.querySelector('input[name="phone"]').value = data.phone || '';
+                    form.querySelector('input[name="house_number"]').value = data.house_number || '';
+                    form.querySelector('input[name="street"]').value = data.street || '';
+                    form.querySelector('input[name="purok"]').value = data.purok || '';
+                    form.querySelector('input[name="birth_place"]').value = data.birth_place || '';
+                    form.querySelector('select[name="gender"]').value = data.gender || '';
+                    form.querySelector('select[name="civil_status"]').value = data.civil_status || '';
+                    form.querySelector('input[name="occupation"]').value = data.occupation || '';
+                    form.querySelector('input[name="is_voter"]').checked = data.is_voter || false;
+                    
+                    // Handle birth date
+                    if (data.birth_date) {
+                        const birthDate = data.birth_date.includes('T') ? data.birth_date.split('T')[0] : data.birth_date;
+                        form.querySelector('input[name="birth_date"]').value = birthDate;
+                    }
+                    
+                    // Change modal title and button
+                    document.querySelector('#addResidentModal h3').textContent = 'Edit Resident';
+                    document.querySelector('#addResidentModal .submit-btn').textContent = 'Update Resident';
+                    
+                    // Store resident ID for update
+                    form.setAttribute('data-resident-id', residentId);
+                    
+                    // Open the modal
+                    openAddResidentModal();
+                })
+                .catch(error => {
+                    alert('Error loading resident data: ' + error.message);
+                });
+        }
+
+        function archiveResident(residentId) {
+            Swal.fire({
+                title: 'Archive Resident?',
+                text: 'You want to archive this resident? This will set their status to inactive and move them to the archive.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f97316',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, archive it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/clerk/api/delete-resident/${residentId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Archived!',
+                                text: 'The resident has been archived successfully.',
+                                confirmButtonColor: '#0891b2'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Error archiving resident: ' + data.message,
+                                confirmButtonColor: '#ef4444'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Connection Error!',
+                            text: 'An error occurred while archiving the resident.',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    });
+                }
+            });
+        }
+
+        function viewArchivedResidents() {
+            // Fetch archived residents (status = 'inactive')
+            fetch('/clerk/api/archived-residents')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showArchivedResidentsModal(data.residents);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Error loading archived residents: ' + data.message,
+                            confirmButtonColor: '#ef4444'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Connection Error!',
+                        text: 'An error occurred while loading archived residents.',
+                        confirmButtonColor: '#ef4444'
+                    });
+                });
+        }
+
+        function showArchivedResidentsModal(residents) {
+            let tableRows = '';
+            if (residents.length === 0) {
+                tableRows = '<tr><td colspan="6" class="px-6 py-8 text-center text-gray-500">No archived residents found</td></tr>';
+            } else {
+                residents.forEach(resident => {
+                    tableRows += `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-6 py-4 text-sm text-gray-900">${resident.fullname}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">${resident.age}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">${resident.gender}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">${resident.purok || 'N/A'}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">${resident.archived_date || 'N/A'}</td>
+                            <td class="px-6 py-4 text-sm text-right">
+                                <button onclick="restoreResident(${resident.id})" class="text-green-600 hover:text-green-900 font-medium">
+                                    <i class="fas fa-undo mr-1"></i>Restore
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Add max-height and overflow for scrollable table when 5 or more records
+            const tableWrapperStyle = residents.length >= 5 ? 'max-h-96 overflow-y-auto' : '';
+
+            Swal.fire({
+                title: '<span class="text-2xl font-bold text-gray-800">Archived Residents</span>',
+                html: `
+                    <div class="overflow-x-auto ${tableWrapperStyle}">
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-100 sticky top-0">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Age</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Gender</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Purok</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Archived Date</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                    </div>
+                `,
+                width: '90%',
+                showCloseButton: true,
+                showConfirmButton: false,
+                customClass: {
+                    popup: 'rounded-2xl'
+                }
+            });
+        }
+
+        function restoreResident(residentId) {
+            Swal.fire({
+                title: 'Restore Resident?',
+                text: 'This will set the resident status back to active.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, restore it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/clerk/api/restore-resident/${residentId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Restored!',
+                                text: 'The resident has been restored successfully.',
+                                confirmButtonColor: '#0891b2'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Error restoring resident: ' + data.message,
+                                confirmButtonColor: '#ef4444'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Connection Error!',
+                            text: 'An error occurred while restoring the resident.',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    });
+                }
+            });
+        }
+
+        function initializeViewSwitching() {
+            const gridViewBtn = document.getElementById('gridViewBtn');
+            const tableViewBtn = document.getElementById('tableViewBtn');
+            const gridView = document.getElementById('gridView');
+            const tableView = document.getElementById('tableView');
+
+            // Get saved view preference or default to grid
+            const savedView = localStorage.getItem('residentsView') || 'grid';
+            
+            // Set initial view
+            if (savedView === 'table') {
+                showTableView();
+            } else {
+                showGridView();
+            }
+
+            // Add click handlers
+            if (gridViewBtn) {
+                gridViewBtn.addEventListener('click', showGridView);
+            }
+            if (tableViewBtn) {
+                tableViewBtn.addEventListener('click', showTableView);
+            }
+
+            function showGridView() {
+                if (gridView) gridView.classList.remove('hidden');
+                if (tableView) tableView.classList.add('hidden');
+                
+                if (gridViewBtn) {
+                    gridViewBtn.classList.remove('text-gray-600');
+                    gridViewBtn.classList.add('bg-primary-600', 'text-white');
+                }
+                if (tableViewBtn) {
+                    tableViewBtn.classList.remove('bg-primary-600', 'text-white');
+                    tableViewBtn.classList.add('text-gray-600');
+                }
+                
+                // Save preference
+                localStorage.setItem('residentsView', 'grid');
+            }
+
+            function showTableView() {
+                if (gridView) gridView.classList.add('hidden');
+                if (tableView) tableView.classList.remove('hidden');
+                
+                if (tableViewBtn) {
+                    tableViewBtn.classList.remove('text-gray-600');
+                    tableViewBtn.classList.add('bg-primary-600', 'text-white');
+                }
+                if (gridViewBtn) {
+                    gridViewBtn.classList.remove('bg-primary-600', 'text-white');
+                    gridViewBtn.classList.add('text-gray-600');
+                }
+                
+                // Save preference
+                localStorage.setItem('residentsView', 'table');
+                
+                // Re-attach event listeners for table view buttons
+                attachTableEventListeners();
+            }
+        }
+
+        function attachTableEventListeners() {
+            // Re-attach event listeners for buttons in table view
+            document.querySelectorAll('.view-resident-btn').forEach(button => {
+                button.removeEventListener('click', handleViewResident);
+                button.addEventListener('click', handleViewResident);
+            });
+
+            document.querySelectorAll('.edit-resident-btn').forEach(button => {
+                button.removeEventListener('click', handleEditResident);
+                button.addEventListener('click', handleEditResident);
+            });
+
+            document.querySelectorAll('.archive-resident-btn').forEach(button => {
+                button.removeEventListener('click', handleArchiveResident);
+                button.addEventListener('click', handleArchiveResident);
+            });
+        }
+
+        // Event handler functions to avoid duplicate listeners
+        function handleViewResident(event) {
+            const residentId = this.getAttribute('data-resident-id');
+            viewResident(residentId);
+        }
+
+        function handleEditResident(event) {
+            const residentId = this.getAttribute('data-resident-id');
+            editResident(residentId);
+        }
+
+        function handleArchiveResident(event) {
+            const residentId = this.getAttribute('data-resident-id');
+            archiveResident(residentId);
+        }
+
+        // Utility function for debouncing search input
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
+
+    <!-- Load clerk components -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - iSerbisyo Resident</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        purple: {
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            200: '#e9d5ff',
+                            300: '#d8b4fe',
+                            400: '#c084fc',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            700: '#7c3aed',
+                            800: '#6b21a8',
+                            900: '#581c87'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-purple-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar Container - Always render, let the sidebar component handle its own visibility -->
+        {% include 'components/resident-sidebar.html' %}
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 lg:pl-64">
+            <!-- Header Container -->
+            {% include 'components/resident-header.html' %}
+
+            <!-- Main content area -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <!-- Profile Content -->
+                <div class="py-3 sm:py-4 lg:py-6 pl-4 sm:pl-6 lg:pl-8 pr-4 sm:pr-6 lg:pr-8 xl:pr-10">
+                    <div class="max-w-full mx-auto">
+                        <!-- Modern Page Header -->
+                        <div class="mb-6 sm:mb-8">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <div class="flex items-center space-x-3 sm:space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                                                <i class="fas fa-user text-white text-lg sm:text-xl"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">My Profile</h1>
+                                            <p class="text-gray-600 mt-1 text-sm sm:text-base">View and manage your personal information</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                                        <span class="inline-flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium bg-green-100 text-green-800">
+                                            <span class="w-2 h-2 mr-1.5 sm:mr-2 bg-green-500 rounded-full"></span>
+                                            {{ resident.status.title() }}
+                                        </span>
+                                        <a href="{{ url_for('resident.edit_profile') }}" class="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors duration-200 text-sm sm:text-base">
+                                            <i class="fas fa-edit mr-1.5 sm:mr-2 text-xs sm:text-sm"></i>
+                                            <span class="hidden sm:inline">Edit Profile</span>
+                                            <span class="sm:hidden">Edit</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Profile Information -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                            <!-- Profile Overview -->
+                            <div class="lg:col-span-1">
+                                <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                    <div class="text-center">
+                                        <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto bg-purple-100 rounded-full flex items-center justify-center mb-3 sm:mb-4 border-4 border-purple-200">
+                                            {% if resident.profile_picture %}
+                                                <img src="{{ url_for('static', filename='uploads/profiles/' + resident.profile_picture) }}" alt="Profile Picture" class="w-full h-full rounded-full object-cover">
+                                            {% else %}
+                                                <span class="text-2xl sm:text-3xl font-bold text-purple-600">{{ resident.first_name[0].upper() if resident.first_name else 'R' }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">{{ resident.full_name }}</h3>
+                                        <p class="text-gray-600 mb-4 text-sm sm:text-base break-all">{{ current_user.email }}</p>
+                                        
+                                        <div class="grid grid-cols-2 gap-3 sm:gap-4 text-center">
+                                            <div class="bg-purple-50 rounded-lg p-2 sm:p-3">
+                                                <p class="text-xs sm:text-sm font-medium text-gray-600">Status</p>
+                                                <p class="text-base sm:text-lg font-bold text-purple-600">{{ resident.status.title() }}</p>
+                                            </div>
+                                            <div class="bg-blue-50 rounded-lg p-2 sm:p-3">
+                                                <p class="text-xs sm:text-sm font-medium text-gray-600">Since</p>
+                                                <p class="text-base sm:text-lg font-bold text-blue-600">{{ resident.created_at.strftime('%Y') }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Stats -->
+                                <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6 mt-4 sm:mt-6">
+                                    <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Quick Stats</h4>
+                                    <div class="space-y-3 sm:space-y-4">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs sm:text-sm text-gray-600">Certificate Requests</span>
+                                            <span class="text-xs sm:text-sm font-medium text-gray-900">{{ resident.certificates|length }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs sm:text-sm text-gray-600">Pending Requests</span>
+                                            <span class="text-xs sm:text-sm font-medium text-orange-600">{{ resident.certificates|selectattr('status', 'equalto', 'pending')|list|length }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs sm:text-sm text-gray-600">Completed Requests</span>
+                                            <span class="text-xs sm:text-sm font-medium text-green-600">{{ resident.certificates|selectattr('status', 'in', ['completed', 'claimed'])|list|length }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs sm:text-sm text-gray-600">Voter Status</span>
+                                            <span class="text-xs sm:text-sm font-medium {% if resident.is_voter %}text-green-600{% else %}text-gray-500{% endif %}">
+                                                {% if resident.is_voter %}Registered{% else %}Not Registered{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Detailed Information -->
+                            <div class="lg:col-span-2">
+                                <div class="space-y-4 sm:space-y-6">
+                                    <!-- Personal Information -->
+                                    <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                        <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+                                            <i class="fas fa-user-circle mr-2 text-purple-600 text-sm sm:text-base"></i>
+                                            Personal Information
+                                        </h4>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">First Name</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.first_name or 'Not provided' }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Middle Name</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.middle_name or 'Not provided' }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.last_name or 'Not provided' }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Suffix</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.suffix or 'Not provided' }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Birth Date</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">
+                                                    {% if resident.birth_date %}
+                                                        {{ resident.birth_date.strftime('%B %d, %Y') }}
+                                                    {% else %}
+                                                        Not provided
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Birth Place</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.birth_place or 'Not provided' }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Gender</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.gender or 'Not provided' }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Civil Status</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.civil_status or 'Not provided' }}</p>
+                                            </div>
+                                            <div class="sm:col-span-2">
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Occupation</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.occupation or 'Not provided' }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Contact Information -->
+                                    <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                        <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+                                            <i class="fas fa-address-book mr-2 text-purple-600 text-sm sm:text-base"></i>
+                                            Contact Information
+                                        </h4>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg break-all">{{ current_user.email }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.phone or 'Not provided' }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Address Information -->
+                                    <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                        <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+                                            <i class="fas fa-map-marker-alt mr-2 text-purple-600 text-sm sm:text-base"></i>
+                                            Address Information
+                                        </h4>
+                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">House Number</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.house_number or 'Not provided' }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Street</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.street or 'Not provided' }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Purok</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.purok or 'Not provided' }}</p>
+                                            </div>
+                                            <div class="sm:col-span-3">
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Complete Address</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.full_address }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Account Information -->
+                                    <div class="bg-white rounded-lg sm:rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6">
+                                        <h4 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center">
+                                            <i class="fas fa-user-cog mr-2 text-purple-600 text-sm sm:text-base"></i>
+                                            Account Information
+                                        </h4>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Account Created</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Last Updated</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ resident.updated_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Account Status</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg flex items-center">
+                                                    <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                                    Active
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">Role</label>
+                                                <p class="text-xs sm:text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg">{{ current_user.role.title() }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script>
+        // Enable debug logging
+        console.log('Profile page loaded successfully');
+        
+        // Mobile menu toggle functionality
+        function initializeMobileMenu() {
+            const mobileMenuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            if (mobileMenuToggle && sidebar && overlay) {
+                console.log('Mobile menu initialized');
+                mobileMenuToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Toggle sidebar visibility
+                    const isHidden = sidebar.classList.contains('-translate-x-full');
+                    if (isHidden) {
+                        sidebar.classList.remove('-translate-x-full');
+                        sidebar.classList.add('translate-x-0');
+                        overlay.classList.remove('hidden');
+                    } else {
+                        sidebar.classList.add('-translate-x-full');
+                        sidebar.classList.remove('translate-x-0');
+                        overlay.classList.add('hidden');
+                    }
+                });
+
+                // Close sidebar when clicking overlay
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                    overlay.classList.add('hidden');
+                });
+            }
+        }
+
+        // Header dropdown functionality
+        function initializeHeaderDropdowns() {
+            const notificationsToggle = document.getElementById('notifications-toggle');
+            const notificationsDropdown = document.getElementById('notifications-dropdown');
+            
+            if (notificationsToggle && notificationsDropdown) {
+                notificationsToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    notificationsDropdown.classList.toggle('hidden');
+                    const profileDropdown = document.getElementById('profile-dropdown');
+                    if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+                        profileDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            const profileToggle = document.getElementById('profile-toggle');
+            const profileDropdown = document.getElementById('profile-dropdown');
+            
+            if (profileToggle && profileDropdown) {
+                profileToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    profileDropdown.classList.toggle('hidden');
+                    if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
+                        notificationsDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(event) {
+                if (notificationsDropdown && !event.target.closest('#notifications-toggle') && !event.target.closest('#notifications-dropdown')) {
+                    notificationsDropdown.classList.add('hidden');
+                }
+                
+                if (profileDropdown && !event.target.closest('#profile-toggle') && !event.target.closest('#profile-dropdown')) {
+                    profileDropdown.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMobileMenu();
+            initializeHeaderDropdowns();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blotter Records - iSerBisyo Clerk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',                           
+                            800: '#1e40af',
+                            900: '#1e3a8a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar Container -->
+        <div class="hidden lg:block">
+            {% include 'components/clerk-sidebar.html' %}
+        </div>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 lg:pl-64">
+            <!-- Header Container -->
+            {% include 'components/clerk-header.html' %}
+
+            <!-- Main content area -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <!-- Blotter Content -->
+                <div class="py-3 sm:py-4 lg:py-6">
+                    <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+                        <!-- Modern Page Header -->
+                        <div class="mb-8">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                                    <div class="flex items-center space-x-4 mb-4 lg:mb-0">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+                                            <i class="fas fa-file-alt text-white text-2xl"></i>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-600 bg-clip-text text-transparent">
+                                                Blotter Records
+                                            </h1>
+                                            <p class="text-gray-600 text-lg">Manage incident reports and blotter entries efficiently</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-3">
+                                        <button onclick="showPrintReportModal()" class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-300">
+                                            <i class="fas fa-print mr-2"></i>
+                                            Print Report
+                                        </button>
+                                        <button class="new-blotter-btn inline-flex items-center px-6 py-2 bg-gradient-to-r from-red-600 to-blue-600 text-white text-sm font-medium rounded-lg hover:from-red-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-300">
+                                            <i class="fas fa-plus mr-2"></i>
+                                            New Blotter
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Stats Cards - Full Width -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+                            <!-- Total Records -->
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-blue-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-blue-600 uppercase tracking-wide">Total Records</p>
+                                            <p class="text-3xl font-bold text-blue-900 mt-2">{{ stats.total_records }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-file-alt text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- This Month -->
+                            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-emerald-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-emerald-600 uppercase tracking-wide">This Month</p>
+                                            <p class="text-3xl font-bold text-emerald-900 mt-2">{{ stats.this_month }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-calendar text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Active Cases -->
+                            <div class="bg-gradient-to-br from-amber-50 to-amber-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-amber-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-amber-600 uppercase tracking-wide">Active Cases</p>
+                                            <p class="text-3xl font-bold text-amber-900 mt-2">{{ stats.active_cases }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-amber-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-exclamation text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Resolved -->
+                            <div class="bg-gradient-to-br from-violet-50 to-violet-100 overflow-hidden shadow-lg rounded-xl hover:shadow-xl transition-all duration-300 border border-violet-200 group">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-violet-600 uppercase tracking-wide">Resolved</p>
+                                            <p class="text-3xl font-bold text-violet-900 mt-2">{{ stats.resolved_cases }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <div class="w-16 h-16 bg-violet-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas fa-check text-white text-xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Filters -->
+                        <div class="bg-white shadow-lg rounded-xl p-6 mb-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center space-x-3">
+                                    <h3 class="text-lg font-bold text-gray-900">Search & Filters</h3>
+                                    {% set active_filters = [] %}
+                                    {% if current_filters.search %}{% set _ = active_filters.append('search') %}{% endif %}
+                                    {% if current_filters.type %}{% set _ = active_filters.append('type') %}{% endif %}
+                                    {% if current_filters.status %}{% set _ = active_filters.append('status') %}{% endif %}
+                                    {% if current_filters.priority %}{% set _ = active_filters.append('priority') %}{% endif %}
+                                    {% if current_filters.date_from %}{% set _ = active_filters.append('date') %}{% endif %}
+                                    {% if current_filters.date_to %}{% set _ = active_filters.append('date') %}{% endif %}
+                                    {% if active_filters %}
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <i class="fas fa-filter mr-1"></i>
+                                        {{ active_filters|length }} filter{{ 's' if active_filters|length != 1 else '' }} active
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <button id="resetFiltersBtn" class="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors">
+                                    <i class="fas fa-redo mr-1"></i>
+                                    Reset Filters
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Search Records</label>
+                                    <div class="relative">
+                                        <input type="text" id="searchInput" placeholder="Search by complainant or case..." value="{{ current_filters.search or '' }}" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                        <i class="fas fa-search absolute left-3 top-4 text-gray-400 text-sm"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Incident Type</label>
+                                    <select id="typeFilter" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                        <option value="">All Types</option>
+                                        <option value="noise_complaint" {{ 'selected' if current_filters.type == 'noise_complaint' else '' }}>Noise Complaint</option>
+                                        <option value="theft" {{ 'selected' if current_filters.type == 'theft' else '' }}>Theft/Robbery</option>
+                                        <option value="domestic_dispute" {{ 'selected' if current_filters.type == 'domestic_dispute' else '' }}>Domestic Dispute</option>
+                                        <option value="public_disturbance" {{ 'selected' if current_filters.type == 'public_disturbance' else '' }}>Public Disturbance</option>
+                                        <option value="vandalism" {{ 'selected' if current_filters.type == 'vandalism' else '' }}>Vandalism</option>
+                                        <option value="others" {{ 'selected' if current_filters.type == 'others' else '' }}>Others</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                    <select id="statusFilter" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                        <option value="">All Status</option>
+                                        <option value="active" {{ 'selected' if current_filters.status == 'active' else '' }}>Active</option>
+                                        <option value="under_investigation" {{ 'selected' if current_filters.status == 'under_investigation' else '' }}>Under Investigation</option>
+                                        <option value="mediation_scheduled" {{ 'selected' if current_filters.status == 'mediation_scheduled' else '' }}>Mediation Scheduled</option>
+                                        <option value="referred_to_police" {{ 'selected' if current_filters.status == 'referred_to_police' else '' }}>Referred to Police</option>
+                                        <option value="resolved" {{ 'selected' if current_filters.status == 'resolved' else '' }}>Resolved</option>
+                                        <option value="closed" {{ 'selected' if current_filters.status == 'closed' else '' }}>Closed</option>
+                                        <option value="dismissed" {{ 'selected' if current_filters.status == 'dismissed' else '' }}>Dismissed</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                                    <select id="priorityFilter" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                        <option value="">All Priority</option>
+                                        <option value="low" {{ 'selected' if current_filters.priority == 'low' else '' }}>Low</option>
+                                        <option value="medium" {{ 'selected' if current_filters.priority == 'medium' else '' }}>Medium</option>
+                                        <option value="high" {{ 'selected' if current_filters.priority == 'high' else '' }}>High</option>
+                                        <option value="emergency" {{ 'selected' if current_filters.priority == 'emergency' else '' }}>Emergency</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Date From</label>
+                                    <input type="date" id="dateFromFilter" value="{{ current_filters.date_from or '' }}" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                                </div>
+                            </div>
+                        </div>                                         
+
+                        <!-- Blotter Records Table -->
+                        <div class="bg-white shadow-lg rounded-xl border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-lg font-bold text-gray-900">Blotter Records</h3>
+                                    <div class="flex items-center space-x-3">
+                                        {% if blotters.total > 0 %}
+                                        <span class="text-sm text-gray-600">
+                                            Showing {{ ((blotters.page - 1) * 10 + 1) }} 
+                                            to {{ (blotters.page * 10) if blotters.page * 10 < blotters.total else blotters.total }} 
+                                            of {{ blotters.total }} record{{ 's' if blotters.total != 1 else '' }}
+                                        </span>
+                                        {% else %}
+                                        <span class="text-sm text-gray-600">No blotter records found</span>
+                                        {% endif %}
+                                        <div class="flex items-center space-x-1">
+                                            <span class="text-xs text-gray-400">Page {{ blotters.page }} of {{ blotters.pages }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blotter Info</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Incident Type</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parties Involved</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% if blotters.items %}
+                                        {% for blotter in blotters.items %}
+                                        <tr class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div>
+                                                    <div class="text-sm font-semibold text-gray-900">{{ blotter.blotter_number }}</div>
+                                                    <div class="text-xs text-gray-500 flex items-center">
+                                                        <i class="fas fa-calendar mr-1"></i>
+                                                        {{ blotter.incident_date.strftime('%b %d, %Y') if blotter.incident_date else 'N/A' }}
+                                                        {% if blotter.incident_time %}• {{ blotter.incident_time.strftime('%I:%M %p') }}{% endif %}
+                                                    </div>
+                                                    <div class="text-xs text-gray-500 flex items-center">
+                                                        <i class="fas fa-user mr-1"></i>
+                                                        Reported by: {{ blotter.reported_by or 'N/A' }}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">{{ blotter.formatted_incident_type }}</div>
+                                                <div class="text-xs text-gray-500">
+                                                    {% if blotter.incident_place %}
+                                                    <i class="fas fa-map-marker-alt mr-1"></i>
+                                                    {{ blotter.incident_place[:30] }}{% if blotter.incident_place|length > 30 %}...{% endif %}
+                                                    {% else %}
+                                                    Location not specified
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">{{ blotter.complainant_name }} vs. {{ blotter.respondent_name }}</div>
+                                                <div class="text-xs text-gray-500">Complainant vs. Respondent</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold 
+                                                    {% if blotter.status == 'active' %}bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border border-blue-300
+                                                    {% elif blotter.status == 'under_investigation' %}bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border border-yellow-300
+                                                    {% elif blotter.status == 'mediation_scheduled' %}bg-gradient-to-r from-indigo-100 to-indigo-200 text-indigo-800 border border-indigo-300
+                                                    {% elif blotter.status == 'referred_to_police' %}bg-gradient-to-r from-red-100 to-red-200 text-red-800 border border-red-300
+                                                    {% elif blotter.status == 'resolved' %}bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300
+                                                    {% elif blotter.status == 'closed' %}bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-300
+                                                    {% elif blotter.status == 'dismissed' %}bg-gradient-to-r from-gray-100 to-gray-200 text-gray-600 border border-gray-300
+                                                    {% else %}bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-300{% endif %}">
+                                                    {% if blotter.status == 'active' %}<i class="fas fa-exclamation-circle mr-1"></i>Active
+                                                    {% elif blotter.status == 'under_investigation' %}<i class="fas fa-search mr-1"></i>Under Investigation
+                                                    {% elif blotter.status == 'mediation_scheduled' %}<i class="fas fa-handshake mr-1"></i>Mediation Scheduled
+                                                    {% elif blotter.status == 'referred_to_police' %}<i class="fas fa-shield-alt mr-1"></i>Referred to Police
+                                                    {% elif blotter.status == 'resolved' %}<i class="fas fa-check-circle mr-1"></i>Resolved
+                                                    {% elif blotter.status == 'closed' %}<i class="fas fa-times-circle mr-1"></i>Closed
+                                                    {% elif blotter.status == 'dismissed' %}<i class="fas fa-ban mr-1"></i>Dismissed
+                                                    {% else %}{{ blotter.formatted_status }}{% endif %}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold 
+                                                    {% if blotter.priority == 'low' %}bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300
+                                                    {% elif blotter.priority == 'medium' %}bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border border-yellow-300
+                                                    {% elif blotter.priority == 'high' %}bg-gradient-to-r from-orange-100 to-orange-200 text-orange-800 border border-orange-300
+                                                    {% elif blotter.priority == 'emergency' %}bg-gradient-to-r from-red-100 to-red-200 text-red-800 border border-red-300
+                                                    {% else %}bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 border border-gray-300{% endif %}">
+                                                    {% if blotter.priority == 'low' %}<i class="fas fa-chevron-down mr-1"></i>Low
+                                                    {% elif blotter.priority == 'medium' %}<i class="fas fa-minus mr-1"></i>Medium
+                                                    {% elif blotter.priority == 'high' %}<i class="fas fa-chevron-up mr-1"></i>High
+                                                    {% elif blotter.priority == 'emergency' %}<i class="fas fa-exclamation-triangle mr-1"></i>Emergency
+                                                    {% else %}{{ blotter.priority.title() }}{% endif %}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <div class="flex space-x-2">
+                                                    <button class="view-blotter-btn p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200" 
+                                                            data-blotter-id="{{ blotter.id }}" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    {% if blotter.status not in ['resolved', 'closed', 'dismissed'] %}
+                                                    <button class="edit-blotter-btn p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-all duration-200" 
+                                                            data-blotter-id="{{ blotter.id }}" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    {% else %}
+                                                    <button class="p-2 text-gray-400 cursor-not-allowed rounded-lg" title="Cannot edit resolved cases">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    {% endif %}
+                                                    <button class="print-blotter-btn p-2 text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded-lg transition-all duration-200" 
+                                                            data-blotter-id="{{ blotter.id }}" title="Print">
+                                                        <i class="fas fa-print"></i>
+                                                    </button>
+                                                    {% if blotter.status not in ['resolved', 'closed', 'dismissed'] %}
+                                                    <button class="delete-blotter-btn p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200" 
+                                                            data-blotter-id="{{ blotter.id }}" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="6" class="px-6 py-12 text-center">
+                                                <div class="flex flex-col items-center">
+                                                    <i class="fas fa-file-alt text-gray-400 text-4xl mb-4"></i>
+                                                    <h3 class="text-lg font-medium text-gray-900 mb-2">No blotter records found</h3>
+                                                    <p class="text-gray-500 mb-4">Try adjusting your filters or add a new blotter record.</p>
+                                                    <button class="new-blotter-btn inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700">
+                                                        <i class="fas fa-plus mr-2"></i>
+                                                        Add Blotter Record
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination -->
+                            {% if blotters.total > 0 %}
+                            <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-t border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-sm text-gray-600 font-medium">
+                                        Showing {{ ((blotters.page - 1) * blotters.per_page + 1) }} 
+                                        to {{ (blotters.page * blotters.per_page) if blotters.page * blotters.per_page < blotters.total else blotters.total }} 
+                                        of {{ blotters.total }} record{{ 's' if blotters.total != 1 else '' }}
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        {% if blotters.has_prev %}
+                                        {% set prev_args = request.args.copy() %}
+                                        {% set _ = prev_args.update({'page': blotters.prev_num}) %}
+                                        <a href="{{ url_for('clerk.blotter', **prev_args) }}" 
+                                           class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-all duration-200">
+                                            <i class="fas fa-chevron-left mr-1 text-xs"></i>
+                                            Previous
+                                        </a>
+                                        {% else %}
+                                        <span class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-lg cursor-not-allowed">
+                                            <i class="fas fa-chevron-left mr-1 text-xs"></i>
+                                            Previous
+                                        </span>
+                                        {% endif %}
+
+                                        <!-- Page numbers -->
+                                        <div class="flex items-center space-x-1">
+                                            {% for page_num in blotters.iter_pages() %}
+                                                {% if page_num %}
+                                                    {% if page_num != blotters.page %}
+                                                    {% set page_args = request.args.copy() %}
+                                                    {% set _ = page_args.update({'page': page_num}) %}
+                                                    <a href="{{ url_for('clerk.blotter', **page_args) }}" 
+                                                       class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200">
+                                                        {{ page_num }}
+                                                    </a>
+                                                    {% else %}
+                                                    <span class="px-3 py-2 text-sm font-bold text-white bg-gradient-to-r from-red-500 to-red-600 border border-red-500 rounded-lg shadow-md">
+                                                        {{ page_num }}
+                                                    </span>
+                                                    {% endif %}
+                                                {% else %}
+                                                <span class="px-2 py-2 text-sm text-gray-400">…</span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+
+                                        {% if blotters.has_next %}
+                                        {% set next_args = request.args.copy() %}
+                                        {% set _ = next_args.update({'page': blotters.next_num}) %}
+                                        <a href="{{ url_for('clerk.blotter', **next_args) }}" 
+                                           class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-all duration-200">
+                                            Next
+                                            <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                        </a>
+                                        {% else %}
+                                        <span class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-lg cursor-not-allowed">
+                                            Next
+                                            <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Load clerk components -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Blotter Management JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Blotter action handlers
+            
+            // View blotter details
+            document.querySelectorAll('.view-blotter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const blotterId = this.dataset.blotterId;
+                    viewBlotter(blotterId);
+                });
+            });
+
+            // Edit blotter
+            document.querySelectorAll('.edit-blotter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const blotterId = this.dataset.blotterId;
+                    editBlotter(blotterId);
+                });
+            });
+
+            // Print blotter
+            document.querySelectorAll('.print-blotter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const blotterId = this.dataset.blotterId;
+                    printBlotter(blotterId);
+                });
+            });
+
+            // Delete blotter
+            document.querySelectorAll('.delete-blotter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const blotterId = this.dataset.blotterId;
+                    deleteBlotter(blotterId);
+                });
+            });
+
+            // New Blotter button
+            document.querySelectorAll('.new-blotter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showNewBlotterModal();
+                });
+            });
+
+            // Filter functionality
+            const searchInput = document.getElementById('searchInput');
+            const typeFilter = document.getElementById('typeFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const priorityFilter = document.getElementById('priorityFilter');
+            const dateFromFilter = document.getElementById('dateFromFilter');
+            const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+
+            // Reset filters button click
+            resetFiltersBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                resetFilters();
+            });
+
+            // Debounced search input - auto-apply after 300ms
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    applyFilters();
+                }, 300);
+            });
+
+            // Auto-apply filters on dropdown change
+            [typeFilter, statusFilter, priorityFilter, dateFromFilter].forEach(filter => {
+                filter.addEventListener('change', function() {
+                    applyFilters();
+                });
+            });
+        });
+
+        // View blotter details
+        function viewBlotter(blotterId) {
+            fetch(`/clerk/api/blotter/${blotterId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const blotter = data.blotter;
+                        Swal.fire({
+                            title: 'Blotter Record Details',
+                            html: `
+                                <div class="text-left space-y-4">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <strong>Blotter Number:</strong><br>
+                                            <span class="text-gray-600">${blotter.blotter_number}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Case Number:</strong><br>
+                                            <span class="text-gray-600">${blotter.case_number}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Incident Type:</strong><br>
+                                            <span class="text-gray-600">${blotter.formatted_incident_type}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Status:</strong><br>
+                                            <span class="text-gray-600">${blotter.formatted_status}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Priority:</strong><br>
+                                            <span class="text-gray-600">${blotter.priority.charAt(0).toUpperCase() + blotter.priority.slice(1)}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Incident Date:</strong><br>
+                                            <span class="text-gray-600">${new Date(blotter.incident_date).toLocaleDateString()} ${blotter.incident_time ? '• ' + new Date('1970-01-01T' + blotter.incident_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Location:</strong><br>
+                                            <span class="text-gray-600">${blotter.incident_place || 'Not specified'}</span>
+                                        </div>
+                                        <div>
+                                            <strong>Reported By:</strong><br>
+                                            <span class="text-gray-600">${blotter.reported_by || 'N/A'} ${blotter.reporter_type ? '(' + blotter.reporter_type.replace('_', ' ') + ')' : ''}</span>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <strong>Complainant:</strong><br>
+                                            <span class="text-gray-600">${blotter.complainant_name}</span>
+                                            ${blotter.complainant_address ? '<br><small class="text-gray-500">' + blotter.complainant_address + '</small>' : ''}
+                                            ${blotter.complainant_contact ? '<br><small class="text-gray-500">' + blotter.complainant_contact + '</small>' : ''}
+                                        </div>
+                                        <div>
+                                            <strong>Respondent:</strong><br>
+                                            <span class="text-gray-600">${blotter.respondent_name}</span>
+                                            ${blotter.respondent_address ? '<br><small class="text-gray-500">' + blotter.respondent_address + '</small>' : ''}
+                                            ${blotter.respondent_contact ? '<br><small class="text-gray-500">' + blotter.respondent_contact + '</small>' : ''}
+                                        </div>
+                                    </div>
+                                    ${blotter.incident_description ? 
+                                        '<div><strong>Description:</strong><br><span class="text-gray-600">' + blotter.incident_description + '</span></div>' : ''}
+                                    ${blotter.witnesses ? 
+                                        '<div><strong>Witnesses:</strong><br><span class="text-gray-600">' + blotter.witnesses + '</span></div>' : ''}
+                                    ${blotter.evidence ? 
+                                        '<div><strong>Evidence:</strong><br><span class="text-gray-600">' + blotter.evidence + '</span></div>' : ''}
+                                    ${blotter.remarks ? 
+                                        '<div><strong>Remarks:</strong><br><span class="text-gray-600">' + blotter.remarks + '</span></div>' : ''}
+                                    ${blotter.resolution_date ? 
+                                        '<div><strong>Resolution Date:</strong><br><span class="text-gray-600">' + new Date(blotter.resolution_date).toLocaleDateString() + '</span></div>' : ''}
+                                    ${blotter.resolution_details ? 
+                                        '<div><strong>Resolution Details:</strong><br><span class="text-gray-600">' + blotter.resolution_details + '</span></div>' : ''}
+                                </div>
+                            `,
+                            width: '800px',
+                            confirmButtonText: 'Close',
+                            confirmButtonColor: '#dc2626'
+                        });
+                    } else {
+                        Swal.fire('Error', data.message || 'Failed to load blotter details', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'Failed to load blotter details', 'error');
+                });
+        }
+
+        // Show new blotter modal
+        function showNewBlotterModal() {
+            Swal.fire({
+                title: 'New Blotter Entry',
+                html: `
+                    <div class="text-left space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Incident Date *</label>
+                                <input type="date" id="new-incident-date" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Incident Time</label>
+                                <input type="time" id="new-incident-time" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Incident Type *</label>
+                            <select id="new-incident-type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                                <option value="">Select incident type</option>
+                                <option value="noise_complaint">Noise Complaint</option>
+                                <option value="theft">Theft/Robbery</option>
+                                <option value="domestic_dispute">Domestic Dispute</option>
+                                <option value="public_disturbance">Public Disturbance</option>
+                                <option value="vandalism">Vandalism</option>
+                                <option value="others">Others</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                            <input type="text" id="new-incident-place" placeholder="Location of incident" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Complainant *</label>
+                                <input type="text" id="new-complainant-name" placeholder="Name of complainant" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Respondent *</label>
+                                <input type="text" id="new-respondent-name" placeholder="Name of respondent" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" required>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Complainant Address</label>
+                                <input type="text" id="new-complainant-address" placeholder="Address of complainant" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Respondent Address</label>
+                                <input type="text" id="new-respondent-address" placeholder="Address of respondent" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Incident Description</label>
+                            <textarea id="new-incident-description" rows="3" placeholder="Detailed description of the incident" 
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Priority Level</label>
+                                <select id="new-priority" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="emergency">Emergency</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Reported By</label>
+                                <input type="text" id="new-reported-by" placeholder="Name of reporter" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Reporter Type</label>
+                            <select id="new-reporter-type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                                <option value="">Select reporter type</option>
+                                <option value="resident">Resident</option>
+                                <option value="barangay_tanod">Barangay Tanod</option>
+                                <option value="family_member">Family Member</option>
+                                <option value="neighbor">Neighbor</option>
+                                <option value="witness">Witness</option>
+                                <option value="others">Others</option>
+                            </select>
+                        </div>
+                    </div>
+                `,
+                width: '600px',
+                showCancelButton: true,
+                confirmButtonText: 'Create Blotter',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#dc2626',
+                preConfirm: () => {
+                    const incidentDate = document.getElementById('new-incident-date').value;
+                    const incidentTime = document.getElementById('new-incident-time').value;
+                    const incidentType = document.getElementById('new-incident-type').value;
+                    const incidentPlace = document.getElementById('new-incident-place').value;
+                    const complainantName = document.getElementById('new-complainant-name').value;
+                    const respondentName = document.getElementById('new-respondent-name').value;
+                    const complainantAddress = document.getElementById('new-complainant-address').value;
+                    const respondentAddress = document.getElementById('new-respondent-address').value;
+                    const incidentDescription = document.getElementById('new-incident-description').value;
+                    const priority = document.getElementById('new-priority').value;
+                    const reportedBy = document.getElementById('new-reported-by').value;
+                    const reporterType = document.getElementById('new-reporter-type').value;
+
+                    if (!incidentDate || !incidentType || !complainantName || !respondentName) {
+                        Swal.showValidationMessage('Please fill in all required fields (marked with *)');
+                        return false;
+                    }
+
+                    return {
+                        incident_date: incidentDate,
+                        incident_time: incidentTime,
+                        incident_type: incidentType,
+                        incident_place: incidentPlace,
+                        complainant_name: complainantName,
+                        respondent_name: respondentName,
+                        complainant_address: complainantAddress,
+                        respondent_address: respondentAddress,
+                        incident_description: incidentDescription,
+                        priority: priority,
+                        reported_by: reportedBy,
+                        reporter_type: reporterType
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    createBlotter(result.value);
+                }
+            });
+        }
+
+        // Create new blotter
+        function createBlotter(blotterData) {
+            fetch('/clerk/api/blotter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(blotterData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: `Blotter record created successfully with case number: ${data.case_number}`,
+                        icon: 'success',
+                        timer: 3000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', data.message || 'Failed to create blotter record', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Failed to create blotter record', 'error');
+            });
+        }
+
+        // Edit blotter
+        function editBlotter(blotterId) {
+            // Fetch blotter details first
+            fetch(`/clerk/api/blotter/${blotterId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const blotter = data.blotter;
+                        showEditBlotterModal(blotter);
+                    } else {
+                        Swal.fire('Error', data.message || 'Failed to load blotter details', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire('Error', 'Failed to load blotter details', 'error');
+                });
+        }
+
+        // Show edit blotter modal
+        function showEditBlotterModal(blotter) {
+            Swal.fire({
+                title: 'Edit Blotter Record',
+                html: `
+                    <div class="text-left space-y-4">
+                        <div class="bg-gray-100 p-3 rounded-lg">
+                            <strong>Case Number:</strong> ${blotter.case_number}
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <select id="edit-status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                                    <option value="active" ${blotter.status === 'active' ? 'selected' : ''}>Active</option>
+                                    <option value="under_investigation" ${blotter.status === 'under_investigation' ? 'selected' : ''}>Under Investigation</option>
+                                    <option value="mediation_scheduled" ${blotter.status === 'mediation_scheduled' ? 'selected' : ''}>Mediation Scheduled</option>
+                                    <option value="referred_to_police" ${blotter.status === 'referred_to_police' ? 'selected' : ''}>Referred to Police</option>
+                                    <option value="resolved" ${blotter.status === 'resolved' ? 'selected' : ''}>Resolved</option>
+                                    <option value="closed" ${blotter.status === 'closed' ? 'selected' : ''}>Closed</option>
+                                    <option value="dismissed" ${blotter.status === 'dismissed' ? 'selected' : ''}>Dismissed</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                                <select id="edit-priority" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                                    <option value="low" ${blotter.priority === 'low' ? 'selected' : ''}>Low</option>
+                                    <option value="medium" ${blotter.priority === 'medium' ? 'selected' : ''}>Medium</option>
+                                    <option value="high" ${blotter.priority === 'high' ? 'selected' : ''}>High</option>
+                                    <option value="emergency" ${blotter.priority === 'emergency' ? 'selected' : ''}>Emergency</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Incident Description</label>
+                            <textarea id="edit-incident-description" rows="3" 
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">${blotter.incident_description || ''}</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
+                            <textarea id="edit-remarks" rows="2" 
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">${blotter.remarks || ''}</textarea>
+                        </div>
+                        <div id="resolution-section" class="${blotter.status === 'resolved' || blotter.status === 'closed' ? '' : 'hidden'}">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Resolution Details</label>
+                            <textarea id="edit-resolution-details" rows="3" placeholder="Details of how the case was resolved..."
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">${blotter.resolution_details || ''}</textarea>
+                        </div>
+                    </div>
+                `,
+                width: '500px',
+                showCancelButton: true,
+                confirmButtonText: 'Update',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#dc2626',
+                didOpen: () => {
+                    // Show/hide resolution section based on status
+                    document.getElementById('edit-status').addEventListener('change', function() {
+                        const resolutionSection = document.getElementById('resolution-section');
+                        if (this.value === 'resolved' || this.value === 'closed') {
+                            resolutionSection.classList.remove('hidden');
+                        } else {
+                            resolutionSection.classList.add('hidden');
+                        }
+                    });
+                },
+                preConfirm: () => {
+                    const status = document.getElementById('edit-status').value;
+                    const priority = document.getElementById('edit-priority').value;
+                    const incidentDescription = document.getElementById('edit-incident-description').value;
+                    const remarks = document.getElementById('edit-remarks').value;
+                    const resolutionDetails = document.getElementById('edit-resolution-details').value;
+
+                    return {
+                        status: status,
+                        priority: priority,
+                        incident_description: incidentDescription,
+                        remarks: remarks,
+                        resolution_details: resolutionDetails
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateBlotter(blotter.id, result.value);
+                }
+            });
+        }
+
+        // Update blotter
+        function updateBlotter(blotterId, updateData) {
+            fetch(`/clerk/api/blotter/${blotterId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Blotter record updated successfully',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', data.message || 'Failed to update blotter record', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'Failed to update blotter record', 'error');
+            });
+        }
+
+        // Print blotter
+        function printBlotter(blotterId) {
+            // Directly open print view in new window
+            window.open(`/clerk/blotter/${blotterId}/print`, '_blank');
+        }
+
+        // Show print report modal
+        function showPrintReportModal() {
+            Swal.fire({
+                title: 'Print Blotter Report',
+                html: `
+                    <div class="text-left space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
+                            <select id="print-report-type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="all">All Records</option>
+                                <option value="date_range">Date Range</option>
+                                <option value="specific_date">Specific Date</option>
+                            </select>
+                        </div>
+                        
+                        <div id="date-range-section" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">From Date</label>
+                                    <input type="date" id="print-date-from" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">To Date</label>
+                                    <input type="date" id="print-date-to" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="specific-date-section" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
+                            <input type="date" id="print-specific-date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Filter by Status</label>
+                            <select id="print-status-filter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All Statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="under_investigation">Under Investigation</option>
+                                <option value="resolved">Resolved</option>
+                                <option value="closed">Closed</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Filter by Type</label>
+                            <select id="print-type-filter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All Types</option>
+                                <option value="noise_complaint">Noise Complaint</option>
+                                <option value="theft">Theft/Robbery</option>
+                                <option value="domestic_dispute">Domestic Dispute</option>
+                                <option value="public_disturbance">Public Disturbance</option>
+                                <option value="vandalism">Vandalism</option>
+                                <option value="others">Others</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Filter by Priority</label>
+                            <select id="print-priority-filter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">All Priorities</option>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+                `,
+                width: '500px',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-print mr-2"></i>Generate Report',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#2563eb',
+                didOpen: () => {
+                    // Show/hide date sections based on report type
+                    document.getElementById('print-report-type').addEventListener('change', function() {
+                        const dateRangeSection = document.getElementById('date-range-section');
+                        const specificDateSection = document.getElementById('specific-date-section');
+                        
+                        dateRangeSection.classList.add('hidden');
+                        specificDateSection.classList.add('hidden');
+                        
+                        if (this.value === 'date_range') {
+                            dateRangeSection.classList.remove('hidden');
+                        } else if (this.value === 'specific_date') {
+                            specificDateSection.classList.remove('hidden');
+                        }
+                    });
+                },
+                preConfirm: () => {
+                    const reportType = document.getElementById('print-report-type').value;
+                    const dateFrom = document.getElementById('print-date-from').value;
+                    const dateTo = document.getElementById('print-date-to').value;
+                    const specificDate = document.getElementById('print-specific-date').value;
+                    const status = document.getElementById('print-status-filter').value;
+                    const type = document.getElementById('print-type-filter').value;
+                    const priority = document.getElementById('print-priority-filter').value;
+
+                    // Validation
+                    if (reportType === 'date_range' && (!dateFrom || !dateTo)) {
+                        Swal.showValidationMessage('Please select both From and To dates');
+                        return false;
+                    }
+                    if (reportType === 'date_range' && dateFrom > dateTo) {
+                        Swal.showValidationMessage('From date must be before To date');
+                        return false;
+                    }
+                    if (reportType === 'specific_date' && !specificDate) {
+                        Swal.showValidationMessage('Please select a date');
+                        return false;
+                    }
+
+                    return {
+                        reportType,
+                        dateFrom,
+                        dateTo,
+                        specificDate,
+                        status,
+                        type,
+                        priority
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    printReport(result.value);
+                }
+            });
+        }
+
+        // Print report with filters
+        function printReport(filters) {
+            // Build query parameters
+            const params = new URLSearchParams();
+            
+            if (filters.reportType === 'date_range') {
+                params.append('date_from', filters.dateFrom);
+                params.append('date_to', filters.dateTo);
+            } else if (filters.reportType === 'specific_date') {
+                params.append('date_from', filters.specificDate);
+                params.append('date_to', filters.specificDate);
+            }
+            
+            if (filters.status) params.append('status', filters.status);
+            if (filters.type) params.append('type', filters.type);
+            if (filters.priority) params.append('priority', filters.priority);
+            
+            // Open print view with filters
+            window.open(`/clerk/blotter/print?${params.toString()}`, '_blank');
+        }
+
+        // Delete blotter
+        function deleteBlotter(blotterId) {
+            Swal.fire({
+                title: 'Delete Blotter Record',
+                text: 'Are you sure you want to delete this blotter record? This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Delete',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#dc2626'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/clerk/api/blotter/${blotterId}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'Blotter record has been deleted successfully',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', data.message || 'Failed to delete blotter record', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'Failed to delete blotter record', 'error');
+                    });
+                }
+            });
+        }
+
+        // Apply filters function
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value;
+            const type = document.getElementById('typeFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const priority = document.getElementById('priorityFilter').value;
+            const dateFrom = document.getElementById('dateFromFilter').value;
+
+            // Build query parameters
+            const params = new URLSearchParams();
+            if (search) params.append('search', search);
+            if (type) params.append('type', type);
+            if (status) params.append('status', status);
+            if (priority) params.append('priority', priority);
+            if (dateFrom) params.append('date_from', dateFrom);
+            
+            // Reset to page 1
+            params.append('page', '1');
+            
+            // Redirect with filters
+            window.location.href = `${window.location.pathname}?${params.toString()}`;
+        }
+
+        // Reset filters function
+        function resetFilters() {
+            // Clear all filter inputs
+            document.getElementById('searchInput').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('priorityFilter').value = '';
+            document.getElementById('dateFromFilter').value = '';
+            
+            // Redirect without filters
+            window.location.href = window.location.pathname;
+        }
+    </script>
+</body>
+</html>

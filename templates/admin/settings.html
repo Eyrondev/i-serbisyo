@@ -1,0 +1,2525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - iSerBisyo Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',                           
+                            800: '#1e40af',
+                            900: '#1e3a8a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Enhanced active navigation styling */
+        .settings-tab.active {
+            background: linear-gradient(to right, #f8fafc, #f1f5f9) !important;
+            border-left: 4px solid #64748b !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+            color: #475569 !important;
+            transform: translateX(2px);
+        }
+        
+        .settings-tab.active i {
+            color: #64748b !important;
+        }
+        
+        .settings-tab:hover:not(.active) {
+            background: linear-gradient(to right, #f9fafb, #f8fafc);
+            transform: translateX(1px);
+        }
+        
+        .settings-tab {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50">
+    <div class="min-h-screen flex">
+        <!-- Sidebar Container -->
+        <div class="hidden lg:block">
+            {% include 'components/admin-sidebar.html' %}
+        </div>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 lg:pl-64">
+            <!-- Header Container -->
+            {% include 'components/admin-header.html' %}
+            <div id="admin-header"></div>
+
+            <!-- Main content area -->
+            <main class="flex-1 relative overflow-y-auto focus:outline-none">
+                <!-- Settings Content -->
+                <div class="py-3 sm:py-4 lg:py-6">
+                    <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+                        <!-- Modern Page Header -->
+                        <div class="mb-8">
+                            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                                    <div class="flex items-center space-x-4 mb-4 lg:mb-0">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-slate-500 to-gray-600 rounded-xl flex items-center justify-center shadow-lg">
+                                            <i class="fas fa-cog text-white text-2xl"></i>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-3xl font-bold bg-gradient-to-r from-slate-600 to-gray-600 bg-clip-text text-transparent">
+                                                Settings
+                                            </h1>
+                                            <p class="text-gray-600 text-lg">Configure system settings and preferences</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-3">
+                                        <button onclick="resetToDefault()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:shadow-md transition-all duration-300">
+                                            <i class="fas fa-undo mr-2"></i>
+                                            Reset to Default
+                                        </button>
+                                        <button onclick="saveChanges()" class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-slate-600 to-gray-600 text-white text-sm font-medium rounded-lg hover:from-slate-700 hover:to-gray-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-300">
+                                            <i class="fas fa-save mr-2"></i>
+                                            Save Changes
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings Navigation -->
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                            <!-- Modern Settings Sidebar -->
+                            <div class="lg:col-span-3">
+                                <div class="bg-white shadow-lg rounded-xl border border-gray-200">
+                                    <div class="p-6">
+                                        <nav class="space-y-2">
+                                            <button onclick="showSettingsTab('general')" class="settings-tab w-full text-left px-4 py-3 text-sm font-medium text-slate-600 bg-gradient-to-r from-slate-50 to-gray-50 rounded-lg flex items-center transition-all duration-300 shadow-md border-l-4 border-slate-500">
+                                                <i class="fas fa-cog mr-3 text-slate-500"></i>
+                                                General Settings
+                                            </button>
+                                            <button onclick="showSettingsTab('barangay')" class="settings-tab w-full text-left px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gradient-to-r hover:from-gray-50 hover:to-slate-50 rounded-lg flex items-center transition-all duration-300">
+                                                <i class="fas fa-building mr-3 text-gray-500"></i>
+                                                Barangay Information
+                                            </button>
+                                            <button onclick="showSettingsTab('users')" class="settings-tab w-full text-left px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gradient-to-r hover:from-gray-50 hover:to-slate-50 rounded-lg flex items-center transition-all duration-300">
+                                                <i class="fas fa-users mr-3 text-gray-500"></i>
+                                                User Management
+                                            </button>
+                                            <button onclick="showSettingsTab('services')" class="settings-tab w-full text-left px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gradient-to-r hover:from-gray-50 hover:to-slate-50 rounded-lg flex items-center transition-all duration-300">
+                                                <i class="fas fa-list mr-3 text-gray-500"></i>
+                                                Service Fees
+                                            </button>
+                                            <button onclick="showSettingsTab('purok')" class="settings-tab w-full text-left px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gradient-to-r hover:from-gray-50 hover:to-slate-50 rounded-lg flex items-center transition-all duration-300">
+                                                <i class="fas fa-map-marked-alt mr-3 text-gray-500"></i>
+                                                Purok/Sitio Management
+                                            </button>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Settings Content -->
+                            <div class="lg:col-span-9">
+                                <!-- General Settings Tab -->
+                                <div id="general-tab" class="settings-content">
+                                    <div class="bg-white shadow-sm rounded-lg border border-gray-100">
+                                        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-gray-900">General Settings</h3>
+                                                <p class="text-sm text-gray-600">Configure basic system settings and preferences.</p>
+                                            </div>
+                                            <button onclick="saveSystemSettingsOnly()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center">
+                                                <i class="fas fa-save mr-2"></i>Save General Settings
+                                            </button>
+                                        </div>
+                                        <div class="p-4 space-y-4">
+                                            <!-- Loading State -->
+                                            <div id="general-settings-loading" class="text-center py-8">
+                                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto"></div>
+                                                <p class="text-gray-500 mt-2">Loading settings...</p>
+                                            </div>
+                                            
+                                            <!-- Settings Form -->
+                                            <div id="general-settings-form" class="space-y-4 hidden">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-1">System Name</label>
+                                                    <input type="text" id="system-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-1">System Description</label>
+                                                    <textarea id="system-description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="Brief description of the system"></textarea>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-1">Session Timeout (minutes)</label>
+                                                    <input type="number" id="session-timeout" min="10" max="480" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                </div>
+                                                <div class="space-y-3">
+                                                    <h4 class="text-sm font-medium text-gray-900">System Features</h4>
+                                                    <div class="space-y-2">
+                                                        <label class="flex items-center">
+                                                            <input type="checkbox" id="registration-enabled" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" onchange="previewRegistrationSetting(this)">
+                                                            <span class="ml-2 text-sm text-gray-700">Enable new resident registration</span>
+                                                        </label>
+                                                        <div id="registration-preview" class="ml-6 mt-2 text-sm text-gray-600 hidden">
+                                                            <i class="fas fa-info-circle mr-1 text-blue-500"></i>
+                                                            <span id="registration-preview-text"></span>
+                                                        </div>
+                                                        <label class="flex items-center">
+                                                            <input type="checkbox" id="maintenance-mode" class="rounded border-gray-300 text-red-600 focus:ring-red-500" onchange="previewMaintenanceSetting(this)">
+                                                            <span class="ml-2 text-sm text-gray-700">Maintenance mode (disables public access)</span>
+                                                        </label>
+                                                        <div id="maintenance-preview" class="ml-6 mt-2 text-sm text-gray-600 hidden">
+                                                            <i class="fas fa-exclamation-triangle mr-1 text-orange-500"></i>
+                                                            <span id="maintenance-preview-text"></span>
+                                                        </div>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Barangay Information Tab -->
+                                <div id="barangay-tab" class="settings-content hidden">
+                                    <div class="bg-white shadow-sm rounded-lg border border-gray-100">
+                                        <div class="p-4 border-b border-gray-200">
+                                            <h3 class="text-lg font-semibold text-gray-900">Barangay Information</h3>
+                                            <p class="text-sm text-gray-600">Update official barangay details and contact information.</p>
+                                        </div>
+                                        <div class="p-4 space-y-4">
+                                            <!-- Loading State -->
+                                            <div id="barangay-info-loading" class="text-center py-8">
+                                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto"></div>
+                                                <p class="text-gray-500 mt-2">Loading barangay information...</p>
+                                            </div>
+                                            
+                                            <!-- Barangay Info Form -->
+                                            <div id="barangay-info-form" class="space-y-4 hidden">
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-1">Barangay Name</label>
+                                                        <input type="text" id="barangay-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-1">Municipality/City</label>
+                                                        <input type="text" id="municipality" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                    </div>
+                                                </div>
+                                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-1">Province</label>
+                                                        <input type="text" id="province" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-1">Region</label>
+                                                        <input type="text" id="region" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
+                                                        <input type="text" id="zip-code" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                                                    <input type="text" id="street-address" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="Street/Subdivision address">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-1">Barangay Hall Address</label>
+                                                    <textarea id="barangay-hall-address" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="Complete address of the barangay hall"></textarea>
+                                                </div>
+                                                
+                                                <div class="border-t pt-4">
+                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Contact Information</h4>
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                                            <input type="text" id="phone-number" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+                                                            <input type="text" id="mobile-number" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                        </div>
+                                                    </div>
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                                            <input type="email" id="email-address" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Emergency Hotline</label>
+                                                            <input type="text" id="emergency-hotline" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                        </div>
+                                                    </div>
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                                                            <input type="url" id="website" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="https://example.com">
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Facebook Page</label>
+                                                            <input type="url" id="facebook-page" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="https://facebook.com/...">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="border-t pt-4">
+                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Officials Information</h4>
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Captain Name</label>
+                                                            <input type="text" id="captain-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Secretary Name</label>
+                                                            <input type="text" id="secretary-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                        </div>
+                                                    </div>
+                                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Treasurer Name</label>
+                                                            <input type="text" id="treasurer-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Captain Term Start</label>
+                                                            <input type="date" id="captain-term-start" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Captain Term End</label>
+                                                            <input type="date" id="captain-term-end" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="border-t pt-4">
+                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Additional Information</h4>
+                                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Total Population</label>
+                                                            <input type="number" id="total-population" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Total Households</label>
+                                                            <input type="number" id="total-households" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Total Area (hectares)</label>
+                                                            <input type="number" id="total-area" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                                        </div>
+                                                    </div>
+                                                    <div class="mt-4">
+                                                        <label class="block text-sm font-medium text-gray-700 mb-1">Office Hours</label>
+                                                        <input type="text" id="office-hours" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="e.g., 8:00 AM - 5:00 PM">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- User Management Tab -->
+                                <div id="users-tab" class="settings-content hidden">
+                                    <div class="bg-white shadow-sm rounded-lg border border-gray-100">
+                                        <div class="p-4 border-b border-gray-200">
+                                            <div class="flex justify-between items-center mb-4">
+                                                <div>
+                                                    <h3 class="text-lg font-semibold text-gray-900">User Management</h3>
+                                                    <p class="text-sm text-gray-600">Manage all users including admins, clerks, and residents.</p>
+                                                </div>
+                                                <div class="flex space-x-2">
+                                                    <button onclick="loadUsers()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium flex items-center" title="Refresh Users">
+                                                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                                                    </button>
+                                                    <button onclick="addUser()" class="bg-primary-600 hover:bg-primary-700 text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center">
+                                                        <i class="fas fa-plus mr-2"></i>Add User
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <!-- Search Bar -->
+                                            <div class="relative">
+                                                <input type="text" id="user-search" placeholder="Search by name, username, email, or role..." class="w-full px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" onkeyup="filterUsers()">
+                                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                        <div class="overflow-x-auto">
+                                            <!-- Loading State -->
+                                            <div id="users-loading" class="text-center py-8">
+                                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto"></div>
+                                                <p class="text-gray-500 mt-2">Loading users...</p>
+                                            </div>
+                                            
+                                            <!-- Users Table -->
+                                            <table id="users-table" class="min-w-full divide-y divide-gray-200 hidden">
+                                                <thead class="bg-gray-50">
+                                                    <tr>
+                                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Username</th>
+                                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="users-table-body" class="bg-white divide-y divide-gray-200">
+                                                    <!-- Dynamic user rows will be inserted here -->
+                                                </tbody>
+                                            </table>
+                                            
+                                            <!-- Empty State -->
+                                            <div id="users-empty" class="text-center py-8 hidden">
+                                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                    <i class="fas fa-users text-gray-400 text-xl"></i>
+                                                </div>
+                                                <h3 class="text-sm font-medium text-gray-900 mb-2">No Users Found</h3>
+                                                <p class="text-sm text-gray-500 mb-4">Get started by adding your first admin user.</p>
+                                                <button onclick="addUser()" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700">
+                                                    <i class="fas fa-plus mr-2"></i>Add User
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Service Fees Tab -->
+                                <div id="services-tab" class="settings-content hidden">
+                                    <div class="bg-white shadow-sm rounded-lg border border-gray-100">
+                                        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-gray-900">Service Fees</h3>
+                                                <p class="text-sm text-gray-600">Configure fees for barangay services and certificates.</p>
+                                            </div>
+                                            <div class="flex space-x-3">
+                                                <button onclick="addPermit()" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-sm font-medium rounded-lg hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-300">
+                                                    <i class="fas fa-plus mr-2"></i>Add Permit
+                                                </button>
+                                                <button onclick="syncServiceFees()" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-300">
+                                                    <i class="fas fa-sync mr-2"></i>Sync with Database
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="p-4">
+                                            <!-- Loading State -->
+                                            <div id="service-fees-loading" class="text-center py-8">
+                                                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                                <p class="mt-2 text-sm text-gray-600">Loading service fees...</p>
+                                            </div>
+                                            
+                                            <!-- Service Fees Grid -->
+                                            <div id="service-fees-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+                                                <!-- Dynamic content will be loaded here -->
+                                            </div>
+                                            
+                                            <!-- Empty State -->
+                                            <div id="service-fees-empty" class="text-center py-8 hidden">
+                                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                    <i class="fas fa-file-invoice-dollar text-gray-400 text-2xl"></i>
+                                                </div>
+                                                <h3 class="text-lg font-medium text-gray-900 mb-2">No Service Fees Found</h3>
+                                                <p class="text-gray-600 mb-4">Start by adding certificate types and their fees.</p>
+                                                <button onclick="syncServiceFees()" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+                                                    <i class="fas fa-sync mr-2"></i>Initialize Default Fees
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Purok/Sitio Management Tab -->
+                                <div id="purok-tab" class="settings-content hidden">
+                                    <div class="bg-white shadow-sm rounded-lg border border-gray-100">
+                                        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-gray-900">Purok/Sitio Management</h3>
+                                                <p class="text-sm text-gray-600">Manage purok or sitio areas within the barangay. Resident counts are synced automatically from database.</p>
+                                            </div>
+                                            <div class="flex gap-2">
+                                                <button onclick="syncPurokCounts()" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-sm font-medium rounded-lg hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-300" title="Sync resident counts with database">
+                                                    <i class="fas fa-sync-alt mr-2"></i>Sync Counts
+                                                </button>
+                                                <button onclick="addPurok()" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-300">
+                                                    <i class="fas fa-plus mr-2"></i>Add Purok/Sitio
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="p-4">
+                                            <!-- Loading State -->
+                                            <div id="purok-loading" class="text-center py-8">
+                                                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                                <p class="mt-2 text-sm text-gray-600">Loading purok/sitio data...</p>
+                                            </div>
+                                            
+                                            <!-- Purok Grid -->
+                                            <div id="purok-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 hidden">
+                                                <!-- Dynamic content will be loaded here -->
+                                            </div>
+                                            
+                                            <!-- Empty State -->
+                                            <div id="purok-empty" class="text-center py-8 hidden">
+                                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                    <i class="fas fa-map-marked-alt text-gray-400 text-2xl"></i>
+                                                </div>
+                                                <h3 class="text-lg font-medium text-gray-900 mb-2">No Purok/Sitio Areas</h3>
+                                                <p class="text-gray-600 mb-4">Get started by adding your first purok or sitio area.</p>
+                                                <button onclick="addPurok()" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+                                                    <i class="fas fa-plus mr-2"></i>Add First Purok/Sitio
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Tab Management
+        function showSettingsTab(tabName) {
+            // Hide all content tabs
+            const contents = document.querySelectorAll('.settings-content');
+            contents.forEach(content => content.classList.add('hidden'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.settings-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active', 'text-slate-600', 'bg-gradient-to-r', 'from-slate-50', 'to-gray-50', 'shadow-md', 'border-l-4', 'border-slate-500');
+                tab.classList.add('text-gray-700');
+                // Reset icon color
+                const icon = tab.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('text-slate-500');
+                    icon.classList.add('text-gray-500');
+                }
+            });
+            
+            // Show selected content
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+            
+            // Activate selected tab
+            const activeTab = event.target.closest('.settings-tab');
+            activeTab.classList.remove('text-gray-700');
+            activeTab.classList.add('active', 'text-slate-600', 'bg-gradient-to-r', 'from-slate-50', 'to-gray-50', 'shadow-md', 'border-l-4', 'border-slate-500');
+            
+            // Update icon color for active tab
+            const activeIcon = activeTab.querySelector('i');
+            if (activeIcon) {
+                activeIcon.classList.remove('text-gray-500');
+                activeIcon.classList.add('text-slate-500');
+            }
+            
+            // Load data based on the selected tab
+            switch(tabName) {
+                case 'general':
+                    if (!systemSettingsData || Object.keys(systemSettingsData).length === 0) {
+                        loadSystemSettings();
+                    }
+                    break;
+                case 'barangay':
+                    if (!barangayInfoData || Object.keys(barangayInfoData).length === 0) {
+                        loadBarangayInfo();
+                    }
+                    break;
+                case 'users':
+                    if (!usersData || usersData.length === 0) {
+                        loadUsers();
+                    }
+                    break;
+                case 'purok':
+                    if (!purokData || purokData.length === 0) {
+                        loadPurok();
+                    }
+                    break;
+            }
+        }
+
+        // Header Actions
+        function resetToDefault() {
+            Swal.fire({
+                title: 'Reset to Default Settings?',
+                text: 'This will restore all settings to their default values. This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, reset all',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Resetting Settings...',
+                        text: 'Please wait while we restore default settings.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Simulate API call
+                    setTimeout(() => {
+                        Swal.fire({
+                            title: 'Settings Reset!',
+                            text: 'All settings have been restored to default values.',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    }, 2000);
+                }
+            });
+        }
+
+        function saveChanges() {
+            Swal.fire({
+                title: 'Save Changes?',
+                text: 'Do you want to save all configuration changes?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#059669',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, save changes',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Saving Changes...',
+                        text: 'Please wait while we save your settings.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Save all settings sections
+                    Promise.all([
+                        saveSystemSettings(),
+                        saveBarangayInfo()
+                    ])
+                    .then(results => {
+                        const messages = results.filter(r => r && r.message).map(r => r.message).join('\n');
+                        Swal.fire({
+                            title: 'Settings Saved!',
+                            text: 'All changes have been saved successfully.',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Save settings error:', error);
+                        Swal.fire({
+                            title: 'Error',
+                            text: (error && error.message) || error || 'Failed to save settings. Please try again.',
+                            icon: 'error'
+                        });
+                    });
+                }
+            });
+        }
+
+        // User Management Functions
+        function addUser() {
+            Swal.fire({
+                title: 'Add New User',
+                html: `
+                    <div class="text-left space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input type="text" id="add-user-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="Enter full name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                            <input type="text" id="add-user-username" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="Enter username">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <input type="email" id="add-user-email" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="Enter email address">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                            <select id="add-user-role" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                <option value="">Select role...</option>
+                                <option value="admin">Admin</option>
+                                <option value="clerk">Clerk</option>
+                                <option value="super_admin">Super Admin</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input type="password" id="add-user-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="Enter password">
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="add-user-active" checked class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                            <label class="ml-2 text-sm text-gray-700">Active</label>
+                        </div>
+                    </div>
+                `,
+                width: '500px',
+                showCancelButton: true,
+                confirmButtonText: 'Add User',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#059669',
+                preConfirm: () => {
+                    const name = document.getElementById('add-user-name').value.trim();
+                    const username = document.getElementById('add-user-username').value.trim();
+                    const email = document.getElementById('add-user-email').value.trim();
+                    const role = document.getElementById('add-user-role').value;
+                    const password = document.getElementById('add-user-password').value;
+                    const is_active = document.getElementById('add-user-active').checked;
+
+                    if (!name || !username || !email || !role || !password) {
+                        Swal.showValidationMessage('Please fill in all required fields');
+                        return false;
+                    }
+
+                    if (password.length < 8) {
+                        Swal.showValidationMessage('Password must be at least 8 characters long');
+                        return false;
+                    }
+
+                    return { name, username, email, role, password, is_active };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Creating User...',
+                        text: 'Please wait while we create the new user.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Call API to create user
+                    fetch('/admin/api/users', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(result.value)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'User Added!',
+                                text: `User ${data.user.name} has been added successfully.`,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                loadUsers(); // Reload the users list
+                            });
+                        } else {
+                            throw new Error(data.message || 'Failed to create user');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error',
+                            text: error.message || 'Failed to create user. Please try again.',
+                            icon: 'error'
+                        });
+                    });
+                }
+            });
+        }
+
+        function editUser(userId) {
+            // Find user data from loaded users
+            const userData = usersData.find(user => user.id === userId);
+            if (!userData) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'User not found',
+                    icon: 'error'
+                });
+                return;
+            }
+            
+            Swal.fire({
+                title: 'Edit User',
+                html: `
+                    <div class="text-left space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                            <input type="text" id="edit-user-name" value="${userData.name}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <input type="email" id="edit-user-email" value="${userData.email}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                            <select id="edit-user-role" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                <option value="admin" ${userData.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                <option value="clerk" ${userData.role === 'clerk' ? 'selected' : ''}>Clerk</option>
+                                <option value="super_admin" ${userData.role === 'super_admin' ? 'selected' : ''}>Super Admin</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="edit-user-active" ${userData.is_active ? 'checked' : ''} class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                            <label class="ml-2 text-sm text-gray-700">Active</label>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">New Password (optional)</label>
+                            <input type="password" id="edit-user-password" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="Leave empty to keep current password">
+                        </div>
+                    </div>
+                `,
+                width: '500px',
+                showCancelButton: true,
+                confirmButtonText: 'Update User',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#059669',
+                preConfirm: () => {
+                    const name = document.getElementById('edit-user-name').value.trim();
+                    const email = document.getElementById('edit-user-email').value.trim();
+                    const role = document.getElementById('edit-user-role').value;
+                    const is_active = document.getElementById('edit-user-active').checked;
+                    const password = document.getElementById('edit-user-password').value;
+
+                    if (!name || !email || !role) {
+                        Swal.showValidationMessage('Please fill in all required fields');
+                        return false;
+                    }
+
+                    if (password && password.length < 8) {
+                        Swal.showValidationMessage('Password must be at least 8 characters long');
+                        return false;
+                    }
+
+                    const updateData = { name, email, role, is_active };
+                    if (password) {
+                        updateData.password = password;
+                    }
+
+                    return updateData;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Updating User...',
+                        text: 'Please wait while we update the user.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Call API to update user
+                    fetch(`/admin/api/users/${userId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(result.value)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'User Updated!',
+                                text: 'User information has been updated successfully.',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                loadUsers(); // Reload the users list
+                            });
+                        } else {
+                            throw new Error(data.message || 'Failed to update user');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error',
+                            text: error.message || 'Failed to update user. Please try again.',
+                            icon: 'error'
+                        });
+                    });
+                }
+            });
+        }
+
+        function deleteUser(userId) {
+            // Find user data from loaded users
+            const userData = usersData.find(user => user.id === userId);
+            if (!userData) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'User not found',
+                    icon: 'error'
+                });
+                return;
+            }
+            
+            Swal.fire({
+                title: 'Delete User?',
+                text: `Are you sure you want to delete ${userData.name}? This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, delete user',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Deleting User...',
+                        text: 'Please wait while we delete the user.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Call API to delete user
+                    fetch(`/admin/api/users/${userId}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'User Deleted!',
+                                text: `${userData.name} has been removed from the system.`,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                loadUsers(); // Reload the users list
+                            });
+                        } else {
+                            throw new Error(data.message || 'Failed to delete user');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error',
+                            text: error.message || 'Failed to delete user. Please try again.',
+                            icon: 'error'
+                        });
+                    });
+                }
+            });
+        }
+
+
+
+
+
+        // Purok/Sitio Management Functions
+        let purokData = [];
+        let purokApiAvailable = true;
+
+        function disablePurokButtons() {
+            const addButtons = document.querySelectorAll('button[onclick="addPurok()"]');
+            addButtons.forEach(button => {
+                button.disabled = true;
+                button.classList.add('opacity-50', 'cursor-not-allowed');
+                button.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>API Not Available';
+            });
+        }
+
+        function loadPurok() {
+            const loadingElement = document.getElementById('purok-loading');
+            const gridElement = document.getElementById('purok-grid');
+            const emptyElement = document.getElementById('purok-empty');
+            
+            // Show loading state
+            loadingElement.classList.remove('hidden');
+            gridElement.classList.add('hidden');
+            emptyElement.classList.add('hidden');
+            
+            fetch('/admin/api/purok')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('API endpoint not available');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        purokData = data.purok || [];
+                        renderPurokGrid();
+                    } else {
+                        throw new Error(data.message || 'Failed to load purok data');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading purok:', error);
+                    loadingElement.classList.add('hidden');
+                    emptyElement.classList.remove('hidden');
+                    
+                    // Update empty state message for API not available
+                    if (error.message.includes('API endpoint not available')) {
+                        purokApiAvailable = false;
+                        disablePurokButtons();
+                        
+                        const emptyTitle = emptyElement.querySelector('h3');
+                        const emptyText = emptyElement.querySelector('p');
+                        const emptyButton = emptyElement.querySelector('button');
+                        
+                        if (emptyTitle) emptyTitle.textContent = 'API Not Configured';
+                        if (emptyText) emptyText.textContent = 'Purok/Sitio management API endpoints are not yet configured. Please contact the system administrator.';
+                        if (emptyButton) emptyButton.style.display = 'none'; // Hide the add button
+                    }
+                });
+        }
+
+        function renderPurokGrid() {
+            const loadingElement = document.getElementById('purok-loading');
+            const gridElement = document.getElementById('purok-grid');
+            const emptyElement = document.getElementById('purok-empty');
+            
+            loadingElement.classList.add('hidden');
+            
+            if (purokData.length === 0) {
+                emptyElement.classList.remove('hidden');
+                return;
+            }
+            
+            gridElement.innerHTML = '';
+            
+            purokData.forEach(purok => {
+                const purokCard = document.createElement('div');
+                purokCard.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200';
+                purokCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-map-marker-alt text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">${purok.name}</h4>
+                                <p class="text-sm text-gray-500">${purok.type || 'Purok'}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="editPurok(${purok.id})" class="text-blue-600 hover:text-blue-800 p-1 rounded" title="Edit">
+                                <i class="fas fa-edit text-sm"></i>
+                            </button>
+                            <button onclick="deletePurok(${purok.id})" class="text-red-600 hover:text-red-800 p-1 rounded" title="Delete">
+                                <i class="fas fa-trash text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i class="fas fa-users w-4 text-gray-400 mr-2"></i>
+                            <span>${purok.resident_count || 0} residents</span>
+                        </div>
+                        ${purok.leader_name ? `
+                        <div class="flex items-center text-sm text-gray-600">
+                            <i class="fas fa-user-tie w-4 text-gray-400 mr-2"></i>
+                            <span>${purok.leader_name}</span>
+                        </div>
+                        ` : ''}
+                        ${purok.description ? `
+                        <div class="text-sm text-gray-600 mt-2">
+                            <p class="line-clamp-2">${purok.description}</p>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            purok.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }">
+                            ${purok.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                        <div class="text-xs text-gray-400">
+                            Created ${purok.created_at ? new Date(purok.created_at).toLocaleDateString() : 'N/A'}
+                        </div>
+                    </div>
+                `;
+                gridElement.appendChild(purokCard);
+            });
+            
+            gridElement.classList.remove('hidden');
+        }
+
+        function addPurok() {
+            // Check if API is available
+            if (!purokApiAvailable) {
+                Swal.fire({
+                    title: 'Feature Not Available',
+                    text: 'Purok/Sitio management API is not yet configured. Please contact the system administrator to set up the required endpoints.',
+                    icon: 'warning',
+                    confirmButtonColor: '#f59e0b'
+                });
+                return;
+            }
+            
+            Swal.fire({
+                title: 'Add New Purok/Sitio',
+                html: `
+                    <div class="text-left space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                            <input type="text" id="add-purok-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="e.g., Purok 1, Sitio Malinis">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                            <select id="add-purok-type" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                <option value="Purok">Purok</option>
+                                <option value="Sitio">Sitio</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Leader Name (Optional)</label>
+                            <input type="text" id="add-purok-leader" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="Purok/Sitio Leader">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
+                            <textarea id="add-purok-description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="Brief description of the area"></textarea>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="add-purok-active" checked class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                            <label class="ml-2 text-sm text-gray-700">Active</label>
+                        </div>
+                    </div>
+                `,
+                width: '500px',
+                showCancelButton: true,
+                confirmButtonText: 'Add Purok/Sitio',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#059669',
+                preConfirm: () => {
+                    const name = document.getElementById('add-purok-name').value.trim();
+                    const type = document.getElementById('add-purok-type').value;
+                    const leader_name = document.getElementById('add-purok-leader').value.trim();
+                    const description = document.getElementById('add-purok-description').value.trim();
+                    const is_active = document.getElementById('add-purok-active').checked;
+
+                    if (!name) {
+                        Swal.showValidationMessage('Name is required');
+                        return false;
+                    }
+
+                    return { name, type, leader_name, description, is_active };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    createPurok(result.value);
+                }
+            });
+        }
+
+        function createPurok(purokData) {
+            Swal.fire({
+                title: 'Creating Purok/Sitio...',
+                text: 'Please wait while we add the new area.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch('/admin/api/purok', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(purokData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('API endpoint not available');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Purok/Sitio Added!',
+                        text: 'The new area has been added successfully.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        loadPurok();
+                    });
+                } else {
+                    throw new Error(data.message || 'Failed to add purok/sitio');
+                }
+            })
+            .catch(error => {
+                console.error('Error creating purok:', error);
+                let errorMessage = 'Failed to add purok/sitio. Please try again.';
+                let iconType = 'error';
+                
+                if (error.message.includes('API endpoint not available')) {
+                    errorMessage = 'Purok/Sitio management API is not yet configured. Please contact the system administrator to set up the required endpoints.';
+                    iconType = 'warning';
+                }
+                
+                Swal.fire({
+                    title: iconType === 'error' ? 'Error' : 'Feature Not Available',
+                    text: errorMessage,
+                    icon: iconType,
+                    confirmButtonColor: iconType === 'error' ? '#ef4444' : '#f59e0b'
+                });
+            });
+        }
+
+        function editPurok(purokId) {
+            const purok = purokData.find(p => p.id === purokId);
+            if (!purok) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Purok/Sitio not found',
+                    icon: 'error'
+                });
+                return;
+            }
+            
+            Swal.fire({
+                title: 'Edit Purok/Sitio',
+                html: `
+                    <div class="text-left space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                            <input type="text" id="edit-purok-name" value="${purok.name}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                            <select id="edit-purok-type" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                                <option value="Purok" ${purok.type === 'Purok' ? 'selected' : ''}>Purok</option>
+                                <option value="Sitio" ${purok.type === 'Sitio' ? 'selected' : ''}>Sitio</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Leader Name (Optional)</label>
+                            <input type="text" id="edit-purok-leader" value="${purok.leader_name || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
+                            <textarea id="edit-purok-description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">${purok.description || ''}</textarea>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="edit-purok-active" ${purok.is_active ? 'checked' : ''} class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                            <label class="ml-2 text-sm text-gray-700">Active</label>
+                        </div>
+                    </div>
+                `,
+                width: '500px',
+                showCancelButton: true,
+                confirmButtonText: 'Update Purok/Sitio',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#059669',
+                preConfirm: () => {
+                    const name = document.getElementById('edit-purok-name').value.trim();
+                    const type = document.getElementById('edit-purok-type').value;
+                    const leader_name = document.getElementById('edit-purok-leader').value.trim();
+                    const description = document.getElementById('edit-purok-description').value.trim();
+                    const is_active = document.getElementById('edit-purok-active').checked;
+
+                    if (!name) {
+                        Swal.showValidationMessage('Name is required');
+                        return false;
+                    }
+
+                    return { name, type, leader_name, description, is_active };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updatePurok(purokId, result.value);
+                }
+            });
+        }
+
+        function updatePurok(purokId, updateData) {
+            Swal.fire({
+                title: 'Updating Purok/Sitio...',
+                text: 'Please wait while we update the area.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(`/admin/api/purok/${purokId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('API endpoint not available');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Purok/Sitio Updated!',
+                        text: 'The area has been updated successfully.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        loadPurok();
+                    });
+                } else {
+                    throw new Error(data.message || 'Failed to update purok/sitio');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating purok:', error);
+                let errorMessage = 'Failed to update purok/sitio. Please try again.';
+                let iconType = 'error';
+                
+                if (error.message.includes('API endpoint not available')) {
+                    errorMessage = 'Purok/Sitio management API is not yet configured. Please contact the system administrator to set up the required endpoints.';
+                    iconType = 'warning';
+                }
+                
+                Swal.fire({
+                    title: iconType === 'error' ? 'Error' : 'Feature Not Available',
+                    text: errorMessage,
+                    icon: iconType,
+                    confirmButtonColor: iconType === 'error' ? '#ef4444' : '#f59e0b'
+                });
+            });
+        }
+
+        function deletePurok(purokId) {
+            const purok = purokData.find(p => p.id === purokId);
+            if (!purok) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Purok/Sitio not found',
+                    icon: 'error'
+                });
+                return;
+            }
+            
+            Swal.fire({
+                title: 'Delete Purok/Sitio?',
+                text: `Are you sure you want to delete "${purok.name}"? This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, delete it',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Deleting Purok/Sitio...',
+                        text: 'Please wait while we delete the area.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch(`/admin/api/purok/${purokId}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('API endpoint not available');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Purok/Sitio Deleted!',
+                                text: 'The area has been deleted successfully.',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                loadPurok();
+                            });
+                        } else {
+                            throw new Error(data.message || 'Failed to delete purok/sitio');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting purok:', error);
+                        let errorMessage = 'Failed to delete purok/sitio. Please try again.';
+                        let iconType = 'error';
+                        
+                        if (error.message.includes('API endpoint not available')) {
+                            errorMessage = 'Purok/Sitio management API is not yet configured. Please contact the system administrator to set up the required endpoints.';
+                            iconType = 'warning';
+                        }
+                        
+                        Swal.fire({
+                            title: iconType === 'error' ? 'Error' : 'Feature Not Available',
+                            text: errorMessage,
+                            icon: iconType,
+                            confirmButtonColor: iconType === 'error' ? '#ef4444' : '#f59e0b'
+                        });
+                    });
+                }
+            });
+        }
+
+        function syncPurokCounts() {
+            Swal.fire({
+                title: 'Sync Resident Counts?',
+                html: `
+                    <div class="text-left space-y-3">
+                        <p class="text-gray-700">This will update all purok/sitio population counts with the actual number of approved residents from the database.</p>
+                        <p class="text-sm text-gray-600">Note: Resident counts are already synced automatically when viewing the list, but you can manually trigger this sync to update the database records.</p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#059669',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, sync now',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Syncing Counts...',
+                        text: 'Please wait while we update resident counts.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch('/admin/api/purok/sync-counts', {
+                        method: 'POST'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to sync counts');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Success!',
+                                html: `<p>${data.message}</p>`,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                // Reload purok data to show updated counts
+                                loadPurok();
+                            });
+                        } else {
+                            throw new Error(data.message || 'Failed to sync counts');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error syncing counts:', error);
+                        Swal.fire({
+                            title: 'Error',
+                            text: error.message || 'Failed to sync resident counts. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    });
+                }
+            });
+        }
+
+
+
+        // Utility Functions
+        function getUserData(userId) {
+            // Find user from loaded users data
+            return usersData.find(user => user.id === userId) || {};
+        }
+
+        function collectAllSettings() {
+            // This function is no longer needed as we save individual sections
+            // but keeping for backward compatibility
+            return {
+                system: systemSettingsData,
+                barangay: barangayInfoData,
+                users: usersData
+            };
+        }
+
+        // System Settings Management Functions
+        let systemSettingsData = {};
+        let barangayInfoData = {};
+
+        function loadSystemSettings() {
+            const loadingElement = document.getElementById('general-settings-loading');
+            const formElement = document.getElementById('general-settings-form');
+            
+            // Show loading state
+            loadingElement.classList.remove('hidden');
+            formElement.classList.add('hidden');
+            
+            fetch('/admin/api/system-settings')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('API endpoint not available');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        systemSettingsData = data.settings;
+                        populateSystemSettingsForm(data.settings);
+                    } else {
+                        throw new Error(data.message || 'Failed to load system settings');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading system settings:', error);
+                    let errorMessage = 'Failed to load system settings: ' + error.message;
+                    if (error.message.includes('API endpoint not available')) {
+                        errorMessage = 'System settings API is not yet configured. Using default values.';
+                        // Populate with default values
+                        populateSystemSettingsForm({});
+                    }
+                    Swal.fire({
+                        title: 'Warning',
+                        text: errorMessage,
+                        icon: 'warning',
+                        confirmButtonColor: '#f59e0b'
+                    });
+                })
+                .finally(() => {
+                    loadingElement.classList.add('hidden');
+                    formElement.classList.remove('hidden');
+                });
+        }
+
+        function populateSystemSettingsForm(settings) {
+            // Populate form fields with data from database
+            document.getElementById('system-name').value = settings.system_name || '';
+            document.getElementById('system-description').value = settings.system_description || '';
+            document.getElementById('session-timeout').value = settings.session_timeout_minutes || 60;
+            
+            // Set checkboxes
+            const registrationCheckbox = document.getElementById('registration-enabled');
+            const maintenanceCheckbox = document.getElementById('maintenance-mode');
+            
+            registrationCheckbox.checked = settings.registration_enabled !== false;
+            maintenanceCheckbox.checked = settings.maintenance_mode === true;
+            
+            // Trigger preview functions to show appropriate messages
+            previewRegistrationSetting(registrationCheckbox);
+            previewMaintenanceSetting(maintenanceCheckbox);
+        }
+
+        function saveSystemSettings() {
+            const formData = {
+                system_name: document.getElementById('system-name').value,
+                system_description: document.getElementById('system-description').value,
+                session_timeout_minutes: parseInt(document.getElementById('session-timeout').value) || 60,
+                registration_enabled: document.getElementById('registration-enabled').checked,
+                maintenance_mode: document.getElementById('maintenance-mode').checked
+            };
+
+            return fetch('/admin/api/system-settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    systemSettingsData = data.settings;
+                    return { success: true, message: 'System settings saved successfully' };
+                } else {
+                    throw new Error(data.message || 'Failed to save system settings');
+                }
+            })
+            .catch(error => {
+                throw new Error('Failed to save system settings: ' + (error.message || error));
+            });
+        }
+
+        function loadBarangayInfo() {
+            const loadingElement = document.getElementById('barangay-info-loading');
+            const formElement = document.getElementById('barangay-info-form');
+            
+            // Show loading state
+            loadingElement.classList.remove('hidden');
+            formElement.classList.add('hidden');
+            
+            fetch('/admin/api/barangay-info')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('API endpoint not available');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        barangayInfoData = data.barangay_info;
+                        populateBarangayInfoForm(data.barangay_info);
+                    } else {
+                        throw new Error(data.message || 'Failed to load barangay information');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading barangay information:', error);
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to load barangay information: ' + error.message,
+                        icon: 'error',
+                        confirmButtonColor: '#ef4444'
+                    });
+                })
+                .finally(() => {
+                    loadingElement.classList.add('hidden');
+                    formElement.classList.remove('hidden');
+                });
+        }
+
+        function populateBarangayInfoForm(info) {
+            // Basic Information
+            document.getElementById('barangay-name').value = info.barangay_name || '';
+            document.getElementById('municipality').value = info.municipality || '';
+            document.getElementById('province').value = info.province || '';
+            document.getElementById('region').value = info.region || '';
+            document.getElementById('zip-code').value = info.zip_code || '';
+            document.getElementById('street-address').value = info.street_address || '';
+            document.getElementById('barangay-hall-address').value = info.barangay_hall_address || '';
+            
+            // Contact Information
+            document.getElementById('phone-number').value = info.phone_number || '';
+            document.getElementById('mobile-number').value = info.mobile_number || '';
+            document.getElementById('email-address').value = info.email_address || '';
+            document.getElementById('emergency-hotline').value = info.emergency_hotline || '';
+            document.getElementById('website').value = info.website || '';
+            document.getElementById('facebook-page').value = info.facebook_page || '';
+            
+            // Officials Information
+            document.getElementById('captain-name').value = info.captain_name || '';
+            document.getElementById('secretary-name').value = info.secretary_name || '';
+            document.getElementById('treasurer-name').value = info.treasurer_name || '';
+            document.getElementById('captain-term-start').value = info.captain_term_start || '';
+            document.getElementById('captain-term-end').value = info.captain_term_end || '';
+            
+            // Additional Information
+            document.getElementById('total-population').value = info.total_population || '';
+            document.getElementById('total-households').value = info.total_households || '';
+            document.getElementById('total-area').value = info.total_area_hectares || '';
+            document.getElementById('office-hours').value = info.office_hours || '';
+        }
+
+        function saveBarangayInfo() {
+            const formData = {
+                barangay_name: document.getElementById('barangay-name').value,
+                municipality: document.getElementById('municipality').value,
+                province: document.getElementById('province').value,
+                region: document.getElementById('region').value,
+                zip_code: document.getElementById('zip-code').value,
+                street_address: document.getElementById('street-address').value,
+                barangay_hall_address: document.getElementById('barangay-hall-address').value,
+                phone_number: document.getElementById('phone-number').value,
+                mobile_number: document.getElementById('mobile-number').value,
+                email_address: document.getElementById('email-address').value,
+                emergency_hotline: document.getElementById('emergency-hotline').value,
+                website: document.getElementById('website').value,
+                facebook_page: document.getElementById('facebook-page').value,
+                captain_name: document.getElementById('captain-name').value,
+                secretary_name: document.getElementById('secretary-name').value,
+                treasurer_name: document.getElementById('treasurer-name').value,
+                captain_term_start: document.getElementById('captain-term-start').value,
+                captain_term_end: document.getElementById('captain-term-end').value,
+                total_population: document.getElementById('total-population').value,
+                total_households: document.getElementById('total-households').value,
+                total_area_hectares: document.getElementById('total-area').value,
+                office_hours: document.getElementById('office-hours').value
+            };
+
+            return fetch('/admin/api/barangay-info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    barangayInfoData = data.barangay_info;
+                    return { success: true, message: 'Barangay information saved successfully' };
+                } else {
+                    throw new Error(data.message || 'Failed to save barangay information');
+                }
+            })
+            .catch(error => {
+                throw new Error('Failed to save barangay information: ' + error.message);
+            });
+        }
+
+        // User Management Functions (replacing mock functions)
+        let usersData = [];
+
+        function loadUsers() {
+            fetch('/admin/api/users')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('API endpoint not available');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        usersData = data.users || [];
+                        renderUsersTable();
+                    } else {
+                        throw new Error(data.message || 'Failed to load users');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading users:', error);
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to load users: ' + error.message,
+                        icon: 'error',
+                        confirmButtonColor: '#ef4444'
+                    });
+                });
+        }
+
+        function renderUsersTable(filteredData = null) {
+            const loadingElement = document.getElementById('users-loading');
+            const tableElement = document.getElementById('users-table');
+            const emptyElement = document.getElementById('users-empty');
+            const tableBody = document.getElementById('users-table-body');
+            
+            // Use filtered data if provided, otherwise use all users
+            const dataToRender = filteredData !== null ? filteredData : usersData;
+            
+            // Hide loading state
+            loadingElement.classList.add('hidden');
+            
+            if (!dataToRender || dataToRender.length === 0) {
+                // Show empty state
+                tableElement.classList.add('hidden');
+                emptyElement.classList.remove('hidden');
+                return;
+            }
+            
+            // Show table and hide empty state
+            tableElement.classList.remove('hidden');
+            emptyElement.classList.add('hidden');
+            
+            // Clear existing rows
+            tableBody.innerHTML = '';
+            
+            // Generate rows for each user
+            dataToRender.forEach(user => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                // Format dates
+                const createdDate = user.created_at ? new Date(user.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                }) : 'N/A';
+                
+                // Determine role badge color
+                const getRoleBadgeClass = (role) => {
+                    switch(role?.toLowerCase()) {
+                        case 'super_admin':
+                            return 'bg-purple-100 text-purple-800';
+                        case 'admin':
+                            return 'bg-red-100 text-red-800';
+                        case 'clerk':
+                            return 'bg-blue-100 text-blue-800';
+                        case 'resident':
+                            return 'bg-green-100 text-green-800';
+                        default:
+                            return 'bg-gray-100 text-gray-800';
+                    }
+                };
+                
+                // Determine status badge
+                const isActive = user.is_active;
+                const statusBadge = isActive 
+                    ? '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>'
+                    : '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">Inactive</span>';
+                
+                // Determine user avatar color based on role
+                const getAvatarClass = (role) => {
+                    switch(role?.toLowerCase()) {
+                        case 'super_admin':
+                            return 'bg-purple-500 text-white';
+                        case 'admin':
+                            return 'bg-red-500 text-white';
+                        case 'clerk':
+                            return 'bg-blue-500 text-white';
+                        case 'resident':
+                            return 'bg-green-500 text-white';
+                        default:
+                            return 'bg-gray-500 text-white';
+                    }
+                };
+                
+                // Get user initials
+                const getInitials = (name) => {
+                    if (!name) return '?';
+                    const parts = name.split(' ');
+                    if (parts.length >= 2) {
+                        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+                    }
+                    return name[0].toUpperCase();
+                };
+                
+                row.innerHTML = `
+                    <td class="px-4 py-3">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 ${getAvatarClass(user.role)} rounded-full flex items-center justify-center font-semibold text-sm">
+                                ${getInitials(user.name)}
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-sm font-medium text-gray-900">${user.name || 'N/A'}</div>
+                                <div class="text-xs text-gray-500">${user.email || 'No email'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="text-sm text-gray-900">${user.username || 'N/A'}</div>
+                    </td>
+                    <td class="px-4 py-3">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${getRoleBadgeClass(user.role)}">
+                            ${user.role ? user.role.replace('_', ' ').toUpperCase() : 'N/A'}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        ${statusBadge}
+                    </td>
+                    <td class="px-4 py-3 text-sm text-gray-500">${createdDate}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex space-x-2">
+                            <button onclick="editUser(${user.id})" class="text-blue-600 hover:text-blue-900 p-1" title="Edit User">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteUser(${user.id})" class="text-red-600 hover:text-red-900 p-1" title="Delete User">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            console.log(`Rendered ${dataToRender.length} users in the table`);
+        }
+
+        // Filter users based on search input
+        function filterUsers() {
+            const searchInput = document.getElementById('user-search');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                // If search is empty, show all users
+                renderUsersTable();
+                return;
+            }
+            
+            // Filter users based on search term
+            const filteredUsers = usersData.filter(user => {
+                const name = (user.name || '').toLowerCase();
+                const username = (user.username || '').toLowerCase();
+                const email = (user.email || '').toLowerCase();
+                const role = (user.role || '').toLowerCase();
+                
+                return name.includes(searchTerm) ||
+                       username.includes(searchTerm) ||
+                       email.includes(searchTerm) ||
+                       role.includes(searchTerm);
+            });
+            
+            renderUsersTable(filteredUsers);
+        }
+
+        // Service Fees Management Functions
+        let serviceFeesData = [];
+
+        function loadServiceFees() {
+            const loadingElement = document.getElementById('service-fees-loading');
+            const gridElement = document.getElementById('service-fees-grid');
+            const emptyElement = document.getElementById('service-fees-empty');
+            
+            // Show loading state
+            loadingElement.classList.remove('hidden');
+            gridElement.classList.add('hidden');
+            emptyElement.classList.add('hidden');
+            
+            fetch('/admin/api/certificate-types')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('API endpoint not available');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        serviceFeesData = data.certificate_types || [];
+                        renderServiceFees();
+                    } else {
+                        throw new Error(data.message || 'Failed to load service fees');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading service fees:', error);
+                    loadingElement.classList.add('hidden');
+                    emptyElement.classList.remove('hidden');
+                });
+        }
+
+        function renderServiceFees() {
+            const loadingElement = document.getElementById('service-fees-loading');
+            const gridElement = document.getElementById('service-fees-grid');
+            const emptyElement = document.getElementById('service-fees-empty');
+            
+            loadingElement.classList.add('hidden');
+            
+            if (serviceFeesData.length === 0) {
+                emptyElement.classList.remove('hidden');
+                return;
+            }
+            
+            gridElement.innerHTML = '';
+            
+            serviceFeesData.forEach(fee => {
+                const feeCard = document.createElement('div');
+                feeCard.className = 'border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow duration-200';
+                feeCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex-1">
+                            <span class="text-sm font-medium text-gray-900">${fee.name}</span>
+                            ${!fee.is_active ? '<span class="ml-2 px-2 py-1 text-xs bg-red-100 text-red-800 rounded">Inactive</span>' : ''}
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="number" 
+                                   value="${fee.fee}" 
+                                   data-fee-id="${fee.id}"
+                                   class="w-20 px-2 py-1 border border-gray-300 rounded text-sm fee-input"
+                                   onchange="updateFeeValue(${fee.id}, this.value)"
+                                   ${!fee.is_active ? 'disabled' : ''}>
+                            <button onclick="editPermit(${fee.id})" 
+                                    class="text-blue-600 hover:text-blue-800 text-xs"
+                                    title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deletePermit(${fee.id})" 
+                                    class="text-red-600 hover:text-red-800 text-xs"
+                                    title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <p class="text-xs text-gray-500">${fee.description || 'No description'}</p>
+                        <div class="text-xs text-gray-400">
+                            ${fee.processing_days} days
+                        </div>
+                    </div>
+                `;
+                gridElement.appendChild(feeCard);
+            });
+            
+            gridElement.classList.remove('hidden');
+        }
+
+        function addPermit() {
+            Swal.fire({
+                title: 'Add New Permit/Certificate',
+                html: `
+                    <div class="text-left space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Certificate Name</label>
+                            <input type="text" id="add-permit-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="e.g., Business Permit">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Code (Internal Use)</label>
+                            <input type="text" id="add-permit-code" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="e.g., business_permit">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea id="add-permit-description" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="Brief description of the certificate"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Fee (₱)</label>
+                                <input type="number" id="add-permit-fee" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="0.00">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Processing Days</label>
+                                <input type="number" id="add-permit-days" min="1" value="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" id="add-permit-active" checked class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                <span class="ml-2 text-sm text-gray-700">Active</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="add-permit-online" checked class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                <span class="ml-2 text-sm text-gray-700">Available Online</span>
+                            </label>
+                        </div>
+                    </div>
+                `,
+                width: '600px',
+                showCancelButton: true,
+                confirmButtonText: 'Add Permit',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#059669',
+                preConfirm: () => {
+                    const name = document.getElementById('add-permit-name').value.trim();
+                    const code = document.getElementById('add-permit-code').value.trim();
+                    const description = document.getElementById('add-permit-description').value.trim();
+                    const fee = parseFloat(document.getElementById('add-permit-fee').value) || 0;
+                    const days = parseInt(document.getElementById('add-permit-days').value) || 3;
+                    const isActive = document.getElementById('add-permit-active').checked;
+                    const isOnline = document.getElementById('add-permit-online').checked;
+
+                    if (!name || !code) {
+                        Swal.showValidationMessage('Name and code are required');
+                        return false;
+                    }
+
+                    return { name, code, description, fee, processing_days: days, is_active: isActive, is_available_online: isOnline };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    createPermit(result.value);
+                }
+            });
+        }
+
+        function createPermit(permitData) {
+            Swal.fire({
+                title: 'Creating Permit...',
+                text: 'Please wait while we add the new permit.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch('/admin/api/certificate-types', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(permitData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Permit Added!',
+                        text: 'The new permit has been added successfully.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        loadServiceFees();
+                    });
+                } else {
+                    throw new Error(data.message || 'Failed to add permit');
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error',
+                    text: error.message || 'Failed to add permit. Please try again.',
+                    icon: 'error'
+                });
+            });
+        }
+
+        function editPermit(permitId) {
+            const permit = serviceFeesData.find(f => f.id === permitId);
+            if (!permit) return;
+
+            Swal.fire({
+                title: 'Edit Permit/Certificate',
+                html: `
+                    <div class="text-left space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Certificate Name</label>
+                            <input type="text" id="edit-permit-name" value="${permit.name}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea id="edit-permit-description" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">${permit.description || ''}</textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Fee (₱)</label>
+                                <input type="number" id="edit-permit-fee" step="0.01" min="0" value="${permit.fee}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Processing Days</label>
+                                <input type="number" id="edit-permit-days" min="1" value="${permit.processing_days}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" id="edit-permit-active" ${permit.is_active ? 'checked' : ''} class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                <span class="ml-2 text-sm text-gray-700">Active</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="edit-permit-online" ${permit.is_available_online ? 'checked' : ''} class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                <span class="ml-2 text-sm text-gray-700">Available Online</span>
+                            </label>
+                        </div>
+                    </div>
+                `,
+                width: '600px',
+                showCancelButton: true,
+                confirmButtonText: 'Update Permit',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#059669'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const updateData = {
+                        name: document.getElementById('edit-permit-name').value.trim(),
+                        description: document.getElementById('edit-permit-description').value.trim(),
+                        fee: parseFloat(document.getElementById('edit-permit-fee').value) || 0,
+                        processing_days: parseInt(document.getElementById('edit-permit-days').value) || 3,
+                        is_active: document.getElementById('edit-permit-active').checked,
+                        is_available_online: document.getElementById('edit-permit-online').checked
+                    };
+                    updatePermit(permitId, updateData);
+                }
+            });
+        }
+
+        function updatePermit(permitId, updateData) {
+            Swal.fire({
+                title: 'Updating Permit...',
+                text: 'Please wait while we update the permit.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(`/admin/api/certificate-types/${permitId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Permit Updated!',
+                        text: 'The permit has been updated successfully.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(() => {
+                        loadServiceFees();
+                    });
+                } else {
+                    throw new Error(data.message || 'Failed to update permit');
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error',
+                    text: error.message || 'Failed to update permit. Please try again.',
+                    icon: 'error'
+                });
+            });
+        }
+
+        function deletePermit(permitId) {
+            const permit = serviceFeesData.find(f => f.id === permitId);
+            if (!permit) return;
+
+            Swal.fire({
+                title: 'Delete Permit?',
+                text: `Are you sure you want to delete "${permit.name}"? This action cannot be undone.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, delete it',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Deleting Permit...',
+                        text: 'Please wait while we delete the permit.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch(`/admin/api/certificate-types/${permitId}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Permit Deleted!',
+                                text: 'The permit has been deleted successfully.',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                loadServiceFees();
+                            });
+                        } else {
+                            throw new Error(data.message || 'Failed to delete permit');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error',
+                            text: error.message || 'Failed to delete permit. Please try again.',
+                            icon: 'error'
+                        });
+                    });
+                }
+            });
+        }
+
+        function updateFeeValue(permitId, newFee) {
+            const updateData = { fee: parseFloat(newFee) || 0 };
+            
+            fetch(`/admin/api/certificate-types/${permitId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update local data
+                    const permit = serviceFeesData.find(f => f.id === permitId);
+                    if (permit) {
+                        permit.fee = parseFloat(newFee) || 0;
+                    }
+                    
+                    // Show brief success indication
+                    const input = document.querySelector(`input[data-fee-id="${permitId}"]`);
+                    if (input) {
+                        input.classList.add('bg-green-50', 'border-green-300');
+                        setTimeout(() => {
+                            input.classList.remove('bg-green-50', 'border-green-300');
+                        }, 1000);
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to update fee');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating fee:', error);
+                // Revert the input value
+                const permit = serviceFeesData.find(f => f.id === permitId);
+                if (permit) {
+                    const input = document.querySelector(`input[data-fee-id="${permitId}"]`);
+                    if (input) {
+                        input.value = permit.fee;
+                        input.classList.add('bg-red-50', 'border-red-300');
+                        setTimeout(() => {
+                            input.classList.remove('bg-red-50', 'border-red-300');
+                        }, 1000);
+                    }
+                }
+            });
+        }
+
+        function syncServiceFees() {
+            Swal.fire({
+                title: 'Sync Service Fees?',
+                text: 'This will initialize or update certificate types with default values from the system.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#059669',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, sync now',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Syncing Service Fees...',
+                        text: 'Please wait while we sync the certificate types.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch('/admin/api/certificate-types/sync', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Sync Complete!',
+                                text: data.message,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                loadServiceFees();
+                            });
+                        } else {
+                            throw new Error(data.message || 'Failed to sync service fees');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            title: 'Error',
+                            text: error.message || 'Failed to sync service fees. Please try again.',
+                            icon: 'error'
+                        });
+                    });
+                }
+            });
+        }
+
+        // Auto-save functionality for form inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize active tab styling
+            initializeActiveTab();
+            
+            // Add change listeners to all form inputs for auto-save indication
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    // Add visual indication that changes need to be saved
+                    const saveButton = document.querySelector('button[onclick="saveChanges()"]');
+                    if (saveButton) {
+                        saveButton.classList.add('animate-pulse');
+                        saveButton.innerHTML = '<i class="fas fa-save mr-2"></i>Save Changes *';
+                    }
+                });
+            });
+
+            // Initialize file upload handling
+            const fileInputs = document.querySelectorAll('input[type="file"]');
+            fileInputs.forEach(input => {
+                input.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Handle file upload preview or validation
+                        console.log('File selected:', file.name);
+                    }
+                });
+            });
+
+            // Load data when tabs are shown
+            const generalTab = document.querySelector('button[onclick="showSettingsTab(\'general\')"]');
+            if (generalTab) {
+                generalTab.addEventListener('click', function() {
+                    setTimeout(() => {
+                        loadSystemSettings();
+                    }, 100);
+                });
+            }
+            
+            const barangayTab = document.querySelector('button[onclick="showSettingsTab(\'barangay\')"]');
+            if (barangayTab) {
+                barangayTab.addEventListener('click', function() {
+                    setTimeout(() => {
+                        loadBarangayInfo();
+                    }, 100);
+                });
+            }
+            
+            const usersTab = document.querySelector('button[onclick="showSettingsTab(\'users\')"]');
+            if (usersTab) {
+                usersTab.addEventListener('click', function() {
+                    setTimeout(() => {
+                        loadUsers();
+                    }, 100);
+                });
+            }
+
+            // Load service fees when services tab is shown
+            const servicesTab = document.querySelector('button[onclick="showSettingsTab(\'services\')"]');
+            if (servicesTab) {
+                servicesTab.addEventListener('click', function() {
+                    setTimeout(() => {
+                        loadServiceFees();
+                    }, 100);
+                });
+            }
+
+            // Load purok when purok tab is shown
+            const purokTab = document.querySelector('button[onclick="showSettingsTab(\'purok\')"]');
+            if (purokTab) {
+                purokTab.addEventListener('click', function() {
+                    setTimeout(() => {
+                        loadPurok();
+                    }, 100);
+                });
+            }
+            
+            // Load system settings by default (since general tab is active)
+            loadSystemSettings();
+        });
+
+        // Preview functionality for system settings
+        function previewRegistrationSetting(checkbox) {
+            const preview = document.getElementById('registration-preview');
+            const previewText = document.getElementById('registration-preview-text');
+            
+            if (checkbox.checked) {
+                preview.classList.add('hidden');
+            } else {
+                previewText.textContent = 'When disabled: Signup page will show "Registration Closed" message, signup links will be disabled';
+                preview.classList.remove('hidden');
+            }
+        }
+        
+        function previewMaintenanceSetting(checkbox) {
+            const preview = document.getElementById('maintenance-preview');
+            const previewText = document.getElementById('maintenance-preview-text');
+            
+            if (checkbox.checked) {
+                previewText.textContent = 'When enabled: Public users will see maintenance page, only admins/clerks can access the system';
+                preview.classList.remove('hidden');
+            } else {
+                preview.classList.add('hidden');
+            }
+        }
+        
+        // Test public access function
+        function testPublicAccess() {
+            Swal.fire({
+                title: 'Test Public Access',
+                html: `
+                    <div class="text-left space-y-3">
+                        <p class="text-sm text-gray-600 mb-4">Open public pages to test current settings:</p>
+                        <button onclick="window.open('/', '_blank')" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm mb-2">
+                            <i class="fas fa-home mr-2"></i>Test Home Page
+                        </button>
+                        <button onclick="window.open('/signup', '_blank')" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm mb-2">
+                            <i class="fas fa-user-plus mr-2"></i>Test Signup Page
+                        </button>
+                        <button onclick="window.open('/login', '_blank')" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Test Login Page
+                        </button>
+                    </div>
+                `,
+                width: '400px',
+                showConfirmButton: false,
+                showCancelButton: true,
+                cancelButtonText: 'Close'
+            });
+        }
+        
+        // Save only system settings function
+        function saveSystemSettingsOnly() {
+            Swal.fire({
+                title: 'Save General Settings?',
+                text: 'Do you want to save the general system settings?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#059669',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, save settings',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Saving Settings...',
+                        text: 'Please wait while we save your general settings.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Save only system settings
+                    saveSystemSettings()
+                    .then(result => {
+                        Swal.fire({
+                            title: 'Settings Saved!',
+                            text: 'General settings have been saved successfully.',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Save system settings error:', error);
+                        Swal.fire({
+                            title: 'Error',
+                            text: (error && error.message) || error || 'Failed to save general settings. Please try again.',
+                            icon: 'error'
+                        });
+                    });
+                }
+            });
+        }
+
+        // Initialize active tab styling
+        function initializeActiveTab() {
+            // Ensure General Settings tab is properly styled as active on load
+            const generalTab = document.querySelector('button[onclick="showSettingsTab(\'general\')"]');
+            if (generalTab && !generalTab.classList.contains('active')) {
+                generalTab.classList.add('active', 'text-slate-600', 'bg-gradient-to-r', 'from-slate-50', 'to-gray-50', 'shadow-md', 'border-l-4', 'border-slate-500');
+                generalTab.classList.remove('text-gray-700');
+                
+                // Update icon color
+                const icon = generalTab.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('text-gray-500');
+                    icon.classList.add('text-slate-500');
+                }
+            }
+        }
+    </script>
+
+    <!-- Load admin components -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
