@@ -1892,13 +1892,11 @@ def get_resident_details(resident_id):
     try:
         resident = Resident.query.get_or_404(resident_id)
         
-        # Build full address
-        address_parts = []
-        if resident.house_number:
-            address_parts.append(resident.house_number)
-        if resident.street:
-            address_parts.append(resident.street)
-        full_address = ' '.join(address_parts) if address_parts else None
+        # Build full address using the model's property
+        full_address = resident.full_address
+        
+        # Get purok name from sitio relationship
+        purok_name = resident.sitio.name if resident.sitio else None
         
         resident_data = {
             'id': resident.id,
@@ -1911,8 +1909,7 @@ def get_resident_details(resident_id):
             'phone': resident.phone,
             'full_address': full_address,
             'house_number': resident.house_number,
-            'street': resident.street,
-            'purok': resident.purok,
+            'purok': purok_name,
             'birth_date': resident.birth_date.strftime('%Y-%m-%d') if resident.birth_date else None,
             'birth_place': resident.birth_place,
             'gender': resident.gender,
@@ -1931,7 +1928,9 @@ def get_resident_details(resident_id):
         
     except Exception as e:
         print(f"Error getting resident details: {e}")
-        return jsonify({'status': 'error', 'message': 'Failed to get resident details'})
+        import traceback
+        traceback.print_exc()
+        return jsonify({'status': 'error', 'message': f'Failed to get resident details: {str(e)}'})
 
 # Enhanced API endpoint for rejecting residents with email notification
 @admin_bp.route('/api/reject-resident/<int:resident_id>', methods=['POST'])

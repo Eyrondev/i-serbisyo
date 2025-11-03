@@ -5,7 +5,7 @@ import os
 import uuid
 from datetime import datetime
 from . import public_bp
-from models import db, Resident, Announcement, Official, User, Certificate, CertificateType, BarangayInfo, ContactMessage
+from models import db, Resident, Announcement, Official, User, Certificate, CertificateType, BarangayInfo, ContactMessage, PurokInfo
 from utils import validate_form_data, validate_email, validate_password, success_response, error_response
 
 # File upload configuration
@@ -332,7 +332,7 @@ def signup():
             # Basic validation for required fields
             required_fields = ['firstName', 'lastName', 'email', 'phone', 'birthDate', 
                              'birthPlace', 'gender', 'civilStatus', 'houseNumber', 
-                             'street', 'purok', 'username', 'password', 'confirmPassword']
+                             'purok', 'username', 'password', 'confirmPassword']
             
             errors = {}
             for field in required_fields:
@@ -412,6 +412,15 @@ def signup():
             from datetime import datetime
             birth_date = datetime.strptime(form_data['birthDate'], '%Y-%m-%d').date()
             
+            # Get or create purok/sitio
+            purok_name = form_data['purok']
+            purok = PurokInfo.query.filter_by(name=purok_name).first()
+            if not purok:
+                # Create new purok if it doesn't exist
+                purok = PurokInfo(name=purok_name, type='Purok')
+                db.session.add(purok)
+                db.session.flush()
+            
             resident = Resident(
                 user_id=user.id,
                 first_name=form_data['firstName'],
@@ -421,8 +430,7 @@ def signup():
                 email=form_data['email'],
                 phone=form_data['phone'],
                 house_number=form_data['houseNumber'],
-                street=form_data['street'],
-                purok=form_data['purok'],
+                sitio_id=purok.id,
                 birth_date=birth_date,
                 birth_place=form_data['birthPlace'],
                 gender=form_data['gender'],
@@ -440,8 +448,8 @@ def signup():
             
             return jsonify({
                 'success': True,
-                'message': 'Account created successfully! Please wait for verification.',
-                'redirect_url': '/signup-success'
+                'message': 'Account created successfully! Please wait for admin verification before you can log in.',
+                'redirect_url': '/login'
             })
             
         except Exception as e:
@@ -530,6 +538,17 @@ def submit_contact():
             'success': False,
             'errors': {'general': 'Sorry, there was an error sending your message. Please try again later.'}
         }), 500
+
+
+@public_bp.route('/api/puroks', methods=['GET'])
+def get_puroks():
+    """API endpoint to fetch all active puroks/sitios"""
+    try:
+        puroks = PurokInfo.query.filter_by(is_active=True).order_by(PurokInfo.name).all()
+        purok_list = [{'id': p.id, 'name': p.name, 'type': p.type} for p in puroks]
+        return jsonify({'success': True, 'puroks': purok_list})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 
 @public_bp.route('/signup-success')

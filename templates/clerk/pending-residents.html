@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pending Residents - iSerBisyo Clerk</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/iserbisyo_icon.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
@@ -660,11 +661,22 @@
         }
 
         function showRejectModal(residentId) {
-            currentResidentId = residentId;
+            // Get resident name from the table row using the button's data attribute
+            const rejectButton = document.querySelector(`.reject-resident-btn[data-resident-id="${residentId}"]`);
+            if (!rejectButton) {
+                alert('Error: Could not find resident information.');
+                return;
+            }
             
-            // Get resident name from the table row
-            const residentRow = document.querySelector(`[data-resident-id="${residentId}"]`).closest('tr');
-            const residentName = residentRow.querySelector('.text-sm.font-medium.text-gray-900').textContent;
+            const residentRow = rejectButton.closest('tr');
+            const residentNameElement = residentRow.querySelector('.text-sm.font-medium.text-gray-900');
+            const residentName = residentNameElement ? residentNameElement.textContent : 'Unknown Resident';
+            
+            // Close view modal if open (this will clear currentResidentId)
+            closeViewModal();
+            
+            // Set currentResidentId AFTER closing view modal
+            currentResidentId = residentId;
             
             // Set the resident name in the modal
             document.getElementById('residentNameForRejection').textContent = residentName;
@@ -672,9 +684,6 @@
             // Clear previous reason and hide error
             document.getElementById('rejectionReason').value = '';
             document.getElementById('rejectionReasonError').classList.add('hidden');
-            
-            // Close view modal if open
-            closeViewModal();
             
             // Show reject modal
             document.getElementById('rejectResidentModal').classList.remove('hidden');

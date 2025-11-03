@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - iSerBisyo Admin</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/iserbisyo_icon.png') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
@@ -273,56 +274,6 @@
                                                             <label class="block text-sm font-medium text-gray-700 mb-1">Facebook Page</label>
                                                             <input type="url" id="facebook-page" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="https://facebook.com/...">
                                                         </div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="border-t pt-4">
-                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Officials Information</h4>
-                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Captain Name</label>
-                                                            <input type="text" id="captain-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Secretary Name</label>
-                                                            <input type="text" id="secretary-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
-                                                        </div>
-                                                    </div>
-                                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Treasurer Name</label>
-                                                            <input type="text" id="treasurer-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Captain Term Start</label>
-                                                            <input type="date" id="captain-term-start" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Captain Term End</label>
-                                                            <input type="date" id="captain-term-end" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="border-t pt-4">
-                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Additional Information</h4>
-                                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Total Population</label>
-                                                            <input type="number" id="total-population" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Total Households</label>
-                                                            <input type="number" id="total-households" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
-                                                        </div>
-                                                        <div>
-                                                            <label class="block text-sm font-medium text-gray-700 mb-1">Total Area (hectares)</label>
-                                                            <input type="number" id="total-area" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
-                                                        </div>
-                                                    </div>
-                                                    <div class="mt-4">
-                                                        <label class="block text-sm font-medium text-gray-700 mb-1">Office Hours</label>
-                                                        <input type="text" id="office-hours" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500" placeholder="e.g., 8:00 AM - 5:00 PM">
                                                     </div>
                                                 </div>
                                             </div>
@@ -1621,19 +1572,6 @@
             document.getElementById('emergency-hotline').value = info.emergency_hotline || '';
             document.getElementById('website').value = info.website || '';
             document.getElementById('facebook-page').value = info.facebook_page || '';
-            
-            // Officials Information
-            document.getElementById('captain-name').value = info.captain_name || '';
-            document.getElementById('secretary-name').value = info.secretary_name || '';
-            document.getElementById('treasurer-name').value = info.treasurer_name || '';
-            document.getElementById('captain-term-start').value = info.captain_term_start || '';
-            document.getElementById('captain-term-end').value = info.captain_term_end || '';
-            
-            // Additional Information
-            document.getElementById('total-population').value = info.total_population || '';
-            document.getElementById('total-households').value = info.total_households || '';
-            document.getElementById('total-area').value = info.total_area_hectares || '';
-            document.getElementById('office-hours').value = info.office_hours || '';
         }
 
         function saveBarangayInfo() {
@@ -1650,16 +1588,7 @@
                 email_address: document.getElementById('email-address').value,
                 emergency_hotline: document.getElementById('emergency-hotline').value,
                 website: document.getElementById('website').value,
-                facebook_page: document.getElementById('facebook-page').value,
-                captain_name: document.getElementById('captain-name').value,
-                secretary_name: document.getElementById('secretary-name').value,
-                treasurer_name: document.getElementById('treasurer-name').value,
-                captain_term_start: document.getElementById('captain-term-start').value,
-                captain_term_end: document.getElementById('captain-term-end').value,
-                total_population: document.getElementById('total-population').value,
-                total_households: document.getElementById('total-households').value,
-                total_area_hectares: document.getElementById('total-area').value,
-                office_hours: document.getElementById('office-hours').value
+                facebook_page: document.getElementById('facebook-page').value
             };
 
             return fetch('/admin/api/barangay-info', {
