@@ -68,8 +68,8 @@
                                     <div class="flex items-center">
                                         <span class="inline-flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-800">
                                             <span class="w-2 h-2 mr-1.5 sm:mr-2 bg-purple-500 rounded-full"></span>
-                                            <span class="hidden sm:inline">{{ announcement_stats.urgent + announcement_stats.high }} Priority Today</span>
-                                            <span class="sm:hidden">{{ announcement_stats.urgent + announcement_stats.high }} Priority</span>
+                                            <span class="hidden sm:inline">{{ announcements|length }} Active Announcement{% if announcements|length != 1 %}s{% endif %}</span>
+                                            <span class="sm:hidden">{{ announcements|length }} Active</span>
                                         </span>
                                     </div>
                                 </div>
@@ -355,21 +355,6 @@
 
         // Header dropdown functionality
         function initializeHeaderDropdowns() {
-            const notificationsToggle = document.getElementById('notifications-toggle');
-            const notificationsDropdown = document.getElementById('notifications-dropdown');
-            
-            if (notificationsToggle && notificationsDropdown) {
-                notificationsToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    notificationsDropdown.classList.toggle('hidden');
-                    const profileDropdown = document.getElementById('profile-dropdown');
-                    if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
-                        profileDropdown.classList.add('hidden');
-                    }
-                });
-            }
-
             const profileToggle = document.getElementById('profile-toggle');
             const profileDropdown = document.getElementById('profile-dropdown');
             
@@ -378,18 +363,11 @@
                     e.preventDefault();
                     e.stopPropagation();
                     profileDropdown.classList.toggle('hidden');
-                    if (notificationsDropdown && !notificationsDropdown.classList.contains('hidden')) {
-                        notificationsDropdown.classList.add('hidden');
-                    }
                 });
             }
 
-            // Close dropdowns when clicking outside
+            // Close dropdown when clicking outside
             document.addEventListener('click', function(event) {
-                if (notificationsDropdown && !event.target.closest('#notifications-toggle') && !event.target.closest('#notifications-dropdown')) {
-                    notificationsDropdown.classList.add('hidden');
-                }
-                
                 if (profileDropdown && !event.target.closest('#profile-toggle') && !event.target.closest('#profile-dropdown')) {
                     profileDropdown.classList.add('hidden');
                 }

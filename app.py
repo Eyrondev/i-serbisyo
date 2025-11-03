@@ -132,10 +132,18 @@ def inject_notifications():
                     status='pending'
                 ).count()
                 
-                # Count all published announcements (not just recent ones)
-                # This shows total available announcements for the resident to read
+                # Count only non-expired published announcements
+                # Filter out announcements with expiry_date in the past
+                from datetime import datetime
+                from sqlalchemy import or_
+                current_time = datetime.utcnow()
                 new_announcements = Announcement.query.filter_by(
                     status='published'
+                ).filter(
+                    or_(
+                        Announcement.expiry_date.is_(None),
+                        Announcement.expiry_date > current_time
+                    )
                 ).count()
                 
                 return dict(notifications={

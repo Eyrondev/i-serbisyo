@@ -33,16 +33,27 @@ def dashboard():
     recent_certificates = Certificate.query.filter_by(resident_id=resident.id)\
         .order_by(Certificate.request_date.desc()).limit(5).all()
     
-    # Get recent announcements (latest 3 published announcements)
+    # Get recent announcements (latest 3 published announcements that are not expired)
+    current_time = datetime.utcnow()
     recent_announcements = Announcement.query.filter(
         Announcement.status == 'published'
+    ).filter(
+        db.or_(
+            Announcement.expiry_date.is_(None),
+            Announcement.expiry_date > current_time
+        )
     ).order_by(Announcement.created_at.desc()).limit(3).all()
     
-    # Get announcement count for this week
+    # Get announcement count for this week (non-expired only)
     week_ago = datetime.now() - timedelta(days=7)
     announcement_count = Announcement.query.filter(
         Announcement.status == 'published',
         Announcement.created_at >= week_ago
+    ).filter(
+        db.or_(
+            Announcement.expiry_date.is_(None),
+            Announcement.expiry_date > current_time
+        )
     ).count()
     
     # Prepare dashboard statistics
@@ -132,8 +143,18 @@ def announcements():
     category_filter = request.args.get('category', '')
     sort_order = request.args.get('sort', 'latest')
     
-    # Build query
+    # Build query - filter published announcements that are not expired
     query = Announcement.query.filter_by(status='published')
+    
+    # Filter out expired announcements
+    # Show announcements with no expiry date OR expiry date in the future
+    current_time = datetime.utcnow()
+    query = query.filter(
+        db.or_(
+            Announcement.expiry_date.is_(None),
+            Announcement.expiry_date > current_time
+        )
+    )
     
     # Apply filters
     if search_query:
@@ -166,17 +187,25 @@ def announcements():
     # Get announcements
     announcements = query.all()
     
-    # Get unique categories for filter dropdown
-    all_announcements = Announcement.query.filter_by(status='published').all()
-    categories = list(set([ann.category for ann in all_announcements if ann.category]))
+    # Get all non-expired published announcements for category dropdown
+    # (without search/category filters applied)
+    all_non_expired = Announcement.query.filter_by(status='published').filter(
+        db.or_(
+            Announcement.expiry_date.is_(None),
+            Announcement.expiry_date > current_time
+        )
+    ).all()
+    categories = list(set([ann.category for ann in all_non_expired if ann.category]))
     
-    # Count announcements by priority
+    # Count announcements by priority - ONLY from filtered/displayed announcements
+    # This ensures stats match what user actually sees
     announcement_stats = {
-        'total': len(all_announcements),
-        'urgent': len([a for a in all_announcements if a.priority == 'urgent']),
-        'high': len([a for a in all_announcements if a.priority == 'high']),
-        'medium': len([a for a in all_announcements if a.priority == 'medium']),
-        'low': len([a for a in all_announcements if a.priority == 'low'])
+        'total': len(announcements),
+        'urgent': len([a for a in announcements if a.priority == 'urgent']),
+        'high': len([a for a in announcements if a.priority == 'high']),
+        'medium': len([a for a in announcements if a.priority == 'medium']),
+        'low': len([a for a in announcements if a.priority == 'low']),
+        'active': len(announcements)  # Active = currently displayed (non-expired + filters applied)
     }
     
     return render_template('residents/announcements.html',
