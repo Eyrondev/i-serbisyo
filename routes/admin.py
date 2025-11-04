@@ -4310,8 +4310,7 @@ def create_user():
             username=data['username'],
             email=data['email'],
             role=data['role'],
-            is_active=data.get('is_active', True),
-            pending_approval=False  # Admin-created users don't need approval
+            is_active=data.get('is_active', True)
         )
         user.set_password(data['password'])
         
