@@ -316,9 +316,13 @@ def residents():
         'pwd_count': pwd_count
     }
     
+    # Get all active sitios/puroks for the dropdown
+    purok_list = PurokInfo.query.filter_by(is_active=True).order_by(PurokInfo.name).all()
+    
     return render_template('clerk/residents.html', 
                          residents=residents_paginated, 
                          stats=stats,
+                         purok_list=purok_list,
                          current_filters={
                              'age': age_filter,
                              'gender': gender_filter,
@@ -731,8 +735,11 @@ def announcements():
     if priority:
         query = query.filter(Announcement.priority == priority)
     
-    # Order by creation date (newest first)
-    query = query.order_by(Announcement.created_at.desc())
+    # Order by pinned status first, then creation date (newest first)
+    query = query.order_by(
+        Announcement.is_pinned.desc(),
+        Announcement.created_at.desc()
+    )
     
     # Paginate results
     announcements = query.paginate(
@@ -893,8 +900,16 @@ def create_announcement():
         
         # Create slug from title
         import re
+        from datetime import datetime
         slug = re.sub(r'[^a-zA-Z0-9\s-]', '', data['title'])
         slug = re.sub(r'\s+', '-', slug.strip()).lower()
+        
+        # Make slug unique by checking if it exists
+        base_slug = slug
+        counter = 1
+        while Announcement.query.filter_by(slug=slug).first():
+            slug = f"{base_slug}-{counter}"
+            counter += 1
         
         # Create announcement
         announcement = Announcement(
@@ -2228,8 +2243,9 @@ def get_resident(resident_id):
         'email': resident.email,
         'phone': resident.phone,
         'house_number': resident.house_number,
-        'street': resident.street,
-        'purok': resident.purok,
+        'street': '',  # Not in model, kept for compatibility
+        'purok': resident.sitio.name if resident.sitio else '',
+        'sitio_id': resident.sitio_id,
         'birth_date': resident.birth_date.isoformat() if resident.birth_date else None,
         'birth_place': resident.birth_place,
         'gender': resident.gender,
@@ -2257,8 +2273,7 @@ def add_resident():
             email=data.get('email', '').strip() or None,
             phone=data.get('phone', '').strip() or None,
             house_number=data.get('house_number', '').strip() or None,
-            street=data.get('street', '').strip() or None,
-            purok=data.get('purok', '').strip() or None,
+            sitio_id=data.get('sitio_id') or None,
             birth_place=data.get('birth_place', '').strip() or None,
             gender=data.get('gender', '').strip() or None,
             civil_status=data.get('civil_status', '').strip() or None,
@@ -2315,8 +2330,7 @@ def update_resident(resident_id):
         resident.email = data.get('email', '').strip() or None
         resident.phone = data.get('phone', '').strip() or None
         resident.house_number = data.get('house_number', '').strip() or None
-        resident.street = data.get('street', '').strip() or None
-        resident.purok = data.get('purok', '').strip() or None
+        resident.sitio_id = data.get('sitio_id') or None
         resident.birth_place = data.get('birth_place', '').strip() or None
         resident.gender = data.get('gender', resident.gender)
         resident.civil_status = data.get('civil_status', resident.civil_status)

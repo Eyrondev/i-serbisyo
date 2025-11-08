@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 01, 2025 at 01:57 AM
+-- Generation Time: Nov 08, 2025 at 03:41 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `iserbisyo_db`
 --
-CREATE DATABASE IF NOT EXISTS `iserbisyo_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `iserbisyo_db`;
 
 -- --------------------------------------------------------
 
@@ -78,11 +76,12 @@ CREATE TABLE `announcements` (
 --
 
 INSERT INTO `announcements` (`id`, `title`, `content`, `slug`, `excerpt`, `category`, `tags`, `status`, `priority`, `created_by`, `updated_by`, `approved_by`, `approved_at`, `is_published`, `published_at`, `view_count`, `like_count`, `comment_count`, `share_count`, `send_sms`, `send_email`, `post_on_website`, `notify_residents`, `featured_image`, `attachment_path`, `attachment_name`, `attachment_size`, `event_date`, `event_time`, `event_location`, `event_organizer`, `event_contact`, `registration_required`, `registration_deadline`, `max_participants`, `is_featured`, `is_pinned`, `publish_date`, `expiry_date`, `created_at`, `updated_at`) VALUES
-(21, 'Community Vaccination Drive - COVID-19 Booster Shots', 'The Barangay Health Center will conduct a vaccination drive for COVID-19 booster shots. All residents 18 years old and above are encouraged to participate. Please bring your vaccination card and valid ID.', NULL, 'Free COVID-19 booster shots available for all residents 18+ at the Barangay Health Center.', 'health', 'vaccination, covid-19, health, booster, free', 'published', 'high', 1, NULL, NULL, NULL, 1, '2025-09-26 15:44:54', 245, 89, 0, 23, 1, 1, 1, 1, NULL, NULL, NULL, NULL, '2025-10-01 15:44:54', NULL, 'Barangay Health Center', 'Barangay Health Office', '09123456789', 0, NULL, NULL, 1, 1, '2025-09-26 15:44:54', '2025-10-05 15:44:54', '2025-09-28 07:44:54', '2025-09-28 07:44:54'),
-(22, 'New Online Barangay Certificate System Launch', 'We are excited to announce the launch of our new online barangay certificate system. Residents can now apply for various certificates online through our website. This includes barangay clearance, certificates of residency, indigency certificates, and more.', NULL, 'Apply for barangay certificates online through our new digital system.', 'services', 'online, certificates, digital, services, convenience', 'published', 'high', 1, NULL, NULL, NULL, 1, '2025-09-23 15:44:54', 356, 127, 0, 45, 0, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 1, 0, '2025-09-23 15:44:54', NULL, '2025-09-28 07:44:54', '2025-09-28 07:44:54'),
+(21, 'Community Vaccination Drive - COVID-19 Booster Shots', 'The Barangay Health Center will conduct a vaccination drive for COVID-19 booster shots. All residents 18 years old and above are encouraged to participate. Please bring your vaccination card and valid ID.', 'community-vaccination-drive---covid-19-booster-shots', 'Free COVID-19 booster shots available for all residents 18+ at the Barangay Health Center.', 'health', 'vaccination, covid-19, health, booster, free', 'published', 'high', 1, 1, NULL, NULL, 1, '2025-09-26 15:44:54', 245, 89, 0, 23, 1, 1, 1, 1, NULL, NULL, NULL, NULL, '2025-10-01 15:44:54', NULL, 'Barangay Health Center', 'Barangay Health Office', '09123456789', 0, NULL, NULL, 1, 1, '2025-09-26 15:44:54', '2025-11-07 00:00:00', '2025-09-28 07:44:54', '2025-11-08 10:48:51'),
+(22, 'New Online Barangay Certificate System Launch', 'We are excited to announce the launch of our new online barangay certificate system. Residents can now apply for various certificates online through our website. This includes barangay clearance, certificates of residency, indigency certificates, and more.', 'new-online-barangay-certificate-system-launch', 'Apply for barangay certificates online through our new digital system.', 'services', 'online, certificates, digital, services, convenience', 'published', 'high', 1, 1, NULL, NULL, 1, '2025-09-23 15:44:54', 356, 127, 0, 45, 0, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 1, 0, '2025-09-23 15:44:54', '2025-11-20 00:00:00', '2025-09-28 07:44:54', '2025-11-08 10:48:39'),
 (23, 'Community Clean-Up Drive - \"Linis Kalikasan\"', 'Join our monthly community clean-up drive! Let\'s work together to keep our barangay clean and green. Participants will receive free snacks and certificates of participation. Bring your own cleaning materials or get them from the registration booth.', NULL, 'Monthly community clean-up drive with free snacks and certificates for participants.', 'events', 'clean-up, environment, community, volunteer, participation', 'published', 'medium', 1, NULL, NULL, NULL, 1, '2025-09-27 15:44:54', 189, 67, 0, 19, 1, 0, 1, 1, NULL, NULL, NULL, NULL, '2025-10-03 15:44:54', '06:00:00', 'Barangay Plaza', 'Barangay Environmental Committee', '09876543210', 1, '2025-10-01 15:44:54', 100, 0, 0, '2025-09-27 15:44:54', '2025-10-12 15:44:54', '2025-09-28 07:44:54', '2025-09-28 07:44:54'),
 (24, 'Senior Citizens Monthly Pension Distribution', 'All senior citizens are reminded that the monthly pension distribution will be held at the Barangay Hall. Please bring your senior citizen ID and a face mask. Distribution will follow health protocols.', NULL, 'Monthly pension distribution for senior citizens at the Barangay Hall.', 'government', 'senior citizens, pension, monthly, distribution, government', 'published', 'high', 1, NULL, NULL, NULL, 1, '2025-09-25 15:44:54', 298, 45, 0, 12, 1, 0, 1, 1, NULL, NULL, NULL, NULL, '2025-09-29 15:44:54', '08:00:00', 'Barangay Hall', 'Barangay Secretary', '09567890123', 0, NULL, NULL, 0, 0, '2025-09-25 15:44:54', '2025-09-30 15:44:54', '2025-09-28 07:44:54', '2025-09-28 07:44:54'),
-(25, 'Emergency: Water Service Interruption Notice', 'URGENT: Water service will be temporarily interrupted tomorrow from 8:00 AM to 6:00 PM due to emergency pipe repairs on the main distribution line. Residents are advised to store water in advance. We apologize for the inconvenience.', NULL, 'Emergency water service interruption tomorrow 8AM-6PM for pipe repairs.', 'emergency', 'emergency, water, interruption, repairs, urgent', 'published', 'urgent', 1, NULL, NULL, NULL, 1, '2025-09-28 13:44:54', 523, 23, 0, 67, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 0, 1, '2025-09-28 13:44:54', '2025-09-29 15:44:54', '2025-09-28 07:44:54', '2025-09-28 07:44:54');
+(25, 'Emergency: Water Service Interruption Notice', 'URGENT: Water service will be temporarily interrupted tomorrow from 8:00 AM to 6:00 PM due to emergency pipe repairs on the main distribution line. Residents are advised to store water in advance. We apologize for the inconvenience.', NULL, 'Emergency water service interruption tomorrow 8AM-6PM for pipe repairs.', 'emergency', 'emergency, water, interruption, repairs, urgent', 'published', 'urgent', 1, NULL, NULL, NULL, 1, '2025-09-28 13:44:54', 523, 23, 0, 67, 1, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, 0, 1, '2025-09-28 13:44:54', '2025-09-29 15:44:54', '2025-09-28 07:44:54', '2025-09-28 07:44:54'),
+(27, 'awdaw', 'awda', 'awdaw', 'awda', 'health', NULL, 'published', 'normal', 1, NULL, NULL, NULL, 1, '2025-11-08 11:03:35', 0, 0, 0, 0, 0, 1, 1, 0, NULL, NULL, NULL, NULL, NULL, NULL, '', '', '', 0, NULL, NULL, 0, 0, '2025-11-08 00:00:00', '2025-11-11 00:00:00', '2025-11-08 11:03:35', '2025-11-08 11:03:35');
 
 -- --------------------------------------------------------
 
@@ -231,7 +230,7 @@ INSERT INTO `certificates` (`id`, `resident_id`, `certificate_type`, `purpose`, 
 (57, 1, 'barangay_clearance', 'awdawd', 'pending', NULL, '2025-09-30 15:54:22', NULL, NULL, 50.00, 'unpaid', NULL, NULL, NULL, NULL, 0, 0, NULL, NULL),
 (58, 1, 'business permit', 'bank_requirements', 'ready', 1, '2025-10-01 01:28:51', '2025-10-07 13:20:11', NULL, 50.00, 'unpaid', NULL, 'CT-2025-000001', NULL, NULL, 0, 0, NULL, NULL),
 (59, 1, 'Certificate of Indigency', 'employment', 'pending', NULL, '2025-10-08 20:48:24', NULL, NULL, 0.00, 'unpaid', NULL, NULL, NULL, NULL, 0, 0, NULL, NULL),
-(60, 1, 'Certificate of Residency', 'bank_requirements', 'pending', NULL, '2025-10-08 20:58:00', NULL, NULL, 30.00, 'unpaid', NULL, NULL, NULL, NULL, 0, 0, NULL, NULL);
+(60, 1, 'Certificate of Residency', 'bank_requirements', 'rejected', 1, '2025-10-08 20:58:00', '2025-11-03 15:52:13', NULL, 30.00, 'unpaid', NULL, NULL, NULL, 'need more detailed', 0, 0, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -297,7 +296,8 @@ INSERT INTO `contact_messages` (`id`, `name`, `email`, `phone`, `subject`, `mess
 (2, 'Maria Santos', 'maria.santos@gmail.com', NULL, 'Certificate Processing Time', 'Good day! I submitted my certificate request last week but haven\'t received any updates. Can you please check the status?', 'read', 'high', NULL, NULL, NULL, '192.168.1.101', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36', '2025-10-01 21:12:39', '2025-10-01 21:12:39'),
 (3, 'Pedro Cruz', 'pedro.cruz@yahoo.com', '+63 998 765 4321', 'Question about Business Permit', 'I want to start a small sari-sari store in our barangay. What are the requirements and fees for getting a business permit?', 'replied', 'normal', 'Thank you for your inquiry about the business permit. Please visit our office during business hours (8AM-5PM, Monday-Friday) and bring the following requirements: Valid ID, Proof of residence, Location sketch of your business, and the permit fee of ₱200. The processing time is typically 7 business days.', 1, '2025-10-01 21:12:39', '192.168.1.102', 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X)', '2025-10-01 21:12:39', '2025-10-01 21:12:39'),
 (4, 'aaron', 'admin@iserbisyo.com', '1231231', 'awdaw', 'awdaadawdaawda', 'unread', 'normal', NULL, NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 OPR/122.0.0.0', '2025-10-01 13:15:03', '2025-10-01 13:15:03'),
-(5, 'te', 'student@test.com', '1231', 'awdaw', 'awdawdawdaw', 'unread', 'normal', NULL, NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 OPR/122.0.0.0', '2025-10-01 15:35:20', '2025-10-01 15:35:20');
+(5, 'te', 'student@test.com', '1231', 'awdaw', 'awdawdawdaw', 'unread', 'normal', NULL, NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 OPR/122.0.0.0', '2025-10-01 15:35:20', '2025-10-01 15:35:20'),
+(6, 'Aaron Joseph Mandita Jimenez', 'admin@gmail.com', '09932326567', 'button', 'awdaawdawdwaw', 'unread', 'normal', NULL, NULL, NULL, '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-02 03:27:21', '2025-11-02 03:27:21');
 
 -- --------------------------------------------------------
 
@@ -506,9 +506,12 @@ INSERT INTO `residents` (`id`, `user_id`, `first_name`, `middle_name`, `last_nam
 (1, 2, 'try', 'try', 'try', 'Jr.', 'aaronjosephjimenezz@gmail.com', '1231231', 'awdaw', 5, 'awdaw', 'Purok 2', '2022-06-28', 'dadaw', 'Male', 'Single', '12312', NULL, NULL, NULL, 'approved', 0, '2025-09-27 18:20:20', '2025-10-31 06:46:35'),
 (2, 3, 'Test', NULL, 'User', NULL, 'test@example.com', '09123456789', '123', 5, 'Test Street', 'Zone 1', '1990-01-01', 'Test City', '', '', 'Student', NULL, NULL, NULL, 'approved', 0, '2025-09-27 18:23:22', '2025-10-31 06:46:31'),
 (3, 4, 'Unique', NULL, 'User', NULL, 'unique@example.com', '09123456789', '999', 5, 'Unique Street', 'Zone 9', '1990-01-01', 'Test City', '', '', 'Doctor', NULL, NULL, NULL, 'approved', 0, '2025-09-27 18:24:07', '2025-10-31 06:46:28'),
-(4, 5, 'FileTesta', NULL, 'User', NULL, 'filetest@example.com', '09123456789', '123', 1, 'Test Street', 'Zone 1', '1990-01-01', 'Test City', '', '', 'Student', 'uploads/profiles/c07e3830-191c-4fe7-9626-8de861fd4c85.png', 'uploads/documents/b417affa-7dae-4f90-adc1-2d178dfaef36.png', 'uploads/documents/fff69a8c-928d-4bc9-bcd8-e60b67455ff6.png', 'approved', 0, '2025-09-27 18:27:48', '2025-10-31 06:46:21'),
+(4, NULL, 'FileTesta', NULL, 'User', NULL, 'filetest@example.com', '09123456789', '123', 1, 'Test Street', 'Zone 1', '1990-01-01', 'Test City', '', '', 'Student', 'uploads/profiles/c07e3830-191c-4fe7-9626-8de861fd4c85.png', 'uploads/documents/b417affa-7dae-4f90-adc1-2d178dfaef36.png', 'uploads/documents/fff69a8c-928d-4bc9-bcd8-e60b67455ff6.png', 'approved', 0, '2025-09-27 18:27:48', '2025-11-04 12:41:57'),
 (5, 6, 'Test', NULL, 'User', NULL, 'testuser@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'pending', 0, '2025-09-30 16:18:08', '2025-09-30 16:18:08'),
-(6, 8, 'Pending', NULL, 'User', NULL, 'pending@test.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'pending', 0, '2025-09-30 16:18:08', '2025-09-30 16:18:08');
+(6, 8, 'Pending', NULL, 'User', NULL, 'pending@test.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'pending', 0, '2025-09-30 16:18:08', '2025-09-30 16:18:08'),
+(7, 10, 'try', 'rtyur', 'wtwe', '', 'try111@gmail.com', '09932326567', '2011', 1, NULL, NULL, '2005-06-03', 'bulacan', 'Male', 'Single', 'Student', NULL, 'uploads/documents/3f5d0002-67c1-43de-a0f2-7cd8ea4fbf2b.png', 'uploads/documents/3f8b1068-b2ff-4c45-8606-3c88ae5f194a.png', 'rejected', 0, '2025-11-03 15:22:13', '2025-11-03 15:28:20'),
+(8, NULL, 'awweda', 'awda', 'wadaw', NULL, 'awdawd@gmail.com', '12312312312', '12', NULL, NULL, NULL, '2025-11-03', 'awdawda', 'Female', 'Single', 'awdwa', NULL, NULL, NULL, 'inactive', 1, '2025-11-06 04:41:25', '2025-11-06 04:41:37'),
+(9, NULL, 'awdaw', 'aawda', 'awdaw', NULL, 'awdaw@gmail.com', '12312312312', 'awda', 1, NULL, NULL, '2021-02-11', 'awdwadwa', 'Male', 'Single', 'awda', NULL, NULL, NULL, 'inactive', 1, '2025-11-06 04:45:53', '2025-11-06 04:46:03');
 
 -- --------------------------------------------------------
 
@@ -683,7 +686,57 @@ INSERT INTO `system_activities` (`id`, `activity_type`, `description`, `user_id`
 (148, 'failed_login', 'Failed login attempt for user try try try Jr.', NULL, NULL, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-01 00:50:18'),
 (149, 'failed_login', 'Failed login attempt for user try try try Jr.', NULL, NULL, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-01 00:50:28'),
 (150, 'login', 'User try try try Jr. logged in successfully', 2, 2, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-01 00:56:00'),
-(151, 'logout', 'User try try try Jr. logged out', 2, 2, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-01 00:56:05');
+(151, 'logout', 'User try try try Jr. logged out', 2, 2, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-01 00:56:05'),
+(152, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-01 00:58:26'),
+(153, 'login', 'User System Clerk logged in successfully', 7, 7, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-01 00:58:50'),
+(154, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-01 01:21:53'),
+(155, 'login', 'User try try try Jr. logged in successfully', 2, 2, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-01 02:14:29'),
+(156, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-01 02:16:55'),
+(157, 'announcement_update', 'Announcement updated: New Online Barangay Certificate System Launch', 1, 22, 'announcement', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-01 02:35:06'),
+(158, 'announcement_create', 'Announcement created: try', 1, 0, 'announcement', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-01 02:39:04'),
+(159, 'logout', 'User System Administrator logged out', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-02 03:26:39'),
+(160, 'login', 'User try try try Jr. logged in successfully', 2, 2, 'user', '192.168.100.85', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1', '2025-11-02 03:45:38'),
+(161, 'logout', 'User try try try Jr. logged out', 2, 2, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-02 05:01:56'),
+(162, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 14:00:39'),
+(163, 'logout', 'User System Administrator logged out', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 14:29:35'),
+(164, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 14:29:56'),
+(165, 'logout', 'User System Administrator logged out', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 14:32:03'),
+(166, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 14:32:25'),
+(167, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 14:32:44'),
+(168, 'logout', 'User System Administrator logged out', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 14:33:48'),
+(169, 'login', 'User System Clerk logged in successfully', 7, 7, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 14:35:47'),
+(170, 'logout', 'User System Clerk logged out', 7, 7, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 14:35:58'),
+(171, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 14:38:45'),
+(172, 'logout', 'User System Administrator logged out', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:14:52'),
+(173, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:23:11'),
+(174, 'resident_rejection', 'Resident try rtyur wtwe - Reason: awdawdawd rejected', 1, 7, 'resident', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:28:20'),
+(175, 'logout', 'User System Administrator logged out', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:30:37'),
+(176, 'failed_login', 'Failed login attempt for user System Clerk', NULL, NULL, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:30:43'),
+(177, 'login', 'User System Clerk logged in successfully', 7, 7, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:30:45'),
+(178, 'logout', 'User System Clerk logged out', 7, 7, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:30:58'),
+(179, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:31:04'),
+(180, 'logout', 'User System Administrator logged out', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:45:08'),
+(181, 'failed_login', 'Failed login attempt for user try try try Jr.', NULL, NULL, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:46:34'),
+(182, 'failed_login', 'Failed login attempt for user try try try Jr.', NULL, NULL, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:46:39'),
+(183, 'failed_login', 'Failed login attempt for user try try try Jr.', NULL, NULL, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:46:48'),
+(184, 'login', 'User try try try Jr. logged in successfully', 2, 2, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:47:21'),
+(185, 'logout', 'User try try try Jr. logged out', 2, 2, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:50:03'),
+(186, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:50:13'),
+(187, 'logout', 'User System Administrator logged out', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:56:54'),
+(188, 'failed_login', 'Failed login attempt for user aaronojosephjimenezz@gmail.com', NULL, NULL, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:57:13'),
+(189, 'login', 'User try try try Jr. logged in successfully', 2, 2, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-11-03 15:58:37'),
+(190, 'logout', 'User try try try Jr. logged out', 2, 2, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-04 12:30:16'),
+(191, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-04 12:30:23'),
+(192, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-06 04:29:04'),
+(193, 'logout', 'User System Administrator logged out', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-06 04:38:46'),
+(194, 'login', 'User System Clerk logged in successfully', 7, 7, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-06 04:38:51'),
+(195, 'resident_registration', 'New resident awweda wadaw registered', 7, 8, 'resident', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-06 04:41:25'),
+(196, 'resident_registration', 'New resident awdaw awdaw registered', 7, 9, 'resident', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-06 04:45:53'),
+(197, 'logout', 'User System Clerk logged out', 7, 7, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-06 04:54:02'),
+(198, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 OPR/122.0.0.0', '2025-11-08 10:24:16'),
+(199, 'logout', 'User System Administrator logged out', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 OPR/122.0.0.0', '2025-11-08 11:36:28'),
+(200, 'login', 'User System Administrator logged in successfully', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 OPR/122.0.0.0', '2025-11-08 11:37:02'),
+(201, 'logout', 'User System Administrator logged out', 1, 1, 'user', '192.168.100.85', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 OPR/122.0.0.0', '2025-11-08 11:37:39');
 
 -- --------------------------------------------------------
 
@@ -749,14 +802,14 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `name`, `role`, `is_active`, `created_at`, `updated_at`, `reset_token`, `reset_token_expiry`, `otp_code`, `otp_expiry`, `otp_verified`) VALUES
-(1, 'admin', 'admin@iserbisyo.com', 'scrypt:32768:8:1$hBzg9xu5uiWSqD9e$6fea6c19aaaba99da25febc591b073774aceb373e1ae1e82eadc450cf0aa39a9368775e60ac3faf8e613af20a398b5daf3e662477673c391b925da801d1735bc', 'System Administrator', 'admin', 1, '2025-09-27 18:03:45', '2025-09-28 00:49:22', NULL, NULL, NULL, NULL, 0),
-(2, 'awda', 'aaronjosephjimenezz@gmail.com', 'scrypt:32768:8:1$hBzg9xu5uiWSqD9e$6fea6c19aaaba99da25febc591b073774aceb373e1ae1e82eadc450cf0aa39a9368775e60ac3faf8e613af20a398b5daf3e662477673c391b925da801d1735bc', 'try try try Jr.', 'resident', 1, '2025-09-27 18:20:20', '2025-11-01 00:56:00', 'Ljnk8aqx1W4sQJNUNTVLO50-rJN6cLaBcbY3SUG1ssU', '2025-10-08 13:25:09', NULL, NULL, 1),
-(3, 'testuser123', 'test@example.com', 'scrypt:32768:8:1$hBzg9xu5uiWSqD9e$6fea6c19aaaba99da25febc591b073774aceb373e1ae1e82eadc450cf0aa39a9368775e60ac3faf8e613af20a398b5daf3e662477673c391b925da801d1735bc', 'Test User', 'resident', 1, '2025-09-27 18:23:22', '2025-09-30 16:14:14', NULL, NULL, NULL, NULL, 0),
+(1, 'admin', 'admin@gmail.com', 'scrypt:32768:8:1$hBzg9xu5uiWSqD9e$6fea6c19aaaba99da25febc591b073774aceb373e1ae1e82eadc450cf0aa39a9368775e60ac3faf8e613af20a398b5daf3e662477673c391b925da801d1735bc', 'System Administrator', 'admin', 1, '2025-09-27 18:03:45', '2025-09-28 00:49:22', NULL, NULL, NULL, NULL, 0),
+(2, 'awda', 'aaronjosephjimenezz@gmail.com', 'scrypt:32768:8:1$hBzg9xu5uiWSqD9e$6fea6c19aaaba99da25febc591b073774aceb373e1ae1e82eadc450cf0aa39a9368775e60ac3faf8e613af20a398b5daf3e662477673c391b925da801d1735bc', 'try try try Jr.', 'resident', 1, '2025-09-27 18:20:20', '2025-11-03 15:58:37', 'Ljnk8aqx1W4sQJNUNTVLO50-rJN6cLaBcbY3SUG1ssU', '2025-10-08 13:25:09', NULL, NULL, 1),
+(3, 'testuser123', 'test@example.com', 'scrypt:32768:8:1$hBzg9xu5uiWSqD9e$6fea6c19aaaba99da25febc591b073774aceb373e1ae1e82eadc450cf0aa39a9368775e60ac3faf8e613af20a398b5daf3e662477673c391b925da801d1735bc', 'Test User', 'resident', 1, '2025-09-27 18:23:22', '2025-11-06 04:37:58', NULL, NULL, NULL, NULL, 0),
 (4, 'uniqueuser789', 'unique@example.com', 'scrypt:32768:8:1$hBzg9xu5uiWSqD9e$6fea6c19aaaba99da25febc591b073774aceb373e1ae1e82eadc450cf0aa39a9368775e60ac3faf8e613af20a398b5daf3e662477673c391b925da801d1735bc', 'Unique User', 'resident', 1, '2025-09-27 18:24:07', '2025-09-30 16:14:14', NULL, NULL, NULL, NULL, 0),
-(5, 'filetest123', 'filetest@example.com', 'scrypt:32768:8:1$hBzg9xu5uiWSqD9e$6fea6c19aaaba99da25febc591b073774aceb373e1ae1e82eadc450cf0aa39a9368775e60ac3faf8e613af20a398b5daf3e662477673c391b925da801d1735bc', 'FileTesta User', 'resident', 1, '2025-09-27 18:27:48', '2025-10-31 06:26:06', NULL, NULL, NULL, NULL, 0),
 (6, 'testuser', 'testuser@gmail.com', 'scrypt:32768:8:1$hBzg9xu5uiWSqD9e$6fea6c19aaaba99da25febc591b073774aceb373e1ae1e82eadc450cf0aa39a9368775e60ac3faf8e613af20a398b5daf3e662477673c391b925da801d1735bc', 'Test User', 'resident', 1, '2025-09-28 03:19:03', '2025-09-30 16:14:14', NULL, NULL, NULL, NULL, 0),
-(7, 'clerk', 'clerk@iserbisyo.local', 'scrypt:32768:8:1$hBzg9xu5uiWSqD9e$6fea6c19aaaba99da25febc591b073774aceb373e1ae1e82eadc450cf0aa39a9368775e60ac3faf8e613af20a398b5daf3e662477673c391b925da801d1735bc', 'System Clerk', 'clerk', 1, '2025-09-30 18:38:06', '2025-09-30 18:38:06', NULL, NULL, NULL, NULL, 0),
-(8, 'pending_test', 'pending@test.com', 'scrypt:32768:8:1$hBzg9xu5uiWSqD9e$6fea6c19aaaba99da25febc591b073774aceb373e1ae1e82eadc450cf0aa39a9368775e60ac3faf8e613af20a398b5daf3e662477673c391b925da801d1735bc', 'Pending Test User', 'resident', 1, '2025-09-30 16:17:29', '2025-09-30 16:17:29', NULL, NULL, NULL, NULL, 0);
+(7, 'clerk', 'clerk@gmail.com', 'scrypt:32768:8:1$hBzg9xu5uiWSqD9e$6fea6c19aaaba99da25febc591b073774aceb373e1ae1e82eadc450cf0aa39a9368775e60ac3faf8e613af20a398b5daf3e662477673c391b925da801d1735bc', 'System Clerk', 'clerk', 1, '2025-09-30 18:38:06', '2025-09-30 18:38:06', NULL, NULL, NULL, NULL, 0),
+(8, 'pending_test', 'pending@test.com', 'scrypt:32768:8:1$hBzg9xu5uiWSqD9e$6fea6c19aaaba99da25febc591b073774aceb373e1ae1e82eadc450cf0aa39a9368775e60ac3faf8e613af20a398b5daf3e662477673c391b925da801d1735bc', 'Pending Test User', 'resident', 1, '2025-09-30 16:17:29', '2025-09-30 16:17:29', NULL, NULL, NULL, NULL, 0),
+(10, 'johndoe1234', 'try111@gmail.com', 'scrypt:32768:8:1$pIyHmfaFFfflQmd5$f1b49e61d8830f496024999a97adbeb625908613188d1d8ffaaf6bb1773c942b4b720f4a6bf2b27f2eb20239028808cd070221b1fdfc0175790f5d7f05b1cf32', 'try rtyur wtwe', 'resident', 0, '2025-11-03 15:22:13', '2025-11-03 15:22:13', NULL, NULL, NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -770,6 +823,21 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `announcements`
+--
+ALTER TABLE `announcements`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_created_by` (`created_by`),
+  ADD KEY `idx_updated_by` (`updated_by`),
+  ADD KEY `idx_approved_by` (`approved_by`),
+  ADD KEY `idx_status` (`status`),
+  ADD KEY `idx_category` (`category`),
+  ADD KEY `idx_priority` (`priority`),
+  ADD KEY `idx_published_at` (`published_at`),
+  ADD KEY `idx_expiry_date` (`expiry_date`),
+  ADD KEY `idx_slug` (`slug`);
 
 --
 -- Indexes for table `certificates`
@@ -872,6 +940,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `announcements`
+--
+ALTER TABLE `announcements`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+
+--
 -- AUTO_INCREMENT for table `certificates`
 --
 ALTER TABLE `certificates`
@@ -887,7 +961,7 @@ ALTER TABLE `certificate_types`
 -- AUTO_INCREMENT for table `contact_messages`
 --
 ALTER TABLE `contact_messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `officials`
@@ -911,13 +985,13 @@ ALTER TABLE `purok_info`
 -- AUTO_INCREMENT for table `residents`
 --
 ALTER TABLE `residents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `system_activities`
 --
 ALTER TABLE `system_activities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=152;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=202;
 
 --
 -- AUTO_INCREMENT for table `system_settings`
@@ -929,11 +1003,19 @@ ALTER TABLE `system_settings`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `announcements`
+--
+ALTER TABLE `announcements`
+  ADD CONSTRAINT `fk_announcements_approved_by` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_announcements_created_by` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_announcements_updated_by` FOREIGN KEY (`updated_by`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `certificates`

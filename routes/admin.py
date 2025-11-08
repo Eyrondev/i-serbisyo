@@ -760,8 +760,11 @@ def announcements():
     if priority:
         query = query.filter(Announcement.priority == priority)
     
-    # Order by creation date (newest first)
-    query = query.order_by(Announcement.created_at.desc())
+    # Order by pinned status first, then creation date (newest first)
+    query = query.order_by(
+        Announcement.is_pinned.desc(),
+        Announcement.created_at.desc()
+    )
     
     # Paginate results
     announcements = query.paginate(
@@ -922,8 +925,16 @@ def create_announcement():
         
         # Create slug from title
         import re
+        from datetime import datetime
         slug = re.sub(r'[^a-zA-Z0-9\s-]', '', data['title'])
         slug = re.sub(r'\s+', '-', slug.strip()).lower()
+        
+        # Make slug unique by checking if it exists
+        base_slug = slug
+        counter = 1
+        while Announcement.query.filter_by(slug=slug).first():
+            slug = f"{base_slug}-{counter}"
+            counter += 1
         
         # Create announcement
         announcement = Announcement(
@@ -4297,7 +4308,7 @@ def create_user():
             }), 400
         
         # Validate role
-        valid_roles = ['admin', 'clerk', 'super_admin']
+        valid_roles = ['resident', 'clerk', 'admin']
         if data['role'] not in valid_roles:
             return jsonify({
                 'success': False,
@@ -4367,7 +4378,7 @@ def update_user(user_id):
                 }), 400
             user.email = data['email']
         if 'role' in data:
-            valid_roles = ['admin', 'clerk', 'super_admin']
+            valid_roles = ['resident', 'clerk', 'admin']
             if data['role'] not in valid_roles:
                 return jsonify({
                     'success': False,

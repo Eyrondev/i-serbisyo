@@ -249,9 +249,6 @@
                                                         <button data-action="generate-receipt" data-payment-id="{{ payment.id }}" class="payment-action-btn text-green-600 hover:text-green-900 text-xs" title="Generate Receipt">
                                                             <i class="fas fa-receipt"></i>
                                                         </button>
-                                                        <button data-action="print-receipt" data-payment-id="{{ payment.id }}" class="payment-action-btn text-purple-600 hover:text-purple-900 text-xs" title="Print Receipt">
-                                                            <i class="fas fa-print"></i>
-                                                        </button>
                                                     {% elif payment.payment_status == 'pending' %}
                                                         <button data-action="mark-paid" data-payment-id="{{ payment.id }}" class="payment-action-btn text-green-600 hover:text-green-900 text-xs" title="Mark as Paid">
                                                             <i class="fas fa-check"></i>
@@ -694,21 +691,289 @@
         }
 
         function generateReceipt(paymentId) {
-            // Implement receipt generation
-            Swal.fire({
-                title: 'Generate Receipt',
-                text: 'Receipt generation functionality will be implemented here.',
-                icon: 'info'
-            });
-        }
-
-        function printReceipt(paymentId) {
-            // Implement receipt printing
-            Swal.fire({
-                title: 'Print Receipt',
-                text: 'Receipt printing functionality will be implemented here.',
-                icon: 'info'
-            });
+            // Fetch payment details first
+            fetch(`/clerk/api/payment-list/${paymentId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const payment = data.payment;
+                        
+                        // Create a print-friendly receipt
+                        const printWindow = window.open('', '_blank');
+                        
+                        // Get current date
+                        const currentDate = new Date().toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        // Build the receipt content
+                        const receiptContent = `
+                            <!DOCTYPE html>
+                            <html>
+                            <head>
+                                <title>Payment Receipt - ${payment.payment_number}</title>
+                                <style>
+                                    @media print {
+                                        @page { 
+                                            margin: 0.5in; 
+                                            size: letter;
+                                        }
+                                        body {
+                                            print-color-adjust: exact;
+                                            -webkit-print-color-adjust: exact;
+                                        }
+                                    }
+                                    body {
+                                        font-family: 'Courier New', monospace;
+                                        max-width: 3in;
+                                        margin: 0 auto;
+                                        padding: 10px;
+                                        color: #000;
+                                        background: #fff;
+                                        font-size: 11px;
+                                        line-height: 1.4;
+                                    }
+                                    .receipt-header {
+                                        text-align: center;
+                                        border-bottom: 2px dashed #000;
+                                        padding-bottom: 10px;
+                                        margin-bottom: 10px;
+                                    }
+                                    .receipt-header h1 {
+                                        margin: 0;
+                                        font-size: 16px;
+                                        color: #000;
+                                        font-weight: bold;
+                                        text-transform: uppercase;
+                                        letter-spacing: 1px;
+                                    }
+                                    .receipt-header p {
+                                        margin: 3px 0;
+                                        font-size: 10px;
+                                        color: #000;
+                                    }
+                                    .receipt-number {
+                                        text-align: center;
+                                        padding: 8px 0;
+                                        margin: 10px 0;
+                                        border-top: 1px solid #000;
+                                        border-bottom: 1px solid #000;
+                                        font-size: 11px;
+                                        font-weight: bold;
+                                    }
+                                    .section-title {
+                                        font-size: 11px;
+                                        font-weight: bold;
+                                        text-transform: uppercase;
+                                        margin: 15px 0 8px 0;
+                                        padding-bottom: 3px;
+                                        border-bottom: 1px solid #000;
+                                    }
+                                    .detail-row {
+                                        display: flex;
+                                        justify-content: space-between;
+                                        padding: 4px 0;
+                                        font-size: 10px;
+                                    }
+                                    .detail-label {
+                                        font-weight: normal;
+                                        color: #000;
+                                        flex: 0 0 45%;
+                                    }
+                                    .detail-value {
+                                        color: #000;
+                                        text-align: right;
+                                        flex: 0 0 55%;
+                                        font-weight: bold;
+                                    }
+                                    .amount-section {
+                                        margin: 15px 0;
+                                        padding: 10px 0;
+                                        border-top: 2px solid #000;
+                                        border-bottom: 2px solid #000;
+                                    }
+                                    .amount-total {
+                                        display: flex;
+                                        justify-content: space-between;
+                                        font-size: 13px;
+                                        font-weight: bold;
+                                        color: #000;
+                                        padding: 5px 0;
+                                    }
+                                    .status-badge {
+                                        display: inline-block;
+                                        padding: 2px 8px;
+                                        border: 1px solid #000;
+                                        font-size: 9px;
+                                        font-weight: bold;
+                                        text-transform: uppercase;
+                                    }
+                                    .footer {
+                                        margin-top: 20px;
+                                        text-align: center;
+                                        font-size: 9px;
+                                        color: #000;
+                                        border-top: 2px dashed #000;
+                                        padding-top: 10px;
+                                    }
+                                    .footer p {
+                                        margin: 3px 0;
+                                    }
+                                    .signature-section {
+                                        margin-top: 30px;
+                                        padding-top: 10px;
+                                    }
+                                    .signature-box {
+                                        margin: 20px 0;
+                                        text-align: center;
+                                    }
+                                    .signature-line {
+                                        border-top: 1px solid #000;
+                                        margin-top: 30px;
+                                        padding-top: 5px;
+                                        font-size: 9px;
+                                        font-weight: normal;
+                                    }
+                                    .barcode {
+                                        text-align: center;
+                                        margin: 15px 0;
+                                        font-family: 'Libre Barcode 128', cursive;
+                                        font-size: 24px;
+                                        letter-spacing: 0;
+                                    }
+                                    .divider {
+                                        border-top: 1px dashed #000;
+                                        margin: 10px 0;
+                                    }
+                                    .text-center {
+                                        text-align: center;
+                                    }
+                                    .text-small {
+                                        font-size: 9px;
+                                    }
+                                    .bold {
+                                        font-weight: bold;
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                <div class="receipt-header">
+                                    <h1>OFFICIAL RECEIPT</h1>
+                                    <p><strong>BARANGAY MANAGEMENT SYSTEM</strong></p>
+                                    <p>i-Serbisyo</p>
+                                </div>
+                                
+                                <div class="receipt-number">
+                                    ${payment.payment_number}
+                                </div>
+                                
+                                <div class="section-title">TRANSACTION DETAILS</div>
+                                
+                                <div class="detail-row">
+                                    <span class="detail-label">Date:</span>
+                                    <span class="detail-value">${new Date(payment.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })} ${new Date(payment.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
+                                </div>
+                                
+                                ${payment.transaction_id ? `
+                                <div class="detail-row">
+                                    <span class="detail-label">Transaction ID:</span>
+                                    <span class="detail-value">${payment.transaction_id}</span>
+                                </div>
+                                ` : ''}
+                                
+                                <div class="divider"></div>
+                                
+                                <div class="section-title">CUSTOMER INFORMATION</div>
+                                
+                                <div class="detail-row">
+                                    <span class="detail-label">Name:</span>
+                                    <span class="detail-value">${payment.payer_name}</span>
+                                </div>
+                                
+                                ${payment.payer_email ? `
+                                <div class="detail-row">
+                                    <span class="detail-label">Email:</span>
+                                    <span class="detail-value text-small">${payment.payer_email}</span>
+                                </div>
+                                ` : ''}
+                                
+                                <div class="divider"></div>
+                                
+                                <div class="section-title">SERVICE DETAILS</div>
+                                
+                                <div class="detail-row">
+                                    <span class="detail-label">Service:</span>
+                                    <span class="detail-value text-small">${payment.service_type.replace(/_/g, ' ').toUpperCase()}</span>
+                                </div>
+                                
+                                <div class="detail-row">
+                                    <span class="detail-label">Payment Method:</span>
+                                    <span class="detail-value">${payment.payment_method.toUpperCase()}</span>
+                                </div>
+                                
+                                <div class="detail-row">
+                                    <span class="detail-label">Status:</span>
+                                    <span class="detail-value"><span class="status-badge">PAID</span></span>
+                                </div>
+                                
+                                <div class="amount-section">
+                                    <div class="amount-total">
+                                        <span>TOTAL AMOUNT:</span>
+                                        <span>₱${parseFloat(payment.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center text-small" style="margin: 15px 0;">
+                                    <p class="bold">AMOUNT PAID IN FULL</p>
+                                    <p>Thank you for your payment!</p>
+                                </div>
+                                
+                                <div class="signature-section">
+                                    <div class="signature-box">
+                                        <div class="signature-line">Authorized Signature</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="footer">
+                                    <p class="bold">*** OFFICIAL RECEIPT ***</p>
+                                    <p>This is a computer-generated receipt.</p>
+                                    <p>No signature required.</p>
+                                    <p style="margin-top: 8px;">Generated: ${currentDate}</p>
+                                    <p>Please keep this receipt for your records.</p>
+                                </div>
+                            </body>
+                            </html>
+                        `;
+                        
+                        // Write content to print window
+                        printWindow.document.write(receiptContent);
+                        printWindow.document.close();
+                        
+                        // Wait for content to load, then print
+                        printWindow.onload = function() {
+                            printWindow.focus();
+                            printWindow.print();
+                        };
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Failed to fetch payment details'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to generate receipt. Please try again.'
+                    });
+                });
         }
 
         function retryPayment(paymentId) {
@@ -1225,9 +1490,6 @@
                             break;
                         case 'generate-receipt':
                             generateReceipt(paymentId);
-                            break;
-                        case 'print-receipt':
-                            printReceipt(paymentId);
                             break;
                         case 'mark-paid':
                             markAsPaid(paymentId);

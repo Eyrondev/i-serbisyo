@@ -108,10 +108,10 @@ def index():
         # Get current datetime for filtering
         now = datetime.utcnow()
         
-        # Get featured announcements (published, not expired, event date hasn't passed)
+        # Get published announcements (not expired, event date hasn't passed)
+        # Show featured first, then regular announcements
         featured_announcements = Announcement.query.filter(
             Announcement.is_published == True,
-            Announcement.is_featured == True,
             db.or_(
                 Announcement.expiry_date.is_(None),
                 Announcement.expiry_date > now
@@ -120,7 +120,10 @@ def index():
                 Announcement.event_date.is_(None),
                 Announcement.event_date >= now.date()
             )
-        ).order_by(Announcement.created_at.desc()).limit(3).all()
+        ).order_by(
+            Announcement.is_featured.desc(),  # Featured first
+            Announcement.created_at.desc()     # Then by newest
+        ).limit(6).all()  # Display up to 6 announcements on landing page
         
         # Get database stats
         approved_residents_count = Resident.query.filter_by(status='approved').count()
